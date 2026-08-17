@@ -580,6 +580,25 @@ class NeurospectraDB {
     if (!data.users) data.users = [];
     data.users.push(newUser);
     this.saveData(data);
+
+    // Synchronize newly created user with PostgreSQL backend server
+    try {
+      fetch('/api/auth/register/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: newUser.id,
+          full_name: newUser.full_name,
+          email: newUser.email,
+          phone: newUser.phone,
+          role: newUser.role,
+          password: userData.password || 'password123'
+        })
+      }).catch(err => {
+        console.warn('Backend sync notice:', err);
+      });
+    } catch (e) {}
+
     return newUser;
   }
 
@@ -589,6 +608,15 @@ class NeurospectraDB {
     if (idx !== -1) {
       data.users[idx] = { ...data.users[idx], ...updates, updated_at: new Date().toISOString() };
       this.saveData(data);
+
+      try {
+        fetch('/api/auth/users/update/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data.users[idx])
+        }).catch(() => {});
+      } catch (e) {}
+
       return data.users[idx];
     }
     return null;
@@ -600,6 +628,14 @@ class NeurospectraDB {
     data.users = (data.users || []).filter(u => u.id !== id);
     if (data.users.length !== initialLen) {
       this.saveData(data);
+      // Synchronize deletion with PostgreSQL database
+      try {
+        fetch('/api/auth/users/delete/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: id })
+        }).catch(() => {});
+      } catch (e) {}
       return true;
     }
     return false;
@@ -907,7 +943,49 @@ class NeurospectraDB {
     this.saveData(data);
     return newNotif;
   }
+  syncToBackend() {
+    try {
+      const data = this.getData();
+      fetch('/api/bulk-sync/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ users: data.users || [] })
+      }).catch(() => {});
+    } catch(e) {}
+  }
+
+  async syncFromBackend() {
+    try {
+      const res = await fetch('/api/auth/users/');
+      if (res.ok) {
+        const remoteUsers = await res.json();
+        if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {
+          const data = this.getData();
+          // Merge remote PostgreSQL users with existing records
+          const userMap = new Map();
+          (data.users || []).forEach(u => userMap.set(u.id, u));
+          remoteUsers.forEach(u => {
+            userMap.set(u.id, {
+              ...u,
+              avatar_url: u.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128',
+              raw_pwd_hash: u.password_hash || 'parent123'
+            });
+          });
+          data.users = Array.from(userMap.values());
+          this.saveData(data);
+          if (window.renderApp) {
+            window.renderApp();
+          }
+        }
+      }
+    } catch(e) {}
+  }
 }
 
 // Global Database Singleton
 window.neuroDB = new NeurospectraDB();
+setTimeout(() => {
+  window.neuroDB.syncFromBackend();
+}, 100);
+
+

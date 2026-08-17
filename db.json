@@ -1,21 +1,209 @@
-{
-  "users": [
-    { "id": "usr_admin_1", "full_name": "Dr. Eleanor Vance", "email": "admin@neurospectra.org", "role": "Administrator", "phone": "+91 9876543210", "is_active": 1, "avatar_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256" },
-    { "id": "usr_therapist_1", "full_name": "Dr. Aisha Khan, Ph.D.", "email": "therapist@neurospectra.org", "role": "Therapist", "phone": "+91 9876543211", "is_active": 1, "avatar_url": "https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256" },
-    { "id": "usr_therapist_2", "full_name": "Dr. Marcus Vance, M.D.", "email": "marcus.vance@neurospectra.org", "role": "Therapist", "phone": "+91 9876543212", "is_active": 1, "avatar_url": "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256" },
-    { "id": "usr_receptionist_1", "full_name": "Sarah Jenkins", "email": "receptionist@neurospectra.org", "role": "Receptionist", "phone": "+91 9876543213", "is_active": 1, "avatar_url": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256" },
-    { "id": "usr_parent_1", "full_name": "Priya Sharma", "email": "parent@neurospectra.org", "role": "Parent / Caregiver", "phone": "+91 9876543214", "is_active": 1, "avatar_url": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256" },
-    { "id": "usr_parent_2", "full_name": "David Miller", "email": "david.miller@gmail.com", "role": "Parent / Caregiver", "phone": "+91 9876543215", "is_active": 1, "avatar_url": "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=256" },
-    { "id": "usr_parent_3", "full_name": "Lin Chen", "email": "lin.chen@gmail.com", "role": "Parent / Caregiver", "phone": "+91 9876543217", "is_active": 1, "avatar_url": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256" },
-    { "id": "usr_teacher_1", "full_name": "Marcus Brody", "email": "teacher@neurospectra.org", "role": "Teacher", "phone": "+91 9876543216", "is_active": 1, "avatar_url": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256" }
-  ],
-  "children": [
-    { "id": "ch_101", "child_code": "NS-2026-0101", "first_name": "Aarav", "last_name": "Sharma", "dob": "2023-04-15", "age_months": 40, "gender": "Male", "status": "Active", "primary_parent_id": "usr_parent_1", "assigned_therapist_id": "usr_therapist_1" },
-    { "id": "ch_102", "child_code": "NS-2026-0102", "first_name": "Liam", "last_name": "Miller", "dob": "2022-09-10", "age_months": 47, "gender": "Male", "status": "Active", "primary_parent_id": "usr_parent_2", "assigned_therapist_id": "usr_therapist_1" },
-    { "id": "ch_103", "child_code": "NS-2026-0103", "first_name": "Maya", "last_name": "Chen", "dob": "2023-11-22", "age_months": 33, "gender": "Female", "status": "Under Assessment", "primary_parent_id": "usr_parent_3", "assigned_therapist_id": "usr_therapist_2" },
-    { "id": "ch_104", "child_code": "NS-2026-0104", "first_name": "Noah", "last_name": "Patel", "dob": "2022-01-30", "age_months": 54, "gender": "Male", "status": "Active", "primary_parent_id": "usr_parent_1", "assigned_therapist_id": "usr_therapist_1" }
-  ],
-  "assessments": [
-    { "id": "rec_asmt_1", "child_id": "ch_101", "therapist_id": "usr_therapist_1", "status": "Completed", "total_score": 1, "risk_level": "Low Risk Indicator" }
-  ]
+﻿{
+    "users":  [
+                  {
+                      "id":  "usr_admin_1",
+                      "full_name":  "Dr. Eleanor Vance",
+                      "email":  "admin@neurospectra.org",
+                      "role":  "Administrator",
+                      "phone":  "+91 9876543210",
+                      "is_active":  1,
+                      "avatar_url":  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
+                  },
+                  {
+                      "id":  "usr_therapist_1",
+                      "full_name":  "Dr. Aisha Khan, Ph.D.",
+                      "email":  "therapist@neurospectra.org",
+                      "role":  "Therapist",
+                      "phone":  "+91 9876543211",
+                      "is_active":  1,
+                      "avatar_url":  "https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
+                  },
+                  {
+                      "id":  "usr_therapist_2",
+                      "full_name":  "Dr. Marcus Vance, M.D.",
+                      "email":  "marcus.vance@neurospectra.org",
+                      "role":  "Therapist",
+                      "phone":  "+91 9876543212",
+                      "is_active":  1,
+                      "avatar_url":  "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
+                  },
+                  {
+                      "id":  "usr_receptionist_1",
+                      "full_name":  "Sarah Jenkins",
+                      "email":  "receptionist@neurospectra.org",
+                      "role":  "Receptionist",
+                      "phone":  "+91 9876543213",
+                      "is_active":  1,
+                      "avatar_url":  "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
+                  },
+                  {
+                      "id":  "usr_parent_1",
+                      "full_name":  "Priya Sharma",
+                      "email":  "parent@neurospectra.org",
+                      "role":  "Parent / Caregiver",
+                      "phone":  "+91 9876543214",
+                      "is_active":  1,
+                      "avatar_url":  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
+                  },
+                  {
+                      "id":  "usr_parent_2",
+                      "full_name":  "David Miller",
+                      "email":  "david.miller@gmail.com",
+                      "role":  "Parent / Caregiver",
+                      "phone":  "+91 9876543215",
+                      "is_active":  1,
+                      "avatar_url":  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
+                  },
+                  {
+                      "id":  "usr_parent_3",
+                      "full_name":  "Lin Chen",
+                      "email":  "lin.chen@gmail.com",
+                      "role":  "Parent / Caregiver",
+                      "phone":  "+91 9876543217",
+                      "is_active":  1,
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
+                  },
+                  {
+                      "id":  "usr_teacher_1",
+                      "full_name":  "Marcus Brody",
+                      "email":  "teacher@neurospectra.org",
+                      "role":  "Teacher",
+                      "phone":  "+91 9876543216",
+                      "is_active":  1,
+                      "avatar_url":  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
+                  },
+                  {
+                      "id":  "usr_test_demo",
+                      "full_name":  "Ananya Roy",
+                      "phone":  "9876543299",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
+                      "is_active":  1,
+                      "email":  "ananya.roy@example.com",
+                      "role":  "Parent / Caregiver"
+                  },
+                  {
+                      "id":  "usr_msspmgkehlvc",
+                      "full_name":  "Dr Rich",
+                      "email":  "rich@example.com",
+                      "password_hash":  "Rich@1",
+                      "role":  "Therapist",
+                      "phone":  "985736367",
+                      "avatar_url":  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format\u0026fit=crop\u0026q=80\u0026w=256",
+                      "is_active":  1,
+                      "created_at":  "2026-08-14T08:53:26.750Z",
+                      "updated_at":  "2026-08-14T08:53:26.750Z"
+                  },
+                  {
+                      "id":  "usr_msspnvwumhd8",
+                      "full_name":  "Edson",
+                      "email":  "edson@example",
+                      "password_hash":  "Edson@1",
+                      "role":  "Parent / Caregiver",
+                      "phone":  "5785785475",
+                      "avatar_url":  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format\u0026fit=crop\u0026q=80\u0026w=256",
+                      "is_active":  1,
+                      "created_at":  "2026-08-14T08:54:33.294Z",
+                      "updated_at":  "2026-08-14T08:54:33.294Z"
+                  },
+                  {
+                      "id":  "usr_msssyhj9w08t",
+                      "full_name":  "Prince",
+                      "email":  "prince@example.com",
+                      "password_hash":  "nshash_52ae6723_UHJpbmNlQDE",
+                      "raw_pwd_hash":  "Prince@1",
+                      "role":  "Parent / Caregiver",
+                      "phone":  "+91 9843567891",
+                      "avatar_url":  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format\u0026fit=crop\u0026q=80\u0026w=256",
+                      "is_active":  1,
+                      "created_at":  "2026-08-14T10:26:46.725Z",
+                      "updated_at":  "2026-08-14T10:26:46.725Z"
+                  },
+                  {
+                      "id":  "usr_msx14vepqzr0",
+                      "full_name":  "Subu",
+                      "phone":  "+91 8590836961",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
+                      "is_active":  1,
+                      "email":  "subinjoseph002@gmail.com",
+                      "role":  "Receptionist"
+                  },
+                  {
+                      "id":  "usr_auto_test",
+                      "full_name":  "Dr. Samuel Evans",
+                      "phone":  "+91 9123456780",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
+                      "is_active":  1,
+                      "email":  "samuel.evans@neurospectra.org",
+                      "role":  "Therapist"
+                  },
+                  {
+                      "id":  "usr_msx1qk2g0c6v",
+                      "full_name":  "Edson",
+                      "phone":  "+91 9857363678",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
+                      "is_active":  1,
+                      "email":  "edson@gmail.com",
+                      "role":  "Parent / Caregiver"
+                  }
+              ],
+    "children":  [
+                     {
+                         "id":  "ch_101",
+                         "child_code":  "NS-2026-0101",
+                         "first_name":  "Aarav",
+                         "last_name":  "Sharma",
+                         "dob":  "2023-04-15",
+                         "age_months":  40,
+                         "gender":  "Male",
+                         "status":  "Active",
+                         "primary_parent_id":  "usr_parent_1",
+                         "assigned_therapist_id":  "usr_therapist_1"
+                     },
+                     {
+                         "id":  "ch_102",
+                         "child_code":  "NS-2026-0102",
+                         "first_name":  "Liam",
+                         "last_name":  "Miller",
+                         "dob":  "2022-09-10",
+                         "age_months":  47,
+                         "gender":  "Male",
+                         "status":  "Active",
+                         "primary_parent_id":  "usr_parent_2",
+                         "assigned_therapist_id":  "usr_therapist_1"
+                     },
+                     {
+                         "id":  "ch_103",
+                         "child_code":  "NS-2026-0103",
+                         "first_name":  "Maya",
+                         "last_name":  "Chen",
+                         "dob":  "2023-11-22",
+                         "age_months":  33,
+                         "gender":  "Female",
+                         "status":  "Under Assessment",
+                         "primary_parent_id":  "usr_parent_3",
+                         "assigned_therapist_id":  "usr_therapist_2"
+                     },
+                     {
+                         "id":  "ch_104",
+                         "child_code":  "NS-2026-0104",
+                         "first_name":  "Noah",
+                         "last_name":  "Patel",
+                         "dob":  "2022-01-30",
+                         "age_months":  54,
+                         "gender":  "Male",
+                         "status":  "Active",
+                         "primary_parent_id":  "usr_parent_1",
+                         "assigned_therapist_id":  "usr_therapist_1"
+                     }
+                 ],
+    "assessments":  [
+                        {
+                            "id":  "rec_asmt_1",
+                            "child_id":  "ch_101",
+                            "therapist_id":  "usr_therapist_1",
+                            "status":  "Completed",
+                            "total_score":  1,
+                            "risk_level":  "Low Risk Indicator"
+                        }
+                    ]
 }

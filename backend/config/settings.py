@@ -72,7 +72,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 
 # Database Configuration (PostgreSQL with SQLite fallback for instant evaluation)
 DB_ENGINE = os.environ.get('DB_ENGINE', 'django.db.backends.postgresql')
-DB_NAME = os.environ.get('DB_NAME', 'neurospectra_db')
+DB_NAME = os.environ.get('DB_NAME', 'postgres')
 DB_USER = os.environ.get('DB_USER', 'postgres')
 DB_PASSWORD = os.environ.get('DB_PASSWORD', 'postgres')
 DB_HOST = os.environ.get('DB_HOST', 'localhost')

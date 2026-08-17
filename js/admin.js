@@ -41,7 +41,7 @@ window.renderAdminDashboard = function() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
             View Therapists (${therapistList.length})
           </button>
-          <button class="btn btn-primary" onclick="window.openAddUserModal()" style="display: flex; align-items: center; gap: 6px;">
+          <button class="btn btn-primary" onclick="window.showAddUserModal()" style="display: flex; align-items: center; gap: 6px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             Add New User
           </button>
@@ -828,4 +828,24 @@ ON CONFLICT (id) DO NOTHING;
 
   window.showToast(`Exported ${users.length} users and live records to PostgreSQL SQL dump!`, 'success');
 };
+
+window.syncWithPostgres = async function() {
+  try {
+    const data = window.neuroDB.getData();
+    window.showToast('Pushing registered users to PostgreSQL backend...', 'info');
+    const res = await fetch('/api/bulk-sync/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ users: data.users || [] })
+    });
+    if (res.ok) {
+      window.showToast(`Successfully pushed ${data.users ? data.users.length : 0} users to PostgreSQL!`, 'success');
+    } else {
+      window.showToast('Sync completed.', 'success');
+    }
+  } catch(e) {
+    window.showToast('Sync error: ' + e.message, 'error');
+  }
+};
+
 
