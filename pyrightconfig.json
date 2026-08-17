@@ -1,0 +1,19 @@
+{
+  "include": [
+    "backend"
+  ],
+  "extraPaths": [
+    "backend",
+    "backend/accounts",
+    "backend/children",
+    "backend/assessments",
+    "backend/therapy",
+    "backend/appointments",
+    "backend/reports",
+    "backend/notifications"
+  ],
+  "reportMissingImports": "none",
+  "reportMissingTypeStubs": "none",
+  "pythonVersion": "3.10",
+  "pythonPlatform": "Windows"
+}
