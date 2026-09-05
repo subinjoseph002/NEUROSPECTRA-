@@ -10,13 +10,8 @@ window.renderLandingPage = function() {
       <!-- Top Navigation Header -->
       <nav style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 18px 48px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 38px; z-index: 500;">
         <!-- Brand Logo -->
-        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.navigateTo('landing')">
-          <div style="width: 38px; height: 38px; border-radius: 8px; background: #2563eb; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-          </div>
-          <div style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">NEUROSPECTRA</div>
+        <div style="display: flex; align-items: center; cursor: pointer; transition: opacity 0.2s;" onclick="window.handleLogoClick()" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'" title="NEUROSPECTRA - Reload">
+          <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 38px; width: auto; max-width: 240px; object-fit: contain; display: block;">
         </div>
 
         <!-- Navigation Links -->
@@ -531,13 +526,8 @@ window.renderLandingPage = function() {
             
             <!-- Col 1: Brand -->
             <div>
-              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 16px;">
-                <div style="width: 34px; height: 34px; border-radius: 8px; background: #2563eb; display: flex; align-items: center; justify-content: center;">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-                  </svg>
-                </div>
-                <div style="font-size: 18px; font-weight: 800; color: #ffffff;">NEUROSPECTRA</div>
+              <div style="display: inline-flex; align-items: center; cursor: pointer; background: #ffffff; padding: 6px 14px; border-radius: 8px; margin-bottom: 18px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); transition: transform 0.2s;" onclick="window.handleLogoClick()" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" title="NEUROSPECTRA - Reload">
+                <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 28px; width: auto; object-fit: contain; display: block;">
               </div>
               <p style="font-size: 13.5px; color: #64748b; line-height: 1.6; max-width: 320px;">
                 AI-powered autism screening and therapy management platform designed to elevate clinical outcomes and empower families.

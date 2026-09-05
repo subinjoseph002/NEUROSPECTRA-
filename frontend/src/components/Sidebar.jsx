@@ -71,15 +71,19 @@ export const Sidebar = () => {
   return (
     <aside className="w-64 bg-slate-900 text-slate-300 flex flex-col flex-shrink-0 min-h-screen border-r border-slate-800">
       {/* Brand Header */}
-      <div className="p-5 flex items-center gap-3 border-b border-slate-800">
-        <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-500/30">
-          N
+      <Link 
+        to="/"
+        className="p-4 border-b border-slate-800 flex items-center hover:opacity-95 transition-opacity"
+        title="NEUROSPECTRA - Back to Home"
+      >
+        <div className="bg-white px-3 py-1.5 rounded-lg w-full flex items-center justify-center shadow-md">
+          <img 
+            src="/assets/logo.png" 
+            alt="NEUROSPECTRA" 
+            className="h-7 w-auto object-contain"
+          />
         </div>
-        <div>
-          <div className="font-extrabold text-base tracking-tight text-white">NEUROSPECTRA</div>
-          <div className="text-[11px] font-semibold text-blue-400">Pediatric Care Portal</div>
-        </div>
-      </div>
+      </Link>
 
       {/* Nav Menu */}
       <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">

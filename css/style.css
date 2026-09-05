@@ -196,7 +196,14 @@ button, input, select, textarea {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.sidebar-brand img, .sidebar-brand svg {
+.sidebar-brand img {
+  max-height: 38px;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.sidebar-brand svg {
   width: 38px;
   height: 38px;
 }

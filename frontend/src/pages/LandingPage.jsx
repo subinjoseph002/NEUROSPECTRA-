@@ -8,14 +8,16 @@ export const LandingPage = () => {
       {/* Top Navbar */}
       <nav className="bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-9 z-40 px-6 py-4">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-xl shadow-lg">
-              N
-            </div>
-            <div>
-              <div className="font-extrabold text-lg tracking-tight text-slate-900">NEUROSPECTRA</div>
-              <div className="text-[11px] font-semibold text-blue-600">Pediatric Autism Care & Therapy</div>
-            </div>
+          <div 
+            className="flex items-center cursor-pointer transition-opacity hover:opacity-90"
+            onClick={() => window.location.reload()}
+            title="NEUROSPECTRA - Reload"
+          >
+            <img 
+              src="/assets/logo.png" 
+              alt="NEUROSPECTRA" 
+              className="h-10 w-auto max-w-[220px] object-contain"
+            />
           </div>
 
           <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-600">

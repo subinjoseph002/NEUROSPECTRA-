@@ -6,6 +6,15 @@ window.currentRoute = 'landing';
 window.routeParams = {};
 window.activeChildProfileTab = 'overview';
 
+// Global Logo Click handler: reload if on landing, otherwise redirect to landing
+window.handleLogoClick = function() {
+  if (window.currentRoute === 'landing') {
+    window.location.reload();
+  } else {
+    window.navigateTo('landing');
+  }
+};
+
 // Navigation entry point
 window.navigateTo = function(route, params = {}) {
   // If attempting to access protected routes without authentication, redirect to login
@@ -63,13 +72,10 @@ window.renderApp = function() {
     <div class="app-shell" style="background: #f8fafc; min-height: calc(100vh - 38px);">
       <!-- Exact Dark Navy Figma Sidebar -->
       <aside class="app-sidebar" id="app-sidebar" style="background: #0b1329; border-right: 1px solid rgba(255,255,255,0.06); width: 250px;">
-        <div class="sidebar-brand" style="padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.navigateTo('dashboard')">
-          <div style="width: 32px; height: 32px; border-radius: 7px; background: #2563eb; display: flex; align-items: center; justify-content: center;">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
+        <div class="sidebar-brand" style="padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; cursor: pointer;" onclick="window.handleLogoClick()" title="NEUROSPECTRA - Back to Home">
+          <div style="background: #ffffff; padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+            <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 26px; width: auto; max-width: 100%; object-fit: contain; display: block;">
           </div>
-          <div style="font-size: 16px; font-weight: 800; color: #ffffff; letter-spacing: -0.3px;">NEUROSPECTRA</div>
         </div>
 
         <!-- Role Nav Menu -->
@@ -253,13 +259,8 @@ window.renderLoginPage = function() {
       <div style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/login_bg.jpg'), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
         
         <!-- Top Logo -->
-        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.navigateTo('landing')">
-          <div style="width: 36px; height: 36px; border-radius: 8px; background: #3b82f6; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-          </div>
-          <div style="font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: 0.3px;">NEUROSPECTRA</div>
+        <div style="display: inline-flex; align-items: center; cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 8px 16px; border-radius: 10px; backdrop-filter: blur(8px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); width: fit-content; transition: transform 0.2s;" onclick="window.handleLogoClick()" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'" title="NEUROSPECTRA - Back to Home">
+          <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 32px; width: auto; display: block; object-fit: contain;">
         </div>
 
         <!-- Center Headline & Accent Line -->
@@ -350,13 +351,8 @@ window.renderRegisterPage = function() {
       <div style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/register_bg.jpg'), url('https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
         
         <!-- Top Logo -->
-        <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.navigateTo('landing')">
-          <div style="width: 36px; height: 36px; border-radius: 8px; background: #3b82f6; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.35);">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
-            </svg>
-          </div>
-          <div style="font-size: 18px; font-weight: 800; color: #ffffff; letter-spacing: 0.3px;">NEUROSPECTRA</div>
+        <div style="display: inline-flex; align-items: center; cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 8px 16px; border-radius: 10px; backdrop-filter: blur(8px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); width: fit-content; transition: transform 0.2s;" onclick="window.handleLogoClick()" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'" title="NEUROSPECTRA - Back to Home">
+          <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 32px; width: auto; display: block; object-fit: contain;">
         </div>
 
         <!-- Center Headline & Accent Line -->

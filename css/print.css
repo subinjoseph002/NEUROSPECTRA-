@@ -83,8 +83,10 @@
 }
 
 .report-brand-logo img {
-  width: 48px;
-  height: 48px;
+  height: 44px;
+  width: auto;
+  max-width: 240px;
+  object-fit: contain;
 }
 
 .report-meta-grid {

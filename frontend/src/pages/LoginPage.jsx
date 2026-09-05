@@ -63,15 +63,17 @@ export const LoginPage = () => {
         </div>
 
         {/* Top Logo */}
-        <div className="relative z-10 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-extrabold text-xl shadow-lg">
-            N
-          </div>
-          <div>
-            <div className="font-extrabold text-lg text-white tracking-tight">NEUROSPECTRA</div>
-            <div className="text-xs text-blue-300 font-semibold">Pediatric Autism Care & Therapy</div>
-          </div>
-        </div>
+        <Link 
+          to="/"
+          className="relative z-10 inline-flex items-center bg-white/95 px-4 py-2 rounded-xl backdrop-blur-md shadow-lg shadow-black/20 w-fit hover:scale-105 transition-transform"
+          title="NEUROSPECTRA - Back to Home"
+        >
+          <img 
+            src="/assets/logo.png" 
+            alt="NEUROSPECTRA" 
+            className="h-8 w-auto object-contain"
+          />
+        </Link>
 
         {/* Middle Hero Quote */}
         <div className="relative z-10 space-y-4 max-w-lg">

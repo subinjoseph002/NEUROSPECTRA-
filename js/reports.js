@@ -72,11 +72,11 @@ window.renderReportView = function(childId) {
       
       <!-- Report Header -->
       <div class="report-header-banner" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 24px;">
-        <div style="display: flex; align-items: center; gap: 14px;">
-          <div style="width: 48px; height: 48px; border-radius: 12px; background: #2563eb; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 24px;">N</div>
-          <div>
-            <div style="font-size: 20px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">NEUROSPECTRA CLINICAL PLATFORM</div>
-            <div style="font-size: 11px; color: #2563eb; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Developmental Screening & Intervention Documentation</div>
+        <div style="display: flex; align-items: center; gap: 16px; cursor: pointer;" onclick="window.handleLogoClick()" title="NEUROSPECTRA - Back to Home">
+          <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 42px; width: auto; max-width: 240px; object-fit: contain; display: block;">
+          <div style="border-left: 1.5px solid #cbd5e1; padding-left: 14px;">
+            <div style="font-size: 16px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">CLINICAL ASSESSMENT REPORT</div>
+            <div style="font-size: 11px; color: #2563eb; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Developmental Screening & Intervention Documentation</div>
           </div>
         </div>
         <div style="text-align: right; font-size: 12px; color: #64748b;">
