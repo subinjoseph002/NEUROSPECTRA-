@@ -227,19 +227,19 @@ window.renderSidebarNavItems = function(role) {
 
   // Receptionist / Parent defaults
   return `
-    <button class="nav-item-btn active" style="background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;" onclick="window.navigateTo('dashboard')">
+    <button class="nav-item-btn ${window.currentRoute === 'dashboard' ? 'active' : ''}" style="${window.currentRoute === 'dashboard' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('dashboard')">
       <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
       Dashboard
     </button>
-    <button class="nav-item-btn" style="color: #94a3b8;" onclick="window.navigateTo('children')">
+    <button class="nav-item-btn ${window.currentRoute === 'children' ? 'active' : ''}" style="${window.currentRoute === 'children' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('children')">
       <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span>
       Children
     </button>
-    <button class="nav-item-btn" style="color: #94a3b8;" onclick="window.navigateTo('appointments')">
+    <button class="nav-item-btn ${window.currentRoute === 'appointments' ? 'active' : ''}" style="${window.currentRoute === 'appointments' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('appointments')">
       <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
       Appointments
     </button>
-    <button class="nav-item-btn" style="color: #94a3b8;" onclick="window.navigateTo('reports')">
+    <button class="nav-item-btn ${window.currentRoute === 'reports' ? 'active' : ''}" style="${window.currentRoute === 'reports' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('reports')">
       <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
       Reports
     </button>
@@ -640,10 +640,17 @@ window.renderRouteContent = function() {
   }
 
   if (route === 'reports') {
+    if (role === 'Receptionist' && window.renderReceptionistReports) {
+      return window.renderReceptionistReports();
+    }
     return window.renderReportsMasterList();
   }
 
   if (route === 'report-view') {
+    if (role === 'Receptionist') {
+      window.showToast('Access Restricted: Detailed clinical findings are restricted to clinical practitioners and caregivers.', 'warning');
+      return window.renderReceptionistReports ? window.renderReceptionistReports() : '';
+    }
     return window.renderReportView(params.childId);
   }
 
@@ -1857,6 +1864,13 @@ window.renderAppointmentsMasterView = function() {
 
 window.renderReportsMasterList = function() {
   const currentUser = window.neuroAuth.getCurrentUser();
+  const role = window.neuroAuth.getRole();
+
+  // Receptionist administrative reports delegate
+  if (role === 'Receptionist' && window.renderReceptionistReports) {
+    return window.renderReceptionistReports();
+  }
+
   let children = window.neuroDB.getChildren();
 
   // If user is Parent / Caregiver, strictly scope list to only their own children

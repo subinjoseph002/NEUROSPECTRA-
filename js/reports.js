@@ -9,6 +9,12 @@ window.renderReportView = function(childId) {
   const currentUser = window.neuroAuth.getCurrentUser();
   const allChildren = window.neuroDB.getChildren();
 
+  // Role Access Control: Receptionists are restricted to administrative reports only
+  if (currentUser && currentUser.role === 'Receptionist') {
+    window.showToast('Access Restricted: Detailed clinical findings and assessment records are restricted to clinical practitioners and caregivers.', 'warning');
+    return window.renderReceptionistReports ? window.renderReceptionistReports() : '';
+  }
+
   // If user is Parent / Caregiver, strictly scope available children
   let allowedChildren = allChildren;
   if (currentUser && currentUser.role === 'Parent / Caregiver') {
@@ -217,6 +223,11 @@ window.renderReportView = function(childId) {
 
 window.generateAndPrintChildReport = function(childId) {
   const currentUser = window.neuroAuth.getCurrentUser();
+  if (currentUser && currentUser.role === 'Receptionist') {
+    window.showToast('Access Restricted: Clinical diagnostic reports are restricted to clinicians and caregivers. You have access to Administrative Reports.', 'warning');
+    window.navigateTo('reports');
+    return;
+  }
   if (currentUser && currentUser.role === 'Parent / Caregiver') {
     const myChildren = window.neuroDB.getChildren().filter(c => c.primary_parent_id === currentUser.id);
     const ownsChild = myChildren.some(c => c.id === childId);
