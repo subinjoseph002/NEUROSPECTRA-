@@ -122,12 +122,12 @@ window.renderApp = function() {
             </div>
 
             <!-- Profile User Pill -->
-            <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.navigateTo('settings')">
+            <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.showUserProfileModal()" title="View & Edit My Profile">
               <div style="text-align: right;">
-                <div style="font-size: 14px; font-weight: 700; color: #0f172a;">${currentUser.full_name.split(' ')[0]} ${currentUser.full_name.split(' ')[1] || 'Mercer'}</div>
+                <div style="font-size: 14px; font-weight: 700; color: #0f172a;">${currentUser.full_name.split(' ')[0]} ${currentUser.full_name.split(' ')[1] || ''}</div>
                 <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">${roleSubtitle}</div>
               </div>
-              <img src="${currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128'}" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1.5px solid #e2e8f0;">
+              <img src="${currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128'}" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1.5px solid #e2e8f0; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
             </div>
           </div>
         </header>
@@ -656,6 +656,10 @@ window.renderRouteContent = function() {
 
   if (route === 'messages') {
     return window.renderMessagingView(params.childId);
+  }
+
+  if (route === 'profile' || route === 'settings') {
+    return window.renderUserProfileView();
   }
 
   // Fallback
@@ -2514,6 +2518,524 @@ window.resetDatabaseDefaults = function() {
   window.closeActiveModal();
   window.showToast('Database reset to fresh MCA demo seed records!', 'success');
   window.renderCurrentView();
+};
+
+// ============================================================================
+// Distinct Role-Based User Profiles
+// ============================================================================
+
+window.renderUserProfileView = function() {
+  const currentUser = window.neuroAuth.getCurrentUser();
+  if (!currentUser) return '';
+  const db = window.neuroDB;
+  const role = currentUser.role;
+
+  let roleBadgeBg = '#eff6ff';
+  let roleBadgeColor = '#2563eb';
+  let roleTitle = 'Platform User';
+
+  if (role === 'Administrator') {
+    roleBadgeBg = '#fdf4ff';
+    roleBadgeColor = '#a855f7';
+    roleTitle = 'System Administrator (Super Admin)';
+  } else if (role === 'Therapist') {
+    roleBadgeBg = '#f0fdf4';
+    roleBadgeColor = '#16a34a';
+    roleTitle = 'Licensed Clinical Specialist (BCBA-D)';
+  } else if (role === 'Receptionist') {
+    roleBadgeBg = '#fffbeb';
+    roleBadgeColor = '#d97706';
+    roleTitle = 'Clinical Intake & Scheduling Coordinator';
+  } else if (role === 'Parent / Caregiver') {
+    roleBadgeBg = '#ecfdf5';
+    roleBadgeColor = '#059669';
+    roleTitle = 'Primary Family Caregiver';
+  } else if (role === 'Teacher') {
+    roleBadgeBg = '#f0f9ff';
+    roleBadgeColor = '#0284c7';
+    roleTitle = 'Special Educator & Classroom Partner';
+  }
+
+  const allChildren = db.getChildren();
+  const allAppointments = db.getAppointments();
+
+  let roleSectionHtml = '';
+  if (role === 'Administrator') {
+    const allUsers = db.getUsers();
+    roleSectionHtml = `
+      <div class="card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#a855f7" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Administrator Scope & System Permissions
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px;">
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Users</div>
+            <div style="font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 4px;">${allUsers.length}</div>
+            <div style="font-size: 11.5px; color: #a855f7; font-weight: 600;">System Wide</div>
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Registered Children</div>
+            <div style="font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 4px;">${allChildren.length}</div>
+            <div style="font-size: 11.5px; color: #16a34a; font-weight: 600;">Clinical Registry</div>
+          </div>
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total Bookings</div>
+            <div style="font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 4px;">${allAppointments.length}</div>
+            <div style="font-size: 11.5px; color: #2563eb; font-weight: 600;">Appointments</div>
+          </div>
+        </div>
+        <div style="font-size: 12.5px; color: #475569; background: #faf5ff; border: 1px solid #f3e8ff; border-radius: 8px; padding: 12px; line-height: 1.5;">
+          <strong>Super Admin Privileges:</strong> Full authorization to manage user roles, audit clinical records, add therapists/teachers, and perform database maintenance.
+        </div>
+      </div>
+    `;
+  } else if (role === 'Therapist') {
+    const myChildren = allChildren.filter(c => c.assigned_therapist_id === currentUser.id);
+    const myApts = allAppointments.filter(a => a.therapist_id === currentUser.id);
+    const myPlans = (db.getTherapyPlans() || []).filter(p => p.therapist_id === currentUser.id);
+
+    roleSectionHtml = `
+      <div class="card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          Clinical Specialist Credentials & Caseload
+        </h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px;">
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #166534; text-transform: uppercase;">Assigned Patients</div>
+            <div style="font-size: 22px; font-weight: 800; color: #166534; margin-top: 4px;">${myChildren.length} Children</div>
+          </div>
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #1e40af; text-transform: uppercase;">Therapy Roadmaps</div>
+            <div style="font-size: 22px; font-weight: 800; color: #1e40af; margin-top: 4px;">${myPlans.length} Active IEPs</div>
+          </div>
+          <div style="background: #faf5ff; border: 1px solid #f3e8ff; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #7e22ce; text-transform: uppercase;">Clinical Sessions</div>
+            <div style="font-size: 22px; font-weight: 800; color: #7e22ce; margin-top: 4px;">${myApts.length} Scheduled</div>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom: 8px;">My Assigned Child Patients:</div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            ${myChildren.map(c => `
+              <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 8px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('child-profile', { childId: '${c.id}' })" onmouseover="this.style.borderColor='#3b82f6'" onmouseout="this.style.borderColor='#cbd5e1'">
+                <div>
+                  <div style="font-weight: 700; font-size: 13px; color: #0f172a;">${c.first_name} ${c.last_name}</div>
+                  <div style="font-size: 11px; color: #64748b; font-family: monospace;">${c.child_code} &bull; ${c.age_months} Months</div>
+                </div>
+                <span class="badge ${c.status === 'Active' ? 'badge-active' : 'badge-scheduled'}">${c.status}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+  } else if (role === 'Receptionist') {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayApts = allAppointments.filter(a => a.appointment_date === todayStr);
+
+    roleSectionHtml = `
+      <div class="card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Reception & Intake Coordination Desk
+        </h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 16px;">
+          <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #b45309; text-transform: uppercase;">Today's Clinic Visits</div>
+            <div style="font-size: 22px; font-weight: 800; color: #b45309; margin-top: 4px;">${todayApts.length} Visits</div>
+          </div>
+          <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #1e40af; text-transform: uppercase;">Total Bookings</div>
+            <div style="font-size: 22px; font-weight: 800; color: #1e40af; margin-top: 4px;">${allAppointments.length} Managed</div>
+          </div>
+          <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px; text-align: center;">
+            <div style="font-size: 11px; font-weight: 700; color: #166534; text-transform: uppercase;">Registered Children</div>
+            <div style="font-size: 22px; font-weight: 800; color: #166534; margin-top: 4px;">${allChildren.length} Files</div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-primary btn-sm" onclick="window.showRegisterChildModal()">+ Register New Child</button>
+          <button class="btn btn-accent btn-sm" onclick="window.showBookAppointmentModal()">+ Book Appointment</button>
+          <button class="btn btn-outline btn-sm" onclick="window.navigateTo('reports')">View Administrative Reports</button>
+        </div>
+      </div>
+    `;
+  } else if (role === 'Parent / Caregiver') {
+    const myChildren = allChildren.filter(c => c.primary_parent_id === currentUser.id);
+    const myChild = myChildren[0] || allChildren[0];
+    const therapist = myChild ? db.getUserById(myChild.assigned_therapist_id) : null;
+
+    roleSectionHtml = `
+      <div class="card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+          Linked Child Profile & Clinical Care Team
+        </h3>
+        
+        ${myChild ? `
+          <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px; margin-bottom: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+              <div>
+                <div style="font-size: 11px; font-weight: 700; color: #059669; text-transform: uppercase;">Linked Child Patient</div>
+                <div style="font-size: 16px; font-weight: 800; color: #0f172a;">${myChild.first_name} ${myChild.last_name}</div>
+              </div>
+              <span style="font-family: monospace; font-weight: 700; color: #2563eb; background: #eff6ff; padding: 3px 8px; border-radius: 6px; font-size: 12px;">${myChild.child_code}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 12.5px;">
+              <div><strong style="color: #64748b;">Age & Gender:</strong> <div>${myChild.age_months} Months (${myChild.gender})</div></div>
+              <div><strong style="color: #64748b;">Assigned Specialist:</strong> <div style="font-weight: 700; color: #0f172a;">${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}</div></div>
+              <div><strong style="color: #64748b;">Caregiver Contact:</strong> <div>${currentUser.phone || '+91 9876543214'}</div></div>
+            </div>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-sm" onclick="window.navigateTo('child-profile', { childId: '${myChild.id}' })">View Full Child Profile</button>
+            <button class="btn btn-outline btn-sm" onclick="window.navigateTo('progress', { childId: '${myChild.id}' })">Milestone Progress</button>
+            <button class="btn btn-secondary btn-sm" onclick="window.navigateTo('reports')">Clinical Reports</button>
+          </div>
+        ` : `
+          <p style="font-size: 13px; color: #64748b;">No linked child registered under this caregiver profile yet.</p>
+        `}
+      </div>
+    `;
+  } else if (role === 'Teacher') {
+    roleSectionHtml = `
+      <div class="card" style="margin-bottom: 24px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg>
+          Special Educator Classroom & Behavioral Coordination
+        </h3>
+        <p style="font-size: 13px; color: #475569; line-height: 1.5; margin-bottom: 12px;">
+          Collaborates with pediatric clinic specialists to align classroom sensory adaptations, peer interactions, and IEP milestone tracking in educational settings.
+        </p>
+        <button class="btn btn-outline btn-sm" onclick="window.navigateTo('dashboard')">View Classroom IEP Dashboard</button>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">My Account & Profile</h1>
+        <p class="page-subtitle">Personal information, role credentials, and account customization for <strong>${currentUser.full_name}</strong>.</p>
+      </div>
+      <div style="display: flex; gap: 10px;">
+        <button class="btn btn-outline" onclick="window.navigateTo('dashboard')">
+          &larr; Back to Dashboard
+        </button>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 340px 1fr; gap: 24px;">
+      
+      <!-- Left Column: User Identity Card -->
+      <div class="card" style="text-align: center; padding: 28px 20px;">
+        <div style="position: relative; display: inline-block; margin-bottom: 16px;">
+          <img id="profile-avatar-preview" src="${currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256'}" alt="${currentUser.full_name}" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+          <span style="position: absolute; bottom: 4px; right: 4px; width: 18px; height: 18px; background: #10b981; border: 3px solid #ffffff; border-radius: 50%;" title="Active Account"></span>
+        </div>
+
+        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">${currentUser.full_name}</h2>
+        <div style="font-size: 13px; color: #64748b; margin-bottom: 12px;">${currentUser.email}</div>
+
+        <div style="display: inline-block; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 700; background: ${roleBadgeBg}; color: ${roleBadgeColor}; margin-bottom: 16px;">
+          ${role}
+        </div>
+
+        <div style="text-align: left; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; font-size: 12.5px; color: #475569; margin-bottom: 18px;">
+          <div style="margin-bottom: 6px;"><strong>User ID:</strong> <span style="font-family: monospace; color: #0f172a;">${currentUser.id}</span></div>
+          <div style="margin-bottom: 6px;"><strong>Phone:</strong> <span style="color: #0f172a;">${currentUser.phone || '+91 9876543210'}</span></div>
+          <div><strong>Status:</strong> <span style="color: #16a34a; font-weight: 700;">Active Account</span></div>
+        </div>
+
+        <button class="btn btn-outline btn-sm" style="width: 100%;" onclick="window.handleLogout()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Sign Out of Account
+        </button>
+      </div>
+
+      <!-- Right Column: Role Details & Edit Form -->
+      <div>
+        ${roleSectionHtml}
+
+        <!-- Edit Profile Form Card -->
+        <div class="card">
+          <div class="card-header" style="border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; margin-bottom: 18px;">
+            <div class="card-title" style="font-size: 16px; font-weight: 800; color: #0f172a;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit Profile & Credentials
+            </div>
+          </div>
+
+          <form id="edit-user-profile-form" onsubmit="window.handleUpdateProfileSubmit(event)">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Full Name <span class="required">*</span></label>
+                <input type="text" id="edit-profile-name" class="form-control" value="${currentUser.full_name}" required>
+              </div>
+              <div class="form-group" style="margin-bottom: 0;">
+                <label class="form-label">Phone Number (Indian Mobile) <span class="required">*</span></label>
+                <input type="tel" id="edit-profile-phone" class="form-control" value="${currentUser.phone || ''}" placeholder="+91 9876543210" required>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label">Work / Account Email</label>
+              <input type="email" class="form-control" value="${currentUser.email}" disabled style="background: #f1f5f9; color: #64748b; cursor: not-allowed;" title="Email cannot be modified directly">
+              <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Email is tied to your NEUROSPECTRA clinical authorization ID.</div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label">Profile Avatar URL</label>
+              <input type="url" id="edit-profile-avatar" class="form-control" value="${currentUser.avatar_url || ''}" placeholder="https://..." oninput="const p = document.getElementById('profile-avatar-preview'); if (p) p.src = this.value">
+              
+              <!-- Quick Avatar Selection Presets -->
+              <div style="margin-top: 8px;">
+                <div style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Or choose a quick avatar preset:</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                  ${[
+                    'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
+                    'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256',
+                    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
+                    'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
+                    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
+                    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256'
+                  ].map(url => `
+                    <img src="${url}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid ${currentUser.avatar_url === url ? '#2563eb' : '#e2e8f0'};" onclick="window.selectAvatarPreset('${url}')">
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+
+            <!-- Password Update (Optional) -->
+            <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; margin-bottom: 20px;">
+              <h4 style="font-size: 13.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">Change Password (Optional)</h4>
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 12px;">New Password</label>
+                  <input type="password" id="edit-profile-newpwd" class="form-control" placeholder="Leave blank to keep current">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                  <label class="form-label" style="font-size: 12px;">Confirm New Password</label>
+                  <input type="password" id="edit-profile-confirmpwd" class="form-control" placeholder="Re-enter new password">
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+              <button type="submit" class="btn btn-primary">
+                Save Profile Changes
+              </button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+};
+
+// Open distinct user profile in modal dialog
+window.showUserProfileModal = function() {
+  const currentUser = window.neuroAuth.getCurrentUser();
+  if (!currentUser) return;
+  const db = window.neuroDB;
+  const role = currentUser.role;
+
+  let roleBadgeBg = '#eff6ff';
+  let roleBadgeColor = '#2563eb';
+  let roleDesc = 'Authenticated NEUROSPECTRA user profile.';
+
+  if (role === 'Administrator') {
+    roleBadgeBg = '#fdf4ff';
+    roleBadgeColor = '#a855f7';
+    roleDesc = 'Full administrative control, clinician provisioning, database management, and clinic compliance.';
+  } else if (role === 'Therapist') {
+    roleBadgeBg = '#f0fdf4';
+    roleBadgeColor = '#16a34a';
+    roleDesc = 'Licensed Clinical Specialist (BCBA-D) conducting M-CHAT-R/F screenings & formulation of active IEP milestone plans.';
+  } else if (role === 'Receptionist') {
+    roleBadgeBg = '#fffbeb';
+    roleBadgeColor = '#d97706';
+    roleDesc = 'Front-Desk & Intake Coordinator managing registrations, appointments, daily roster, and reminder dispatches.';
+  } else if (role === 'Parent / Caregiver') {
+    roleBadgeBg = '#ecfdf5';
+    roleBadgeColor = '#059669';
+    roleDesc = 'Primary Family Caregiver monitoring developmental milestone achievements and clinical therapy sessions.';
+  } else if (role === 'Teacher') {
+    roleBadgeBg = '#f0f9ff';
+    roleBadgeColor = '#0284c7';
+    roleDesc = 'Special Educator coordinating classroom behavioral adjustments and student IEP alignments.';
+  }
+
+  const allChildren = db.getChildren();
+  const allAppointments = db.getAppointments();
+
+  // Role specific extra summary details inside modal
+  let extraDetailsHtml = '';
+  if (role === 'Therapist') {
+    const myChildren = allChildren.filter(c => c.assigned_therapist_id === currentUser.id);
+    extraDetailsHtml = `
+      <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 12.5px;">
+        <div style="font-weight: 700; color: #166534; margin-bottom: 4px;">Assigned Caseload (${myChildren.length} Children):</div>
+        <div style="color: #15803d;">${myChildren.map(c => `${c.first_name} ${c.last_name} (${c.child_code})`).join(', ') || 'No active cases assigned'}</div>
+      </div>
+    `;
+  } else if (role === 'Parent / Caregiver') {
+    const myChildren = allChildren.filter(c => c.primary_parent_id === currentUser.id);
+    const myChild = myChildren[0] || allChildren[0];
+    const therapist = myChild ? db.getUserById(myChild.assigned_therapist_id) : null;
+    extraDetailsHtml = `
+      <div style="background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 12.5px;">
+        <div style="font-weight: 700; color: #065f46; margin-bottom: 2px;">Linked Child Patient: ${myChild ? `${myChild.first_name} ${myChild.last_name} (${myChild.child_code})` : 'None'}</div>
+        <div style="color: #047857;">Assigned Clinical Specialist: <strong>${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}</strong></div>
+      </div>
+    `;
+  } else if (role === 'Receptionist') {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const todayApts = allAppointments.filter(a => a.appointment_date === todayStr);
+    extraDetailsHtml = `
+      <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 12px; margin-bottom: 16px; font-size: 12.5px;">
+        <div style="font-weight: 700; color: #b45309; margin-bottom: 2px;">Intake & Roster Status:</div>
+        <div style="color: #92400e;"><strong>${todayApts.length} Visits Today</strong> &bull; ${allChildren.length} Registered Clinic Files &bull; Full Administrative Report Access</div>
+      </div>
+    `;
+  }
+
+  const content = `
+    <div style="font-family: 'Plus Jakarta Sans', sans-serif;">
+      
+      <!-- Top Profile Identity Banner -->
+      <div style="display: flex; align-items: center; gap: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+        <div style="position: relative;">
+          <img id="modal-avatar-preview" src="${currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256'}" alt="${currentUser.full_name}" style="width: 72px; height: 72px; border-radius: 50%; object-fit: cover; border: 2.5px solid #2563eb;">
+          <span style="position: absolute; bottom: 2px; right: 2px; width: 14px; height: 14px; background: #10b981; border: 2px solid #ffffff; border-radius: 50%;" title="Active"></span>
+        </div>
+        <div style="flex: 1;">
+          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
+            <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0;">${currentUser.full_name}</h3>
+            <span style="padding: 2px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 700; background: ${roleBadgeBg}; color: ${roleBadgeColor};">${role}</span>
+          </div>
+          <div style="font-size: 13px; color: #64748b; margin-bottom: 4px;">${currentUser.email} &bull; ${currentUser.phone || '+91 9876543210'}</div>
+          <div style="font-size: 12px; color: #475569; line-height: 1.4;">${roleDesc}</div>
+        </div>
+      </div>
+
+      ${extraDetailsHtml}
+
+      <!-- Edit Profile Form -->
+      <form id="edit-user-profile-form" onsubmit="window.handleUpdateProfileSubmit(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Full Name <span style="color: #ef4444;">*</span></label>
+            <input type="text" id="edit-profile-name" class="form-control" value="${currentUser.full_name}" required style="padding: 8px 12px; font-size: 13px;">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Phone Number <span style="color: #ef4444;">*</span></label>
+            <input type="tel" id="edit-profile-phone" class="form-control" value="${currentUser.phone || ''}" placeholder="+91 9876543210" required style="padding: 8px 12px; font-size: 13px;">
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Profile Avatar URL</label>
+          <input type="url" id="edit-profile-avatar" class="form-control" value="${currentUser.avatar_url || ''}" placeholder="https://..." style="padding: 8px 12px; font-size: 13px;" oninput="const p = document.getElementById('modal-avatar-preview'); if (p) p.src = this.value">
+          
+          <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
+            <span style="font-size: 11px; color: #64748b;">Preset Avatars:</span>
+            ${[
+              'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
+              'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256',
+              'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
+              'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
+              'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256'
+            ].map(url => `
+              <img src="${url}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 1.5px solid ${currentUser.avatar_url === url ? '#2563eb' : '#cbd5e1'};" onclick="window.selectAvatarPreset('${url}')">
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Password update -->
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-bottom: 16px;">
+          <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px;">Change Password (Optional)</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <input type="password" id="edit-profile-newpwd" class="form-control" placeholder="New password" style="padding: 7px 10px; font-size: 12.5px;">
+            <input type="password" id="edit-profile-confirmpwd" class="form-control" placeholder="Confirm new password" style="padding: 7px 10px; font-size: 12.5px;">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px;">
+          <button type="button" class="btn btn-secondary" onclick="window.closeActiveModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+        </div>
+      </form>
+    </div>
+  `;
+
+  window.openModal(`My Profile — ${currentUser.full_name}`, content, '', true);
+};
+
+window.handleUpdateProfileSubmit = function(e) {
+  e.preventDefault();
+  const name = document.getElementById('edit-profile-name').value.trim();
+  const phone = document.getElementById('edit-profile-phone').value.trim();
+  const avatar = document.getElementById('edit-profile-avatar').value.trim();
+  const newPwd = document.getElementById('edit-profile-newpwd')?.value;
+  const confirmPwd = document.getElementById('edit-profile-confirmpwd')?.value;
+
+  if (name.length < 3) {
+    window.showToast('Full name must be at least 3 characters.', 'error');
+    return;
+  }
+
+  if (newPwd) {
+    if (newPwd.length < 8) {
+      window.showToast('New password must be at least 8 characters long.', 'error');
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      window.showToast('New passwords do not match.', 'error');
+      return;
+    }
+  }
+
+  const currentUser = window.neuroAuth.getCurrentUser();
+  if (!currentUser) return;
+
+  const updates = {
+    full_name: name,
+    phone: phone,
+    avatar_url: avatar || currentUser.avatar_url
+  };
+
+  if (newPwd) {
+    updates.password_hash = window.neuroDB.hashPassword(newPwd);
+    updates.raw_pwd_hash = newPwd;
+  }
+
+  const updatedUser = window.neuroDB.updateUser(currentUser.id, updates);
+  if (updatedUser) {
+    window.neuroAuth.setSession(updatedUser, window.neuroAuth.token);
+    window.closeActiveModal();
+    window.showToast('Profile updated successfully!', 'success');
+    window.renderApp();
+  } else {
+    window.showToast('Failed to update profile.', 'error');
+  }
+};
+
+window.selectAvatarPreset = function(url) {
+  const input = document.getElementById('edit-profile-avatar');
+  const preview1 = document.getElementById('profile-avatar-preview');
+  const preview2 = document.getElementById('modal-avatar-preview');
+  if (input) input.value = url;
+  if (preview1) preview1.src = url;
+  if (preview2) preview2.src = url;
 };
 
 // Interactive Actions

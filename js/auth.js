@@ -241,11 +241,11 @@ class AuthService {
 
     // Map allowed routes per role
     const rolePermissions = {
-      'Administrator': ['dashboard', 'users', 'children', 'child-profile', 'reports', 'report-view', 'settings'],
-      'Therapist': ['dashboard', 'my-children', 'child-profile', 'assessments', 'assessment-conduct', 'therapy-plans', 'sessions', 'progress', 'reports', 'report-view', 'messages'],
-      'Receptionist': ['dashboard', 'children', 'child-profile', 'appointments', 'schedule', 'reminders'],
-      'Parent / Caregiver': ['dashboard', 'my-child', 'appointments', 'therapy-plan', 'progress', 'reports', 'report-view', 'messages'],
-      'Teacher': ['dashboard', 'my-children', 'child-profile', 'progress', 'reports', 'report-view', 'messages']
+      'Administrator': ['dashboard', 'users', 'children', 'child-profile', 'reports', 'report-view', 'settings', 'profile'],
+      'Therapist': ['dashboard', 'my-children', 'child-profile', 'assessments', 'assessment-conduct', 'therapy-plans', 'sessions', 'progress', 'reports', 'report-view', 'messages', 'profile'],
+      'Receptionist': ['dashboard', 'children', 'child-profile', 'appointments', 'schedule', 'reminders', 'reports', 'profile'],
+      'Parent / Caregiver': ['dashboard', 'my-child', 'appointments', 'therapy-plan', 'progress', 'reports', 'report-view', 'messages', 'profile'],
+      'Teacher': ['dashboard', 'my-children', 'child-profile', 'progress', 'reports', 'report-view', 'messages', 'profile']
     };
 
     const allowed = rolePermissions[role] || [];
