@@ -110,6 +110,8 @@ CREATE TABLE IF NOT EXISTS children (
     emergency_contact VARCHAR(120),
     primary_parent_id VARCHAR(64) REFERENCES users(id) ON DELETE SET NULL,
     assigned_therapist_id VARCHAR(64) REFERENCES users(id) ON DELETE SET NULL,
+    assigned_teacher_id VARCHAR(64) REFERENCES users(id) ON DELETE SET NULL,
+    classroom_group VARCHAR(100) DEFAULT 'Kindergarten Early Readiness',
     status child_status_enum NOT NULL DEFAULT 'Active',
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -118,6 +120,25 @@ CREATE TABLE IF NOT EXISTS children (
 
 CREATE INDEX IF NOT EXISTS idx_children_parent ON children(primary_parent_id);
 CREATE INDEX IF NOT EXISTS idx_children_therapist ON children(assigned_therapist_id);
+CREATE INDEX IF NOT EXISTS idx_children_teacher ON children(assigned_teacher_id);
+
+-- ----------------------------------------------------------------------------
+-- Table: teacher_observations (Non-Clinical Classroom Observations)
+-- ----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS teacher_observations (
+    id VARCHAR(64) PRIMARY KEY,
+    child_id VARCHAR(64) NOT NULL REFERENCES children(id) ON DELETE CASCADE,
+    teacher_id VARCHAR(64) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    observation_date DATE NOT NULL,
+    activity_context VARCHAR(120) NOT NULL,
+    ratings_json JSONB DEFAULT '{}'::jsonb,
+    teacher_note TEXT NOT NULL,
+    status VARCHAR(30) NOT NULL DEFAULT 'Submitted',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_teacher_obs_child ON teacher_observations(child_id);
+CREATE INDEX IF NOT EXISTS idx_teacher_obs_teacher ON teacher_observations(teacher_id);
 
 -- ----------------------------------------------------------------------------
 -- Table: assessment_templates

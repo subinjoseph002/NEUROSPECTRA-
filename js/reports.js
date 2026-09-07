@@ -130,16 +130,51 @@ window.renderReportView = function(childId) {
         `}
       </div>
 
-      <!-- Section 2: Individualized Therapy Plan -->
+      <!-- Section 2: Supporting Classroom Observations (Educator Log) -->
+      <div style="margin-bottom: 24px;">
+        <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 12px; border-left: 4px solid #6366f1; padding-left: 10px; display: flex; align-items: center; justify-content: space-between;">
+          <span>2. Supporting Classroom Observations (Teacher / Educator Log)</span>
+          <span style="font-size: 11px; font-weight: 700; color: #4338ca; background: #e0e7ff; padding: 2px 10px; border-radius: 9999px;">Non-Clinical Behavioral Context</span>
+        </h3>
+        ${(() => {
+          const teacherObs = (window.neuroDB.getTeacherObservations ? window.neuroDB.getTeacherObservations({ child_id: child.id }) : []);
+          if (teacherObs.length === 0) {
+            return `<p style="font-size: 13px; color: #64748b;">No classroom educator observations recorded for this reporting period.</p>`;
+          }
+          return `
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${teacherObs.slice(0, 2).map(obs => {
+                const teacher = window.neuroDB.getUserById(obs.teacher_id);
+                return `
+                  <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 14px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                      <div>
+                        <strong style="font-size: 13px; color: #0f172a;">${obs.activity_context}</strong>
+                        <span style="font-size: 11.5px; color: #64748b; margin-left: 8px;">Date: ${obs.observation_date} &bull; Educator: ${teacher ? teacher.full_name : 'Classroom Teacher'}</span>
+                      </div>
+                      <span style="font-size: 11px; font-weight: 700; color: #059669; background: #d1fae5; padding: 2px 8px; border-radius: 4px;">5 Domains Recorded</span>
+                    </div>
+                    <p style="font-size: 12px; color: #334155; line-height: 1.5; margin: 0; font-style: italic;">
+                      "${obs.teacher_note || 'Observation recorded across 5 domains.'}"
+                    </p>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+        })()}
+      </div>
+
+      <!-- Section 3: Individualized Therapy Plan -->
       <div style="margin-bottom: 24px;">
         <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 12px; border-left: 4px solid #10b981; padding-left: 10px;">
-          2. Active Therapy Goals (IEP Roadmap)
+          3. Active Therapy Goals (IEP Roadmap)
         </h3>
         ${activePlan ? `
           <div style="margin-bottom: 12px;">
             <div style="font-weight: 700; font-size: 14px; color: #0f172a;">${activePlan.title}</div>
             <div style="font-size: 12px; color: #64748b; margin-top: 2px;">
-              <strong>Frequency:</strong> 2 Sessions / Week &bull; <strong>Target Completion:</strong> August 2026
+              <strong>Frequency:</strong> ${activePlan.frequency || '2 Sessions / Week'} &bull; <strong>Target Completion:</strong> ${activePlan.target_date || 'August 2026'}
             </div>
           </div>
 
@@ -171,10 +206,10 @@ window.renderReportView = function(childId) {
         `}
       </div>
 
-      <!-- Section 3: Recent Therapy Sessions & Observations -->
+      <!-- Section 4: Recent Therapy Sessions & Observations -->
       <div style="margin-bottom: 24px;">
         <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 12px; border-left: 4px solid #f59e0b; padding-left: 10px;">
-          3. Recent Therapy Session Logs & Outcomes
+          4. Recent Therapy Session Logs & Outcomes
         </h3>
         ${sessions.length > 0 ? `
           <table class="table" style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
@@ -205,15 +240,19 @@ window.renderReportView = function(childId) {
         `}
       </div>
 
-      <!-- Signatures -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; margin-top: 32px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+      <!-- Signatures (3 Multidisciplinary Roles) -->
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
         <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 8px;">
           <div style="font-weight: 700; font-size: 13px; color: #0f172a;">${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}</div>
-          <div style="font-size: 11px; color: #64748b;">Lead Pediatric Clinical Specialist</div>
+          <div style="font-size: 11px; color: #64748b;">Lead Clinical Therapist (BCBA-D)</div>
+        </div>
+        <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 8px;">
+          <div style="font-weight: 700; font-size: 13px; color: #0f172a;">Classroom Educator</div>
+          <div style="font-size: 11px; color: #64748b;">Early Readiness Learning Teacher</div>
         </div>
         <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 8px;">
           <div style="font-weight: 700; font-size: 13px; color: #0f172a;">Clinical Director Signature</div>
-          <div style="font-size: 11px; color: #64748b;">NEUROSPECTRA Clinic Review</div>
+          <div style="font-size: 11px; color: #64748b;">NEUROSPECTRA Pediatric Board</div>
         </div>
       </div>
 

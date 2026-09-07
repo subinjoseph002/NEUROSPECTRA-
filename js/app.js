@@ -253,6 +253,39 @@ window.renderSidebarNavItems = function(role) {
     `;
   }
 
+  if (role === 'Teacher') {
+    return `
+      <button class="nav-item-btn ${window.currentRoute === 'dashboard' ? 'active' : ''}" style="${window.currentRoute === 'dashboard' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('dashboard')">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
+        Dashboard
+      </button>
+      <button class="nav-item-btn ${window.currentRoute === 'my-children' ? 'active' : ''}" style="${window.currentRoute === 'my-children' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('my-children')">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg></span>
+        My Students
+      </button>
+      <button class="nav-item-btn ${window.currentRoute === 'observations' || window.currentRoute === 'observation-create' ? 'active' : ''}" style="${window.currentRoute === 'observations' || window.currentRoute === 'observation-create' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('observations')">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+        Observations
+      </button>
+      <button class="nav-item-btn ${window.currentRoute === 'appointments' ? 'active' : ''}" style="${window.currentRoute === 'appointments' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('appointments')">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+        Appointments
+      </button>
+      <button class="nav-item-btn ${window.currentRoute === 'reports' ? 'active' : ''}" style="${window.currentRoute === 'reports' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('reports')">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+        Reports
+      </button>
+      <button class="nav-item-btn ${window.currentRoute === 'messages' ? 'active' : ''}" style="${window.currentRoute === 'messages' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('messages')">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        Messages
+      </button>
+      <button class="nav-item-btn" style="color: #94a3b8; margin-top: 8px;" onclick="window.handleLogout()">
+        <span class="nav-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></span>
+        Logout
+      </button>
+    `;
+  }
+
   // Receptionist / Parent defaults
   return `
     <button class="nav-item-btn ${window.currentRoute === 'dashboard' ? 'active' : ''}" style="${window.currentRoute === 'dashboard' ? 'background: #1e293b; color: #ffffff; font-weight: 700; border-radius: 8px;' : 'color: #94a3b8;'}" onclick="window.navigateTo('dashboard')">
@@ -630,7 +663,7 @@ window.renderRouteContent = function() {
     if (role === 'Administrator') return window.renderAdminDashboard();
     if (role === 'Therapist') return window.renderTherapistDashboard();
     if (role === 'Receptionist') return window.renderReceptionistDashboard();
-    if (role === 'Teacher') return window.renderTeacherDashboard();
+    if (role === 'Teacher') return window.teacherModule ? window.teacherModule.renderDashboard() : '';
     return window.renderParentDashboard();
   }
 
@@ -638,7 +671,18 @@ window.renderRouteContent = function() {
     return window.renderAdminUsers();
   }
 
+  if (route === 'observations') {
+    return window.teacherModule ? window.teacherModule.renderObservationsListView() : '';
+  }
+
+  if (route === 'observation-create') {
+    return window.teacherModule ? window.teacherModule.renderObservationForm(params.childId) : '';
+  }
+
   if (route === 'children' || route === 'my-children' || route === 'my-child') {
+    if (role === 'Teacher') {
+      return window.teacherModule ? window.teacherModule.renderDashboard() : '';
+    }
     if (role === 'Parent / Caregiver') {
       const children = window.neuroDB.getChildren().filter(c => c.primary_parent_id === window.neuroAuth.getCurrentUser().id);
       if (children.length > 0) return window.renderChildProfile(children[0].id);
@@ -648,6 +692,9 @@ window.renderRouteContent = function() {
   }
 
   if (route === 'child-profile') {
+    if (role === 'Teacher') {
+      return window.teacherModule ? window.teacherModule.renderChildProfile(params.childId || 'ch_101') : '';
+    }
     return window.renderChildProfile(params.childId || 'ch_101');
   }
 

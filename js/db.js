@@ -119,8 +119,10 @@ const INITIAL_DB_DATA = {
       emergency_contact: 'Priya Sharma (+91 9876543214)',
       primary_parent_id: 'usr_parent_1',
       assigned_therapist_id: 'usr_therapist_1',
+      assigned_teacher_id: 'usr_teacher_1',
+      classroom_group: 'Pre-K Sensory Group A',
       status: 'Active',
-      notes: 'Initial screening showed mild speech delay and sensitivity to loud auditory stimuli. Responsive to visual cues.',
+      notes: 'Initial screening showed mild speech delay and sensitivity to loud auditory stimuli. Responsive to visual cues and picture exchange.',
       created_at: '2026-02-01T11:30:00Z'
     },
     {
@@ -136,8 +138,10 @@ const INITIAL_DB_DATA = {
       emergency_contact: 'David Miller (+91 9876543215)',
       primary_parent_id: 'usr_parent_2',
       assigned_therapist_id: 'usr_therapist_1',
+      assigned_teacher_id: 'usr_teacher_1',
+      classroom_group: 'Kindergarten Early Readiness',
       status: 'Active',
-      notes: 'Showing steady progress in joint attention and vocal imitation. Enjoys sensory motor play.',
+      notes: 'Showing steady progress in joint attention and vocal imitation. Enjoys sensory motor play and block activities.',
       created_at: '2026-02-06T15:00:00Z'
     },
     {
@@ -153,6 +157,8 @@ const INITIAL_DB_DATA = {
       emergency_contact: 'Lin Chen (+91 9876543217)',
       primary_parent_id: 'usr_parent_3',
       assigned_therapist_id: 'usr_therapist_2',
+      assigned_teacher_id: 'usr_teacher_1',
+      classroom_group: 'Toddler Developmental Play',
       status: 'Under Assessment',
       notes: 'Parent requested screening due to reduced eye contact during social interactions and toe-walking.',
       created_at: '2026-02-10T10:15:00Z'
@@ -170,32 +176,185 @@ const INITIAL_DB_DATA = {
       emergency_contact: 'Anita Patel (+1 555-890-1234)',
       primary_parent_id: 'usr_parent_2',
       assigned_therapist_id: 'usr_therapist_1',
+      assigned_teacher_id: 'usr_teacher_1',
+      classroom_group: 'Pre-K Structured Learning',
       status: 'Active',
       notes: 'Focusing on peer turn-taking and emotional regulation during transition periods.',
       created_at: '2026-02-12T13:40:00Z'
     }
   ],
 
+  teacher_observations: [
+    {
+      id: 'obs_101',
+      child_id: 'ch_101',
+      teacher_id: 'usr_teacher_1',
+      observation_date: '2026-02-10',
+      activity_context: 'Group Circle Time & Storytelling',
+      ratings: {
+        social_plays_with_others: 'Sometimes',
+        social_responds_when_called: 'Often',
+        social_group_activities: 'Sometimes',
+        comm_communicates_needs: 'Sometimes',
+        comm_uses_words_gestures: 'Often',
+        comm_follows_instructions: 'Often',
+        behav_remains_engaged: 'Sometimes',
+        behav_repetitive_behaviour: 'Sometimes',
+        behav_difficulty_routine: 'Often',
+        sensory_loud_sounds: 'Often',
+        sensory_touch_environment: 'Sometimes',
+        sensory_crowded_noisy: 'Often',
+        class_learning_activities: 'Often',
+        class_completes_tasks: 'Sometimes',
+        class_requires_assistance: 'Sometimes'
+      },
+      teacher_note: 'Aarav participated well during circle time with visual cards. Needed some gentle prompting when transitioning from sensory motor play back to seated activity.',
+      status: 'Submitted',
+      created_at: '2026-02-10T11:15:00Z'
+    },
+    {
+      id: 'obs_102',
+      child_id: 'ch_102',
+      teacher_id: 'usr_teacher_1',
+      observation_date: '2026-02-11',
+      activity_context: 'Sensory Motor & Free Play',
+      ratings: {
+        social_plays_with_others: 'Often',
+        social_responds_when_called: 'Always',
+        social_group_activities: 'Often',
+        comm_communicates_needs: 'Often',
+        comm_uses_words_gestures: 'Always',
+        comm_follows_instructions: 'Often',
+        behav_remains_engaged: 'Often',
+        behav_repetitive_behaviour: 'Never',
+        behav_difficulty_routine: 'Sometimes',
+        sensory_loud_sounds: 'Sometimes',
+        sensory_touch_environment: 'Never',
+        sensory_crowded_noisy: 'Sometimes',
+        class_learning_activities: 'Always',
+        class_completes_tasks: 'Often',
+        class_requires_assistance: 'Sometimes'
+      },
+      teacher_note: 'Liam engaged positively with peers during block construction. Demonstrated good turn-taking when playing with toy cars.',
+      status: 'Submitted',
+      created_at: '2026-02-11T14:30:00Z'
+    },
+    {
+      id: 'obs_103',
+      child_id: 'ch_104',
+      teacher_id: 'usr_teacher_1',
+      observation_date: '2026-02-13',
+      activity_context: 'Classroom Lunch & Snack Routine',
+      ratings: {
+        social_plays_with_others: 'Often',
+        social_responds_when_called: 'Often',
+        social_group_activities: 'Always',
+        comm_communicates_needs: 'Always',
+        comm_uses_words_gestures: 'Always',
+        comm_follows_instructions: 'Often',
+        behav_remains_engaged: 'Often',
+        behav_repetitive_behaviour: 'Never',
+        behav_difficulty_routine: 'Sometimes',
+        sensory_loud_sounds: 'Never',
+        sensory_touch_environment: 'Never',
+        sensory_crowded_noisy: 'Sometimes',
+        class_learning_activities: 'Always',
+        class_completes_tasks: 'Always',
+        class_requires_assistance: 'Never'
+      },
+      teacher_note: 'Noah followed cafeteria rules independently and helped clean up after mealtime. Responded very well to structured praise.',
+      status: 'Submitted',
+      created_at: '2026-02-13T12:45:00Z'
+    }
+  ],
+
   assessment_templates: [
     {
+      id: 'tmpl_communication',
+      title: 'Communication & Verbal Expressiveness Assessment',
+      category: 'Speech & Language Development',
+      description: 'Evaluates child vocalizations, gesture usage, functional requests, and verbal comprehension in everyday interactions.',
+      total_questions: 5,
+      scoring_method: 'Rating_Scale_5'
+    },
+    {
+      id: 'tmpl_social',
+      title: 'Social Interaction & Joint Attention Assessment',
+      category: 'Social-Emotional Reciprocity',
+      description: 'Assesses eye contact, shared enjoyment, peer play interest, and reciprocal social smile during structured play.',
+      total_questions: 5,
+      scoring_method: 'Rating_Scale_5'
+    },
+    {
+      id: 'tmpl_behaviour',
+      title: 'Behavioural & Routine Flexibility Observation',
+      category: 'Behavioural Patterns & Flexibility',
+      description: 'Clinical observation of activity engagement, repetitive motor movements, and transition tolerance across routines.',
+      total_questions: 5,
+      scoring_method: 'Rating_Scale_5'
+    },
+    {
+      id: 'tmpl_sensory',
+      title: 'Sensory Response & Environmental Processing Assessment',
+      category: 'Sensory Integration',
+      description: 'Evaluates auditory, tactile, visual, and spatial sensitivity during busy classroom and clinic environments.',
+      total_questions: 5,
+      scoring_method: 'Rating_Scale_5'
+    },
+    {
+      id: 'tmpl_daily_living',
+      title: 'Daily Living & Adaptive Skills Assessment',
+      category: 'Adaptive & Independence Milestones',
+      description: 'Evaluates age-appropriate functional autonomy, following 2-step directions, and self-help independence.',
+      total_questions: 5,
+      scoring_method: 'Rating_Scale_5'
+    },
+    {
       id: 'tmpl_mchat_rf',
-      title: 'M-CHAT-R/F Screening Foundation (Toddler 16–30 Months)',
+      title: 'Standardized M-CHAT-R/F Early Screening Battery',
       category: 'Early Developmental Screening',
       description: 'Standardized 20-item screening questionnaire to identify children who may benefit from comprehensive developmental assessment.',
       total_questions: 20,
       scoring_method: 'Risk_Indicator_Scoring'
-    },
-    {
-      id: 'tmpl_behavioral_baseline',
-      title: 'Behavioural & Communication Spectrum Observation',
-      category: 'Therapist Clinical Baseline',
-      description: 'Clinical observation checklist evaluating social interaction, communication responsiveness, and sensory-motor patterns on a 5-point scale.',
-      total_questions: 10,
-      scoring_method: 'Rating_Scale_5'
     }
   ],
 
   assessment_questions: [
+    // Communication Assessment Items
+    { id: 'q_comm_1', template_id: 'tmpl_communication', order_num: 1, domain: 'Receptive Communication', text: 'Does the child turn and respond when their name is spoken?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_comm_2', template_id: 'tmpl_communication', order_num: 2, domain: 'Expressive Requesting', text: 'Does the child communicate basic needs (e.g., wanting juice, toy, help) using words, pointing, or gestures?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_comm_3', template_id: 'tmpl_communication', order_num: 3, domain: 'Verbal / Non-Verbal Vocabulary', text: 'Does the child use words, sign language, or picture symbols to name everyday objects?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_comm_4', template_id: 'tmpl_communication', order_num: 4, domain: 'Instruction Following', text: 'Can the child understand and carry out simple 1-step or 2-step spoken instructions without physical guidance?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_comm_5', template_id: 'tmpl_communication', order_num: 5, domain: 'Vocal Imitation', text: 'Does the child imitate simple speech sounds, words, or conversational tones during play?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+
+    // Social Interaction Items
+    { id: 'q_soc_1', template_id: 'tmpl_social', order_num: 1, domain: 'Eye Gaze & Engagement', text: 'Does the child establish and maintain natural eye contact during conversation or interactive play?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_soc_2', template_id: 'tmpl_social', order_num: 2, domain: 'Peer Orientation', text: 'Does the child show interest in peers (e.g., observing, sitting nearby, offering toys)?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_soc_3', template_id: 'tmpl_social', order_num: 3, domain: 'Group Participation', text: 'Does the child participate in cooperative or turn-taking group games (e.g., passing a ball, circle time)?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_soc_4', template_id: 'tmpl_social', order_num: 4, domain: 'Social Smiling', text: 'Does the child respond with a spontaneous smile when an adult or peer smiles warmly at them?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_soc_5', template_id: 'tmpl_social', order_num: 5, domain: 'Joint Attention & Showing', text: 'Does the child bring objects to show you simply to share joy or interest (not just to request help)?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+
+    // Behavioural Observation Items
+    { id: 'q_beh_1', template_id: 'tmpl_behaviour', order_num: 1, domain: 'Routine Flexibility', text: 'Does the child adapt smoothly when daily routines or scheduled activities change?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_beh_2', template_id: 'tmpl_behaviour', order_num: 2, domain: 'Motor Movements', text: 'Does the child display repetitive motor actions (e.g., hand-flapping, rocking, finger flicking)?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_beh_3', template_id: 'tmpl_behaviour', order_num: 3, domain: 'Sustained Engagement', text: 'Can the child remain calmly engaged in a structured tabletop or sensory activity for 5–10 minutes?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_beh_4', template_id: 'tmpl_behaviour', order_num: 4, domain: 'Activity Transition', text: 'Does the child transition between physical spaces or tasks without significant distress or resistance?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_beh_5', template_id: 'tmpl_behaviour', order_num: 5, domain: 'Self-Regulation', text: 'Does the child demonstrate age-appropriate self-soothing and emotional recovery when frustrated?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+
+    // Sensory Response Items
+    { id: 'q_sen_1', template_id: 'tmpl_sensory', order_num: 1, domain: 'Auditory Tolerance', text: 'Does the child react calmly to unexpected loud noises (e.g., school bells, hand dryers, applause)?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_sen_2', template_id: 'tmpl_sensory', order_num: 2, domain: 'Tactile Acceptance', text: 'Does the child tolerate diverse tactile textures (e.g., playdough, sand, finger paint, messy hands)?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_sen_3', template_id: 'tmpl_sensory', order_num: 3, domain: 'Crowded Environments', text: 'Does the child remain comfortable in busy, visually stimulating, or crowded environments?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_sen_4', template_id: 'tmpl_sensory', order_num: 4, domain: 'Vestibular Seeking', text: 'Does the child seek excessive spinning, jumping, or body crashing to fulfill sensory regulation?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_sen_5', template_id: 'tmpl_sensory', order_num: 5, domain: 'Visual Comfort', text: 'Does the child tolerate fluorescent room lighting and contrast without squinting or covering eyes?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+
+    // Daily Living Skills Items
+    { id: 'q_dl_1', template_id: 'tmpl_daily_living', order_num: 1, domain: 'Task Independence', text: 'Can the child complete familiar simple tasks (e.g., putting shoes on, packing backpack) with minimal prompting?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_dl_2', template_id: 'tmpl_daily_living', order_num: 2, domain: 'Mealtime Cooperation', text: 'Does the child eat independently and tolerate standard table foods without severe texture aversion?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_dl_3', template_id: 'tmpl_daily_living', order_num: 3, domain: 'Assistance Prompting', text: 'Does the child seek help appropriately when faced with a difficult task rather than withdrawing?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_dl_4', template_id: 'tmpl_daily_living', order_num: 4, domain: 'Safety Boundaries', text: 'Does the child respect physical safety rules (e.g., staying within classroom perimeter, holding hand in parking lot)?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+    { id: 'q_dl_5', template_id: 'tmpl_daily_living', order_num: 5, domain: 'Hygiene & Cleanliness', text: 'Does the child participate cooperatively in handwashing, face wiping, and tooth brushing routines?', type: 'rating_5', options: ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'] },
+
     // M-CHAT-R/F Items
     { id: 'q_mc_1', template_id: 'tmpl_mchat_rf', order_num: 1, domain: 'Social Orientation', text: 'If you point at something across the room, does your child look at it?', type: 'yes_no', reverse_scored: 0 },
     { id: 'q_mc_2', template_id: 'tmpl_mchat_rf', order_num: 2, domain: 'Hearing / Sensory', text: 'Have you ever wondered if your child might be deaf?', type: 'yes_no', reverse_scored: 1 },
@@ -488,6 +647,31 @@ class NeurospectraDB {
       const stored = localStorage.getItem(DB_STORAGE_KEY);
       if (!stored) {
         this.saveData(INITIAL_DB_DATA);
+      } else {
+        const data = JSON.parse(stored);
+        let modified = false;
+        if (!data.teacher_observations || data.teacher_observations.length === 0) {
+          data.teacher_observations = INITIAL_DB_DATA.teacher_observations;
+          modified = true;
+        }
+        if (!data.assessment_templates || data.assessment_templates.length < INITIAL_DB_DATA.assessment_templates.length) {
+          data.assessment_templates = INITIAL_DB_DATA.assessment_templates;
+          data.assessment_questions = INITIAL_DB_DATA.assessment_questions;
+          modified = true;
+        }
+        if (data.children) {
+          data.children.forEach(c => {
+            if (!c.assigned_teacher_id) {
+              const initChild = INITIAL_DB_DATA.children.find(ic => ic.id === c.id);
+              c.assigned_teacher_id = initChild ? initChild.assigned_teacher_id : 'usr_teacher_1';
+              c.classroom_group = initChild ? initChild.classroom_group : 'Classroom Observation Group';
+              modified = true;
+            }
+          });
+        }
+        if (modified) {
+          this.saveData(data);
+        }
       }
     } catch (e) {
       console.warn('LocalStorage not available or reset required, loading in-memory db', e);
@@ -943,6 +1127,71 @@ class NeurospectraDB {
     this.saveData(data);
     return newNotif;
   }
+
+  // --- Teacher Observations Queries ---
+  getTeacherObservations(filter = {}) {
+    let list = this.getData().teacher_observations || [];
+    if (filter.child_id) list = list.filter(o => o.child_id === filter.child_id);
+    if (filter.teacher_id) list = list.filter(o => o.teacher_id === filter.teacher_id);
+    return list.sort((a, b) => new Date(b.observation_date || b.created_at) - new Date(a.observation_date || a.created_at));
+  }
+
+  getTeacherObservationById(id) {
+    return (this.getData().teacher_observations || []).find(o => o.id === id) || null;
+  }
+
+  createTeacherObservation(obsData) {
+    const data = this.getData();
+    const newObs = {
+      id: 'obs_' + Date.now().toString(36),
+      child_id: obsData.child_id,
+      teacher_id: obsData.teacher_id || 'usr_teacher_1',
+      observation_date: obsData.observation_date || new Date().toISOString().split('T')[0],
+      activity_context: obsData.activity_context || 'General Classroom Activity',
+      ratings: obsData.ratings || {},
+      teacher_note: obsData.teacher_note || '',
+      status: obsData.status || 'Submitted',
+      created_at: new Date().toISOString()
+    };
+    if (!data.teacher_observations) data.teacher_observations = [];
+    data.teacher_observations.unshift(newObs);
+    this.saveData(data);
+    return newObs;
+  }
+
+  updateTeacherObservation(id, updates) {
+    const data = this.getData();
+    const idx = (data.teacher_observations || []).findIndex(o => o.id === id);
+    if (idx !== -1) {
+      data.teacher_observations[idx] = { ...data.teacher_observations[idx], ...updates };
+      this.saveData(data);
+      return data.teacher_observations[idx];
+    }
+    return null;
+  }
+
+  // --- Goal Progress Helper ---
+  updateGoalProgress(therapyPlanId, goalId, progressPct, status = null) {
+    const data = this.getData();
+    const plan = (data.therapy_plans || []).find(p => p.id === therapyPlanId);
+    if (plan && plan.goals) {
+      const goal = plan.goals.find(g => g.id === goalId);
+      if (goal) {
+        goal.progress_pct = Math.min(100, Math.max(0, parseInt(progressPct, 10) || 0));
+        if (status) {
+          goal.status = status;
+        } else if (goal.progress_pct >= 100) {
+          goal.status = 'Achieved';
+        } else if (goal.progress_pct > 0) {
+          goal.status = 'In Progress';
+        }
+        this.saveData(data);
+        return goal;
+      }
+    }
+    return null;
+  }
+
   syncToBackend() {
     try {
       const data = this.getData();

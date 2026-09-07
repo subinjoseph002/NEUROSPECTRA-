@@ -244,10 +244,10 @@ class AuthService {
     // Map allowed routes per role
     const rolePermissions = {
       'Administrator': ['dashboard', 'users', 'children', 'child-profile', 'reports', 'report-view', 'settings', 'profile'],
-      'Therapist': ['dashboard', 'my-children', 'child-profile', 'assessments', 'assessment-conduct', 'therapy-plans', 'sessions', 'progress', 'reports', 'report-view', 'messages', 'profile'],
+      'Therapist': ['dashboard', 'my-children', 'child-profile', 'assessments', 'assessment-conduct', 'therapy-plans', 'sessions', 'progress', 'observations', 'reports', 'report-view', 'messages', 'profile'],
       'Receptionist': ['dashboard', 'children', 'child-profile', 'appointments', 'schedule', 'reminders', 'reports', 'profile'],
       'Parent / Caregiver': ['dashboard', 'my-child', 'appointments', 'therapy-plan', 'progress', 'reports', 'report-view', 'messages', 'profile'],
-      'Teacher': ['dashboard', 'my-children', 'child-profile', 'progress', 'reports', 'report-view', 'messages', 'profile']
+      'Teacher': ['dashboard', 'my-children', 'child-profile', 'observations', 'observation-create', 'appointments', 'reports', 'report-view', 'messages', 'profile']
     };
 
     const allowed = rolePermissions[role] || [];
