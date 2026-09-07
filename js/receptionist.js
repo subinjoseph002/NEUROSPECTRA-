@@ -1391,7 +1391,7 @@ window.showGeneratedAdministrativeDocumentModal = function(category = 'all') {
       <!-- Document Header Banner -->
       <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 18px; margin-bottom: 20px;">
         <div style="display: flex; align-items: center; gap: 14px;">
-          <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 38px; width: auto; object-fit: contain;">
+          ${window.renderBrandLogo ? window.renderBrandLogo('light', 'large', false) : `<img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 38px;">`}
           <div style="border-left: 1.5px solid #cbd5e1; padding-left: 12px;">
             <div style="font-size: 15px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">ADMINISTRATIVE REPORT</div>
             <div style="font-size: 11px; color: #2563eb; font-weight: 700; text-transform: uppercase;">Clinic Operations & Scheduling Services</div>

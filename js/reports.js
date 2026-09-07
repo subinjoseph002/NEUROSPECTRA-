@@ -78,8 +78,8 @@ window.renderReportView = function(childId) {
       
       <!-- Report Header -->
       <div class="report-header-banner" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0f172a; padding-bottom: 20px; margin-bottom: 24px;">
-        <div style="display: flex; align-items: center; gap: 16px; cursor: pointer;" onclick="window.handleLogoClick()" title="NEUROSPECTRA - Back to Home">
-          <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 42px; width: auto; max-width: 240px; object-fit: contain; display: block;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+          ${window.renderBrandLogo ? window.renderBrandLogo('light', 'large', false) : `<img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 42px;">`}
           <div style="border-left: 1.5px solid #cbd5e1; padding-left: 14px;">
             <div style="font-size: 16px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">CLINICAL ASSESSMENT REPORT</div>
             <div style="font-size: 11px; color: #2563eb; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Developmental Screening & Intervention Documentation</div>

@@ -15,6 +15,36 @@ window.handleLogoClick = function() {
   }
 };
 
+// High-Fidelity Brand Logo Lockup with perfect emblem details and adaptable typography
+window.renderBrandLogo = function(theme = 'dark', size = 'normal', showTagline = true) {
+  const isDark = theme === 'dark';
+  const logoBoxSize = size === 'large' ? 40 : size === 'small' ? 26 : 32;
+  const iconSize = size === 'large' ? 22 : size === 'small' ? 15 : 18;
+  const titleSize = size === 'large' ? 21 : size === 'small' ? 13.5 : 16.5;
+  const subtitleSize = size === 'large' ? 10.5 : size === 'small' ? 8 : 9;
+
+  const textColor = isDark ? '#ffffff' : '#0f172a';
+  const accentColor = isDark ? '#60a5fa' : '#2563eb';
+  const subColor = isDark ? '#94a3b8' : '#64748b';
+
+  return `
+    <div class="brand-lockup brand-${theme}" style="display: inline-flex; align-items: center; gap: 10px; cursor: pointer; text-decoration: none; user-select: none; transition: transform 0.2s;" onclick="window.handleLogoClick()" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" title="NEUROSPECTRA - Pediatric Autism Screening & Therapy">
+      <div style="width: ${logoBoxSize}px; height: ${logoBoxSize}px; border-radius: 9px; background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(37, 99, 235, ${isDark ? '0.35' : '0.22'}); flex-shrink: 0;">
+        <svg width="${iconSize}" height="${iconSize}" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04z"/>
+          <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04z"/>
+        </svg>
+      </div>
+      <div style="display: flex; flex-direction: column; justify-content: center; line-height: 1;">
+        <div style="font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif; font-size: ${titleSize}px; font-weight: 800; letter-spacing: 0.6px; color: ${textColor}; display: flex; align-items: center; gap: 0;">
+          NEURO<span style="color: ${accentColor};">SPECTRA</span>
+        </div>
+        ${showTagline ? `<div style="font-size: ${subtitleSize}px; font-weight: 600; color: ${subColor}; letter-spacing: 0.35px; text-transform: uppercase; margin-top: 2px;">Autism Care Platform</div>` : ''}
+      </div>
+    </div>
+  `;
+};
+
 // Navigation entry point
 window.navigateTo = function(route, params = {}) {
   // If attempting to access protected routes without authentication, redirect to login
@@ -72,10 +102,8 @@ window.renderApp = function() {
     <div class="app-shell" style="background: #f8fafc; min-height: calc(100vh - 38px);">
       <!-- Exact Dark Navy Figma Sidebar -->
       <aside class="app-sidebar" id="app-sidebar" style="background: #0b1329; border-right: 1px solid rgba(255,255,255,0.06); width: 250px;">
-        <div class="sidebar-brand" style="padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; cursor: pointer;" onclick="window.handleLogoClick()" title="NEUROSPECTRA - Back to Home">
-          <div style="background: #ffffff; padding: 6px 12px; border-radius: 8px; display: flex; align-items: center; justify-content: center; width: 100%; box-shadow: 0 2px 8px rgba(0,0,0,0.25); transition: all 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
-            <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 26px; width: auto; max-width: 100%; object-fit: contain; display: block;">
-          </div>
+        <div class="sidebar-brand" style="padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center;">
+          ${window.renderBrandLogo('dark', 'normal', true)}
         </div>
 
         <!-- Role Nav Menu -->
@@ -259,8 +287,8 @@ window.renderLoginPage = function() {
       <div style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/login_bg.jpg'), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
         
         <!-- Top Logo -->
-        <div style="display: inline-flex; align-items: center; cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 8px 16px; border-radius: 10px; backdrop-filter: blur(8px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); width: fit-content; transition: transform 0.2s;" onclick="window.handleLogoClick()" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'" title="NEUROSPECTRA - Back to Home">
-          <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 32px; width: auto; display: block; object-fit: contain;">
+        <div style="display: inline-flex; align-items: center;">
+          ${window.renderBrandLogo('dark', 'large', true)}
         </div>
 
         <!-- Center Headline & Accent Line -->
@@ -284,10 +312,14 @@ window.renderLoginPage = function() {
       <div style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 48px 64px; background: #ffffff;">
         <div style="width: 100%; max-width: 420px;">
           
-          <h2 style="font-size: 32px; font-weight: 800; color: #0f172a; letter-spacing: -0.6px; margin-bottom: 8px;">
+          <div style="margin-bottom: 20px;">
+            ${window.renderBrandLogo('light', 'small', false)}
+          </div>
+
+          <h2 style="font-size: 30px; font-weight: 800; color: #0f172a; letter-spacing: -0.6px; margin-bottom: 6px;">
             Welcome back
           </h2>
-          <p style="font-size: 14.5px; color: #64748b; margin-bottom: 28px;">
+          <p style="font-size: 14.5px; color: #64748b; margin-bottom: 24px;">
             Access your personalized clinical dashboard
           </p>
 
@@ -351,8 +383,8 @@ window.renderRegisterPage = function() {
       <div style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/register_bg.jpg'), url('https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
         
         <!-- Top Logo -->
-        <div style="display: inline-flex; align-items: center; cursor: pointer; background: rgba(255, 255, 255, 0.95); padding: 8px 16px; border-radius: 10px; backdrop-filter: blur(8px); box-shadow: 0 4px 16px rgba(0,0,0,0.2); width: fit-content; transition: transform 0.2s;" onclick="window.handleLogoClick()" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'" title="NEUROSPECTRA - Back to Home">
-          <img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 32px; width: auto; display: block; object-fit: contain;">
+        <div style="display: inline-flex; align-items: center;">
+          ${window.renderBrandLogo('dark', 'large', true)}
         </div>
 
         <!-- Center Headline & Accent Line -->
@@ -376,6 +408,10 @@ window.renderRegisterPage = function() {
       <div style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 36px 64px; background: #ffffff; overflow-y: auto;">
         <div style="width: 100%; max-width: 420px;">
           
+          <div style="margin-bottom: 18px;">
+            ${window.renderBrandLogo('light', 'small', false)}
+          </div>
+
           <h2 style="font-size: 30px; font-weight: 800; color: #0f172a; letter-spacing: -0.6px; margin-bottom: 6px;">
             Create your account
           </h2>

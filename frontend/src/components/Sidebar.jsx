@@ -73,15 +73,22 @@ export const Sidebar = () => {
       {/* Brand Header */}
       <Link 
         to="/"
-        className="p-4 border-b border-slate-800 flex items-center hover:opacity-95 transition-opacity"
+        className="p-4 border-b border-slate-800 flex items-center gap-2.5 hover:opacity-95 transition-opacity select-none"
         title="NEUROSPECTRA - Back to Home"
       >
-        <div className="bg-white px-3 py-1.5 rounded-lg w-full flex items-center justify-center shadow-md">
-          <img 
-            src="/assets/logo.png" 
-            alt="NEUROSPECTRA" 
-            className="h-7 w-auto object-contain"
-          />
+        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-blue-500 flex items-center justify-center shadow-md flex-shrink-0">
+          <svg className="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-2.04z"/>
+            <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-2.04z"/>
+          </svg>
+        </div>
+        <div className="flex flex-col">
+          <span className="font-extrabold text-white text-[15px] tracking-wide leading-none">
+            NEURO<span className="text-blue-400">SPECTRA</span>
+          </span>
+          <span className="text-[9px] font-semibold text-slate-400 tracking-wider uppercase mt-0.5">
+            Autism Care Platform
+          </span>
         </div>
       </Link>
 
