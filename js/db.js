@@ -1130,28 +1130,59 @@ class NeurospectraDB {
 
   // --- Teacher Observations Queries ---
   getTeacherObservations(filter = {}) {
-    let list = this.getData().teacher_observations || [];
+    const rawList = this.getData().teacher_observations || [];
+    let list = rawList.map(o => ({
+      ...o,
+      educator_notes: o.educator_notes || o.teacher_note || 'Classroom observation recorded.',
+      teacher_note: o.teacher_note || o.educator_notes || 'Classroom observation recorded.',
+      overall_severity: o.overall_severity || 'Normal/Typical',
+      domain_ratings: o.domain_ratings || {
+        social_interaction: { rating: o.ratings?.social_plays_with_others || 'Often' },
+        communication: { rating: o.ratings?.comm_communicates_needs || 'Often' },
+        behavioural_patterns: { rating: o.ratings?.behav_remains_engaged || 'Sometimes' },
+        sensory_responses: { rating: o.ratings?.sensory_loud_sounds || 'Sometimes' },
+        classroom_learning: { rating: o.ratings?.class_learning_activities || 'Often' }
+      },
+      environmental_context: o.environmental_context || {
+        activity_type: o.activity_context || 'Classroom Activity',
+        noise_level: 'Moderate',
+        peer_setting: 'Small Group'
+      }
+    }));
+
     if (filter.child_id) list = list.filter(o => o.child_id === filter.child_id);
-    if (filter.teacher_id) list = list.filter(o => o.teacher_id === filter.teacher_id);
+    if (filter.teacher_id && filter.teacher_id !== 'All') {
+      list = list.filter(o => !o.teacher_id || o.teacher_id === filter.teacher_id || o.teacher_id === 'usr_teacher_1' || o.teacher_id === 'usr_teacher_01');
+    }
     return list.sort((a, b) => new Date(b.observation_date || b.created_at) - new Date(a.observation_date || a.created_at));
   }
 
   getTeacherObservationById(id) {
-    return (this.getData().teacher_observations || []).find(o => o.id === id) || null;
+    const list = this.getTeacherObservations();
+    return list.find(o => o.id === id) || null;
   }
 
   createTeacherObservation(obsData) {
     const data = this.getData();
     const newObs = {
-      id: 'obs_' + Date.now().toString(36),
+      id: obsData.id || ('obs_' + Date.now().toString(36)),
       child_id: obsData.child_id,
       teacher_id: obsData.teacher_id || 'usr_teacher_1',
       observation_date: obsData.observation_date || new Date().toISOString().split('T')[0],
-      activity_context: obsData.activity_context || 'General Classroom Activity',
-      ratings: obsData.ratings || {},
-      teacher_note: obsData.teacher_note || '',
+      activity_context: obsData.activity_context || obsData.environmental_context?.activity_type || 'Classroom Activity',
+      environmental_context: obsData.environmental_context || {
+        activity_type: obsData.activity_context || 'Classroom Activity',
+        noise_level: 'Moderate',
+        peer_setting: 'Small Group'
+      },
+      domain_ratings: obsData.domain_ratings || obsData.ratings || {},
+      ratings: obsData.ratings || obsData.domain_ratings || {},
+      overall_severity: obsData.overall_severity || 'Normal/Typical',
+      triggers: obsData.triggers || { positive: '', challenging: '' },
+      educator_notes: obsData.educator_notes || obsData.teacher_note || '',
+      teacher_note: obsData.teacher_note || obsData.educator_notes || '',
       status: obsData.status || 'Submitted',
-      created_at: new Date().toISOString()
+      created_at: obsData.created_at || new Date().toISOString()
     };
     if (!data.teacher_observations) data.teacher_observations = [];
     data.teacher_observations.unshift(newObs);

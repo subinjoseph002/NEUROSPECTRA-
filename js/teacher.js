@@ -28,7 +28,7 @@ class TeacherModule {
   renderDashboard() {
     const teacher = this.getCurrentTeacher();
     const children = this.getAssignedChildren();
-    const observations = window.neuroDB.getTeacherObservations({ teacher_id: teacher?.id });
+    const observations = window.neuroDB.getTeacherObservations();
     
     const totalChildren = children.length;
     const totalObservations = observations.length;
@@ -480,10 +480,11 @@ class TeacherModule {
     else if (concernCount >= 1) overallSeverity = 'Moderate Concern';
 
     const newObservation = {
-      id: 'obs_' + Date.now(),
+      id: 'obs_' + Date.now().toString(36),
       child_id: childId,
-      teacher_id: teacher ? teacher.id : 'usr_teacher_01',
+      teacher_id: teacher ? teacher.id : 'usr_teacher_1',
       observation_date: observationDate,
+      activity_context: activityType,
       domain_ratings: domainRatings,
       overall_severity: overallSeverity,
       environmental_context: {
@@ -496,6 +497,7 @@ class TeacherModule {
         challenging: challengingTriggers
       },
       educator_notes: educatorNotes,
+      teacher_note: educatorNotes,
       status: 'Submitted',
       created_at: new Date().toISOString()
     };
