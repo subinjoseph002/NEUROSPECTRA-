@@ -2790,28 +2790,6 @@ window.renderUserProfileView = function() {
               <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Email is tied to your NEUROSPECTRA clinical authorization ID.</div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label class="form-label">Profile Avatar URL</label>
-              <input type="url" id="edit-profile-avatar" class="form-control" value="${currentUser.avatar_url || ''}" placeholder="https://..." oninput="const p = document.getElementById('profile-avatar-preview'); if (p) p.src = this.value">
-              
-              <!-- Quick Avatar Selection Presets -->
-              <div style="margin-top: 8px;">
-                <div style="font-size: 11.5px; font-weight: 600; color: #64748b; margin-bottom: 6px;">Or choose a quick avatar preset:</div>
-                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                  ${[
-                    'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
-                    'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256',
-                    'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
-                    'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
-                    'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
-                    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256'
-                  ].map(url => `
-                    <img src="${url}" style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 2px solid ${currentUser.avatar_url === url ? '#2563eb' : '#e2e8f0'};" onclick="window.selectAvatarPreset('${url}')">
-                  `).join('')}
-                </div>
-              </div>
-            </div>
-
             <!-- Password Update (Optional) -->
             <div style="border-top: 1px solid #e2e8f0; padding-top: 16px; margin-bottom: 20px;">
               <h4 style="font-size: 13.5px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">Change Password (Optional)</h4>
@@ -2942,24 +2920,6 @@ window.showUserProfileModal = function() {
           </div>
         </div>
 
-        <div class="form-group" style="margin-bottom: 14px;">
-          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Profile Avatar URL</label>
-          <input type="url" id="edit-profile-avatar" class="form-control" value="${currentUser.avatar_url || ''}" placeholder="https://..." style="padding: 8px 12px; font-size: 13px;" oninput="const p = document.getElementById('modal-avatar-preview'); if (p) p.src = this.value">
-          
-          <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
-            <span style="font-size: 11px; color: #64748b;">Preset Avatars:</span>
-            ${[
-              'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
-              'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256',
-              'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
-              'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
-              'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256'
-            ].map(url => `
-              <img src="${url}" style="width: 26px; height: 26px; border-radius: 50%; object-fit: cover; cursor: pointer; border: 1.5px solid ${currentUser.avatar_url === url ? '#2563eb' : '#cbd5e1'};" onclick="window.selectAvatarPreset('${url}')">
-            `).join('')}
-          </div>
-        </div>
-
         <!-- Password update -->
         <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-bottom: 16px;">
           <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px;">Change Password (Optional)</div>
@@ -2984,7 +2944,6 @@ window.handleUpdateProfileSubmit = function(e) {
   e.preventDefault();
   const name = document.getElementById('edit-profile-name').value.trim();
   const phone = document.getElementById('edit-profile-phone').value.trim();
-  const avatar = document.getElementById('edit-profile-avatar').value.trim();
   const newPwd = document.getElementById('edit-profile-newpwd')?.value;
   const confirmPwd = document.getElementById('edit-profile-confirmpwd')?.value;
 
@@ -3009,8 +2968,7 @@ window.handleUpdateProfileSubmit = function(e) {
 
   const updates = {
     full_name: name,
-    phone: phone,
-    avatar_url: avatar || currentUser.avatar_url
+    phone: phone
   };
 
   if (newPwd) {
@@ -3027,15 +2985,6 @@ window.handleUpdateProfileSubmit = function(e) {
   } else {
     window.showToast('Failed to update profile.', 'error');
   }
-};
-
-window.selectAvatarPreset = function(url) {
-  const input = document.getElementById('edit-profile-avatar');
-  const preview1 = document.getElementById('profile-avatar-preview');
-  const preview2 = document.getElementById('modal-avatar-preview');
-  if (input) input.value = url;
-  if (preview1) preview1.src = url;
-  if (preview2) preview2.src = url;
 };
 
 // Interactive Actions
