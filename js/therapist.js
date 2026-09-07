@@ -1,6 +1,6 @@
 /**
  * NEUROSPECTRA - Therapist Clinical Dashboard & Workflow Management
- * Native Healthcare Design System with SVG Icons & Live DB Binding.
+ * Native Healthcare Design System with SVG Icons & Built-in Modal Engine.
  */
 
 // ============================================================================
@@ -373,66 +373,56 @@ window.showCreateTherapyPlanModal = function(childId) {
   const children = window.neuroDB.getChildren();
   const selectedChildId = childId || (children.length > 0 ? children[0].id : '');
 
-  const content = `
-    <div style="padding: 24px; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px;">
-        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-          Create Individualized Therapy Plan
-        </h3>
-        <button onclick="window.closeActiveModal()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8;">&times;</button>
+  const bodyHtml = `
+    <form id="create-therapy-plan-form" onsubmit="window.handleCreateTherapyPlan(event)">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Child Patient *</label>
+          <select id="plan-child-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" required>
+            ${children.map(c => `<option value="${c.id}" ${c.id === selectedChildId ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
+          </select>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Plan Title *</label>
+          <input type="text" id="plan-title" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Speech & Sensory Integration Plan" required>
+        </div>
       </div>
 
-      <form id="create-therapy-plan-form" onsubmit="window.handleCreateTherapyPlan(event)">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Child Patient *</label>
-            <select id="plan-child-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" required>
-              ${children.map(c => `<option value="${c.id}" ${c.id === selectedChildId ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
-            </select>
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Plan Title *</label>
-            <input type="text" id="plan-title" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Speech & Sensory Integration Plan" required>
-          </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Session Frequency</label>
+          <select id="plan-frequency" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;">
+            <option value="1x Weekly">1x Weekly</option>
+            <option value="2x Weekly" selected>2x Weekly</option>
+            <option value="3x Weekly">3x Weekly</option>
+            <option value="Intensive Daily">Intensive Daily</option>
+          </select>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Session Frequency</label>
-            <select id="plan-frequency" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;">
-              <option value="1x Weekly">1x Weekly</option>
-              <option value="2x Weekly" selected>2x Weekly</option>
-              <option value="3x Weekly">3x Weekly</option>
-              <option value="Intensive Daily">Intensive Daily</option>
-            </select>
-          </div>
-
-          <div>
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Therapist Focus Area</label>
-            <input type="text" id="plan-focus-area" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Expressive Language & Joint Attention">
-          </div>
+        <div>
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Therapist Focus Area</label>
+          <input type="text" id="plan-focus-area" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Expressive Language & Joint Attention">
         </div>
+      </div>
 
-        <!-- Initial Goals Section -->
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Target Goal 1 *</label>
-          <input type="text" id="plan-goal-1" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; margin-bottom: 8px;" placeholder="e.g. Increase non-verbal pointing gesture across 4 play trials" required>
-          
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Target Goal 2</label>
-          <input type="text" id="plan-goal-2" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Tolerate sensory auditory changes during transitions without distress">
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
-          <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="font-weight: 600;">Save Therapy Plan</button>
-        </div>
-      </form>
-    </div>
+      <!-- Initial Goals Section -->
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Target Goal 1 *</label>
+        <input type="text" id="plan-goal-1" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; margin-bottom: 8px;" placeholder="e.g. Increase non-verbal pointing gesture across 4 play trials" required>
+        
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Target Goal 2</label>
+        <input type="text" id="plan-goal-2" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Tolerate sensory auditory changes during transitions without distress">
+      </div>
+    </form>
   `;
 
-  window.showCustomModal(content);
+  const footerHtml = `
+    <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+    <button type="submit" form="create-therapy-plan-form" class="btn btn-primary" style="font-weight: 600;">Save Therapy Plan</button>
+  `;
+
+  window.openModal('Create Individualized Therapy Plan', bodyHtml, footerHtml);
 };
 
 window.handleCreateTherapyPlan = function(event) {
@@ -483,53 +473,43 @@ window.handleCreateTherapyPlan = function(event) {
 
   window.closeActiveModal();
   if (window.showToast) window.showToast('Therapy Plan created successfully with target goals!', 'success');
-  window.renderCurrentView();
+  window.renderApp();
 };
 
 window.showLogTherapySessionModal = function(preselectedPlanId) {
   const plans = window.neuroDB.getTherapyPlans();
   const children = window.neuroDB.getChildren();
 
-  const content = `
-    <div style="padding: 24px; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px;">
-        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-          Log Therapy Session & Update Goal Progress
-        </h3>
-        <button onclick="window.closeActiveModal()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8;">&times;</button>
+  const bodyHtml = `
+    <form id="log-session-form" onsubmit="window.handleLogTherapySession(event)">
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Associated Therapy Plan *</label>
+        <select id="session-plan-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" onchange="window.handlePlanSelectForSession(this.value)" required>
+          <option value="">-- Select Child & Therapy Plan --</option>
+          ${plans.map(p => {
+            const child = children.find(c => c.id === p.child_id);
+            return `<option value="${p.id}" ${p.id === preselectedPlanId ? 'selected' : ''}>${child ? `${child.first_name} ${child.last_name}` : 'Child'} - ${p.title}</option>`;
+          }).join('')}
+        </select>
       </div>
 
-      <form id="log-session-form" onsubmit="window.handleLogTherapySession(event)">
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Associated Therapy Plan *</label>
-          <select id="session-plan-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" onchange="window.handlePlanSelectForSession(this.value)" required>
-            <option value="">-- Select Child & Therapy Plan --</option>
-            ${plans.map(p => {
-              const child = children.find(c => c.id === p.child_id);
-              return `<option value="${p.id}" ${p.id === preselectedPlanId ? 'selected' : ''}>${child ? `${child.first_name} ${child.last_name}` : 'Child'} - ${p.title}</option>`;
-            }).join('')}
-          </select>
-        </div>
+      <div id="session-goals-container" style="margin-bottom: 16px;">
+        <!-- Dynamically populated goals -->
+      </div>
 
-        <div id="session-goals-container" style="margin-bottom: 16px;">
-          <!-- Dynamically populated goals -->
-        </div>
-
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Clinical Session Notes & Observations *</label>
-          <textarea id="session-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Document child's engagement, sensory regulation, and target goal progress..." required></textarea>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
-          <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="font-weight: 600;">Save Session Record</button>
-        </div>
-      </form>
-    </div>
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Clinical Session Notes & Observations *</label>
+        <textarea id="session-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Document child's engagement, sensory regulation, and target goal progress..." required></textarea>
+      </div>
+    </form>
   `;
 
-  window.showCustomModal(content);
+  const footerHtml = `
+    <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+    <button type="submit" form="log-session-form" class="btn btn-primary" style="font-weight: 600;">Save Session Record</button>
+  `;
+
+  window.openModal('Log Therapy Session & Update Goal Progress', bodyHtml, footerHtml);
   if (preselectedPlanId) {
     window.handlePlanSelectForSession(preselectedPlanId);
   } else if (plans.length > 0) {
@@ -595,7 +575,7 @@ window.handleLogTherapySession = function(event) {
 
   window.closeActiveModal();
   if (window.showToast) window.showToast('Therapy Session logged and goal progress updated!', 'success');
-  window.renderCurrentView();
+  window.renderApp();
 };
 
 window.showEditGoalModal = function(planId, goalId) {
@@ -604,41 +584,34 @@ window.showEditGoalModal = function(planId, goalId) {
   const goal = plan.goals.find(g => g.id === goalId);
   if (!goal) return;
 
-  const content = `
-    <div style="padding: 24px; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px;">
-        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0;">Update Milestone Goal Progress</h3>
-        <button onclick="window.closeActiveModal()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8;">&times;</button>
-      </div>
-
+  const bodyHtml = `
+    <form id="edit-goal-form" onsubmit="window.handleSaveGoalProgress(event, '${planId}', '${goalId}')">
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
         <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Milestone Goal</div>
         <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">${goal.goal_text}</div>
       </div>
 
-      <form onsubmit="window.handleSaveGoalProgress(event, '${planId}', '${goalId}')">
-        <div style="margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-            <label style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase;">Completion Level</label>
-            <span id="quick-goal-pct-lbl" style="font-weight: 800; color: #2563eb; font-size: 16px;">${goal.progress_pct || 0}%</span>
-          </div>
-          <input type="range" id="quick-goal-slider" min="0" max="100" step="5" value="${goal.progress_pct || 0}" style="width: 100%; cursor: pointer;" oninput="document.getElementById('quick-goal-pct-lbl').innerText = this.value + '%'">
+      <div style="margin-bottom: 16px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+          <label style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase;">Completion Level</label>
+          <span id="quick-goal-pct-lbl" style="font-weight: 800; color: #2563eb; font-size: 16px;">${goal.progress_pct || 0}%</span>
         </div>
+        <input type="range" id="quick-goal-slider" min="0" max="100" step="5" value="${goal.progress_pct || 0}" style="width: 100%; cursor: pointer;" oninput="document.getElementById('quick-goal-pct-lbl').innerText = this.value + '%'">
+      </div>
 
-        <div style="margin-bottom: 16px;">
-          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Therapist Progress Notes</label>
-          <textarea id="quick-goal-notes" class="form-control" rows="2" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Optional notes on progress...">${goal.notes || ''}</textarea>
-        </div>
-
-        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
-          <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary" style="font-weight: 600;">Save Progress</button>
-        </div>
-      </form>
-    </div>
+      <div style="margin-bottom: 16px;">
+        <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Therapist Progress Notes</label>
+        <textarea id="quick-goal-notes" class="form-control" rows="2" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Optional notes on progress...">${goal.notes || ''}</textarea>
+      </div>
+    </form>
   `;
 
-  window.showCustomModal(content);
+  const footerHtml = `
+    <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+    <button type="submit" form="edit-goal-form" class="btn btn-primary" style="font-weight: 600;">Save Progress</button>
+  `;
+
+  window.openModal('Update Milestone Goal Progress', bodyHtml, footerHtml);
 };
 
 window.handleSaveGoalProgress = function(event, planId, goalId) {
@@ -650,29 +623,5 @@ window.handleSaveGoalProgress = function(event, planId, goalId) {
   window.neuroDB.updateGoalProgress(planId, goalId, newPct, notes);
   window.closeActiveModal();
   if (window.showToast) window.showToast('Goal progress successfully updated!', 'success');
-  window.renderCurrentView();
-};
-
-window.showCustomModal = function(htmlContent) {
-  let modalRoot = document.getElementById('custom-modal-container');
-  if (!modalRoot) {
-    modalRoot = document.createElement('div');
-    modalRoot.id = 'custom-modal-container';
-    document.body.appendChild(modalRoot);
-  }
-
-  modalRoot.innerHTML = `
-    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
-      <div style="background: #ffffff; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid #e2e8f0;">
-        ${htmlContent}
-      </div>
-    </div>
-  `;
-};
-
-window.closeActiveModal = function() {
-  const modalRoot = document.getElementById('custom-modal-container');
-  if (modalRoot) {
-    modalRoot.innerHTML = '';
-  }
+  window.renderApp();
 };

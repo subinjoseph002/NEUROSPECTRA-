@@ -2,7 +2,7 @@
  * NEUROSPECTRA - Teacher & Educator Module
  * Provides classroom observation logging across 5 developmental domains,
  * student tracking, non-clinical child profiles, and observation history.
- * Native Healthcare Design System with SVG Icons & Live DB Binding.
+ * Native Healthcare Design System with SVG Icons & Built-in Modal Engine.
  */
 
 class TeacherModule {
@@ -55,11 +55,11 @@ class TeacherModule {
           </div>
 
           <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn btn-primary" onclick="window.location.hash='#observation-create'" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+            <button class="btn btn-primary" onclick="window.navigateTo('observation-create')" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               Log Observation
             </button>
-            <button class="btn btn-outline" onclick="window.location.hash='#observations'" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+            <button class="btn btn-outline" onclick="window.navigateTo('observations')" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
               Observation History
             </button>
@@ -80,7 +80,7 @@ class TeacherModule {
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
           
           <!-- Stat 1: Assigned Students -->
-          <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.location.hash='#my-children'" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('my-children')" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e8f0'">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">ASSIGNED STUDENTS</span>
               <div style="width: 28px; height: 28px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
@@ -94,7 +94,7 @@ class TeacherModule {
           </div>
 
           <!-- Stat 2: Observations Logged -->
-          <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.location.hash='#observations'" onmouseover="this.style.borderColor='#8b5cf6'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('observations')" onmouseover="this.style.borderColor='#8b5cf6'" onmouseout="this.style.borderColor='#e2e8f0'">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">OBSERVATIONS LOGGED</span>
               <div style="width: 28px; height: 28px; border-radius: 50%; background: #f5f3ff; color: #8b5cf6; display: flex; align-items: center; justify-content: center;">
@@ -108,7 +108,7 @@ class TeacherModule {
           </div>
 
           <!-- Stat 3: This Month -->
-          <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.location.hash='#observations'" onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('observations')" onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='#e2e8f0'">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">THIS MONTH</span>
               <div style="width: 28px; height: 28px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center;">
@@ -122,7 +122,7 @@ class TeacherModule {
           </div>
 
           <!-- Stat 4: Pending Clinical Review -->
-          <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.location.hash='#observations'" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('observations')" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#e2e8f0'">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
               <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">CLINICAL REVIEWS</span>
               <div style="width: 28px; height: 28px; border-radius: 50%; background: #fffbeb; color: #f59e0b; display: flex; align-items: center; justify-content: center;">
@@ -150,7 +150,7 @@ class TeacherModule {
                   <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Assigned Classroom Students</h3>
                   <p style="font-size: 12.5px; color: #64748b; margin: 0;">Students in your classroom roster for behavioral observation.</p>
                 </div>
-                <button class="btn btn-outline btn-sm" onclick="window.location.hash='#my-children'">View All Students</button>
+                <button class="btn btn-outline btn-sm" onclick="window.navigateTo('my-children')">View All Students</button>
               </div>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
@@ -177,10 +177,10 @@ class TeacherModule {
                       </div>
 
                       <div style="display: flex; gap: 8px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
-                        <button class="btn btn-primary btn-sm" onclick="window.location.hash='#observation-create'; setTimeout(() => window.teacherModule.renderObservationForm('${child.id}'), 50);" style="flex: 1; font-size: 12px; padding: 6px 10px;">
+                        <button class="btn btn-primary btn-sm" onclick="window.navigateTo('observation-create', { childId: '${child.id}' })" style="flex: 1; font-size: 12px; padding: 6px 10px;">
                           + Observation
                         </button>
-                        <button class="btn btn-outline btn-sm" onclick="window.location.hash='#child-profile'; setTimeout(() => window.teacherModule.renderChildProfile('${child.id}'), 50);" style="font-size: 12px; padding: 6px 10px;">
+                        <button class="btn btn-outline btn-sm" onclick="window.navigateTo('child-profile', { childId: '${child.id}' })" style="font-size: 12px; padding: 6px 10px;">
                           Profile
                         </button>
                       </div>
@@ -197,13 +197,13 @@ class TeacherModule {
                   <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Recent Classroom Observations</h3>
                   <p style="font-size: 12.5px; color: #64748b; margin: 0;">Latest 5-domain submissions shared with therapists.</p>
                 </div>
-                <button class="btn btn-outline btn-sm" onclick="window.location.hash='#observations'">Full History</button>
+                <button class="btn btn-outline btn-sm" onclick="window.navigateTo('observations')">Full History</button>
               </div>
 
               ${observations.length === 0 ? `
                 <div style="text-align: center; padding: 32px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
                   <p style="font-size: 13.5px; color: #64748b; margin: 0 0 10px;">No classroom observations logged yet.</p>
-                  <button class="btn btn-primary btn-sm" onclick="window.location.hash='#observation-create'">+ Log First Observation</button>
+                  <button class="btn btn-primary btn-sm" onclick="window.navigateTo('observation-create')">+ Log First Observation</button>
                 </div>
               ` : `
                 <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -229,7 +229,7 @@ class TeacherModule {
                             ${obs.overall_severity || 'Typical'}
                           </span>
                           <button class="btn btn-outline btn-sm" onclick="window.teacherModule.openObservationModal('${obs.id}')" style="font-size: 11.5px; padding: 4px 8px;">
-                            View Log
+                            View Details
                           </button>
                         </div>
                       </div>
@@ -248,17 +248,17 @@ class TeacherModule {
             <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
               <div style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Classroom Actions</div>
               <div style="display: flex; flex-direction: column; gap: 10px;">
-                <button class="btn btn-primary" onclick="window.location.hash='#observation-create'" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
+                <button class="btn btn-primary" onclick="window.navigateTo('observation-create')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                   Log 5-Domain Observation
                 </button>
                 
-                <button class="btn btn-outline" onclick="window.location.hash='#observations'" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
+                <button class="btn btn-outline" onclick="window.navigateTo('observations')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                   Observation Records Log
                 </button>
 
-                <button class="btn btn-outline" onclick="window.location.hash='#my-children'" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
+                <button class="btn btn-outline" onclick="window.navigateTo('my-children')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
                   Assigned Students List
                 </button>
@@ -311,7 +311,7 @@ class TeacherModule {
               Record structured behavioral notes across the 5 developmental domains.
             </p>
           </div>
-          <button class="btn btn-outline btn-sm" onclick="window.location.hash='#observations'">
+          <button class="btn btn-outline btn-sm" onclick="window.navigateTo('observations')">
             &larr; Back to Observations
           </button>
         </div>
@@ -413,7 +413,7 @@ class TeacherModule {
 
             <!-- Form Actions -->
             <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #e2e8f0; padding-top: 18px;">
-              <button type="button" class="btn btn-outline" onclick="window.location.hash='#observations'">Cancel</button>
+              <button type="button" class="btn btn-outline" onclick="window.navigateTo('observations')">Cancel</button>
               <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 10px 24px;">Submit Classroom Observation</button>
             </div>
 
@@ -502,7 +502,7 @@ class TeacherModule {
 
     window.neuroDB.createTeacherObservation(newObservation);
     if (window.showToast) window.showToast('Classroom observation logged successfully!', 'success');
-    window.location.hash = '#observations';
+    window.navigateTo('observations');
   }
 
   // ==========================================================================
@@ -525,7 +525,7 @@ class TeacherModule {
               All recorded behavioral logs across developmental domains.
             </p>
           </div>
-          <button class="btn btn-primary" onclick="window.location.hash='#observation-create'" style="display: flex; align-items: center; gap: 6px;">
+          <button class="btn btn-primary" onclick="window.navigateTo('observation-create')" style="display: flex; align-items: center; gap: 6px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             + New Observation
           </button>
@@ -688,8 +688,8 @@ class TeacherModule {
             </p>
           </div>
           <div style="display: flex; gap: 8px;">
-            <button class="btn btn-outline btn-sm" onclick="window.location.hash='#my-children'">Back to Roster</button>
-            <button class="btn btn-primary btn-sm" onclick="window.location.hash='#observation-create'; setTimeout(() => window.teacherModule.renderObservationForm('${child.id}'), 50);">
+            <button class="btn btn-outline btn-sm" onclick="window.navigateTo('my-children')">Back to Roster</button>
+            <button class="btn btn-primary btn-sm" onclick="window.navigateTo('observation-create', { childId: '${child.id}' })">
               + Log Observation
             </button>
           </div>
@@ -754,64 +754,61 @@ class TeacherModule {
 
     const ratings = obs.domain_ratings || {};
 
-    const content = `
-      <div style="padding: 24px; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
-          <div>
-            <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0;">Classroom Observation Details</h3>
-            <div style="font-size: 12px; color: #64748b;">Logged by ${teacher?.full_name || 'Educator'} on ${obs.observation_date}</div>
-          </div>
-          <button onclick="window.closeActiveModal()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8;">&times;</button>
-        </div>
-
+    const bodyHtml = `
+      <div style="color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
         <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
           <div>
             <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">${child ? `${child.first_name} ${child.last_name}` : 'Student'}</div>
-            <div style="font-size: 12px; color: #64748b;">Code: ${child?.child_code} • Setting: ${obs.environmental_context?.activity_type || 'Classroom'}</div>
+            <div style="font-size: 12px; color: #64748b;">Code: ${child?.child_code || ''} • Logged by ${teacher?.full_name || 'Teacher'} on ${obs.observation_date}</div>
           </div>
           <span class="badge badge-warning" style="font-size: 12px;">${obs.overall_severity || 'Typical'}</span>
         </div>
 
         <div style="margin-bottom: 16px;">
-          <h4 style="font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 8px;">5-Domain Rating Breakdown</h4>
+          <h4 style="font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 8px;">5-Domain Rating Breakdown</h4>
           <div style="display: flex; flex-direction: column; gap: 6px; font-size: 13px;">
-            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 6px;">
-              <span>Social Interaction</span>
-              <strong>${ratings.social_interaction?.rating || 'Not Observed'}</strong>
+            <div style="display: flex; justify-content: space-between; padding: 7px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px;">
+              <span>1. Social Interaction & Peer Play</span>
+              <strong style="color: #2563eb;">${ratings.social_interaction?.rating || 'Not Observed'}</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 6px;">
-              <span>Communication</span>
-              <strong>${ratings.communication?.rating || 'Not Observed'}</strong>
+            <div style="display: flex; justify-content: space-between; padding: 7px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px;">
+              <span>2. Communication & Expression</span>
+              <strong style="color: #8b5cf6;">${ratings.communication?.rating || 'Not Observed'}</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 6px;">
-              <span>Behavioural Patterns</span>
-              <strong>${ratings.behavioural_patterns?.rating || 'Not Observed'}</strong>
+            <div style="display: flex; justify-content: space-between; padding: 7px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px;">
+              <span>3. Behavioural Patterns & Transitions</span>
+              <strong style="color: #f59e0b;">${ratings.behavioural_patterns?.rating || 'Not Observed'}</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 6px;">
-              <span>Sensory Responses</span>
-              <strong>${ratings.sensory_responses?.rating || 'Not Observed'}</strong>
+            <div style="display: flex; justify-content: space-between; padding: 7px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px;">
+              <span>4. Sensory Responses & Sensitivities</span>
+              <strong style="color: #ec4899;">${ratings.sensory_responses?.rating || 'Not Observed'}</strong>
             </div>
-            <div style="display: flex; justify-content: space-between; padding: 6px 10px; background: #ffffff; border: 1px solid #f1f5f9; border-radius: 6px;">
-              <span>Classroom Learning</span>
-              <strong>${ratings.classroom_learning?.rating || 'Not Observed'}</strong>
+            <div style="display: flex; justify-content: space-between; padding: 7px 12px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 6px;">
+              <span>5. Classroom Learning & Focus</span>
+              <strong style="color: #10b981;">${ratings.classroom_learning?.rating || 'Not Observed'}</strong>
             </div>
           </div>
         </div>
 
         <div style="margin-bottom: 16px;">
-          <h4 style="font-size: 13px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 6px;">Educator Remarks</h4>
-          <p style="font-size: 13px; color: #334155; background: #f8fafc; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 0; line-height: 1.45;">
-            "${obs.educator_notes || 'No notes provided.'}"
+          <h4 style="font-size: 12.5px; font-weight: 700; color: #475569; text-transform: uppercase; margin-bottom: 6px;">Educator Narrative Notes</h4>
+          <p style="font-size: 13px; color: #334155; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 0; line-height: 1.5;">
+            "${obs.educator_notes || 'No narrative notes provided.'}"
           </p>
         </div>
 
-        <div style="display: flex; justify-content: flex-end; border-top: 1px solid #e2e8f0; padding-top: 14px;">
-          <button class="btn btn-primary btn-sm" onclick="window.closeActiveModal()">Close</button>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 12px; color: #475569;">
+          <div><strong>Activity:</strong> ${obs.environmental_context?.activity_type || 'Classroom'}</div>
+          <div><strong>Noise Level:</strong> ${obs.environmental_context?.noise_level || 'Moderate'}</div>
         </div>
       </div>
     `;
 
-    window.showCustomModal(content);
+    const footerHtml = `
+      <button class="btn btn-primary" onclick="window.closeActiveModal()">Close</button>
+    `;
+
+    window.openModal('Classroom Observation Details', bodyHtml, footerHtml);
   }
 }
 

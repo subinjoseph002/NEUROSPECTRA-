@@ -69,7 +69,12 @@ window.handleNotificationClick = function(id, link) {
   const popover = document.getElementById('notifications-popover');
   if (popover) popover.classList.remove('show');
   if (link && link !== '#') {
-    window.location.hash = link;
+    const route = link.replace(/^#/, '');
+    if (window.navigateTo) {
+      window.navigateTo(route);
+    } else {
+      window.location.hash = link;
+    }
   }
 };
 
