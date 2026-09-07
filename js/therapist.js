@@ -1,285 +1,362 @@
 /**
  * NEUROSPECTRA - Therapist Clinical Dashboard & Workflow Management
- * Integrates live children stats, teacher observations feed, 5-point assessments,
- * active therapy plans with goal progress tracking, and session logging.
+ * Native Healthcare Design System with SVG Icons & Live DB Binding.
  */
 
+// ============================================================================
+// 1. THERAPIST DASHBOARD VIEW
+// ============================================================================
 window.renderTherapistDashboard = function() {
   const user = window.neuroAuth.getCurrentUser();
-  const allChildren = window.neuroDB.getChildren();
+  const allChildren = window.neuroDB.getChildren ? window.neuroDB.getChildren() : [];
   const myChildren = allChildren.filter(c => !user || c.assigned_therapist_id === user.id || true);
-  const assessments = window.neuroDB.getAssessmentRecords();
-  const therapyPlans = window.neuroDB.getTherapyPlans();
+  const assessments = window.neuroDB.getAssessmentRecords ? window.neuroDB.getAssessmentRecords() : [];
+  const therapyPlans = window.neuroDB.getTherapyPlans ? window.neuroDB.getTherapyPlans() : [];
   const activePlans = therapyPlans.filter(p => p.status === 'Active');
-  const teacherObservations = window.neuroDB.getTeacherObservations();
-  const appointments = window.neuroDB.getAppointments();
+  const teacherObservations = window.neuroDB.getTeacherObservations ? window.neuroDB.getTeacherObservations() : [];
+  const appointments = window.neuroDB.getAppointments ? window.neuroDB.getAppointments() : [];
+  const todayStr = new Date().toISOString().split('T')[0];
+  const todayApts = appointments.filter(a => a.appointment_date === todayStr);
 
   return `
-    <div class="space-y-6" style="color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
+    <div class="therapist-dashboard-view" style="color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
       
-      <!-- Top Header with Actions -->
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-blue-900 p-6 md:p-8 rounded-2xl text-white shadow-xl">
+      <!-- Page Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
         <div>
-          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-xs font-semibold uppercase tracking-wider mb-3 backdrop-blur-sm border border-white/10">
-            <i class="fas fa-user-md text-blue-400"></i> Clinical Therapist Portal
+          <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Clinical Specialist Portal
           </div>
-          <h1 class="text-2xl md:text-3xl font-bold text-white tracking-tight">Dr. ${user?.full_name || 'Aisha Khan'}</h1>
-          <p class="text-slate-300 text-sm md:text-base mt-1 max-w-xl">
-            Pediatric Developmental Assessment, Individualized Therapy Plans, and Multidisciplinary Teacher Collaboration.
+          <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px; line-height: 1.2;">
+            Welcome, Dr. ${user?.full_name || 'Aisha Khan'}
+          </h1>
+          <p style="font-size: 14px; color: #64748b; margin: 0;">
+            Pediatric clinical evaluations, individualized therapy plan goals, and multidisciplinary teacher collaboration.
           </p>
         </div>
-        <div class="flex flex-wrap gap-3">
-          <button onclick="window.startNewAssessment()" class="btn bg-blue-600 hover:bg-blue-500 text-white font-semibold shadow-lg px-5 py-2.5 rounded-xl flex items-center gap-2 transition-all">
-            <i class="fas fa-stethoscope"></i> Conduct Assessment
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn btn-primary" onclick="window.startNewAssessment()" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+            Conduct Assessment
           </button>
-          <button onclick="window.showCreateTherapyPlanModal()" class="btn bg-white/10 hover:bg-white/20 text-white font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 border border-white/20 transition-all">
-            <i class="fas fa-plus"></i> New Therapy Plan
+          <button class="btn btn-outline" onclick="window.showCreateTherapyPlanModal()" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            New Therapy Plan
           </button>
-          <button onclick="window.showLogTherapySessionModal()" class="btn bg-emerald-600 hover:bg-emerald-500 text-white font-semibold px-4 py-2.5 rounded-xl flex items-center gap-2 shadow-md transition-all">
-            <i class="fas fa-pen-to-square"></i> Log Session
+          <button class="btn btn-accent" onclick="window.showLogTherapySessionModal()" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+            Log Session
           </button>
         </div>
       </div>
 
       <!-- Top Row 4 Stat Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px;">
         
-        <!-- Stat 1 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
-          <div>
-            <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Assigned Children</span>
-            <div class="text-2xl font-extrabold text-slate-900 mt-1">${myChildren.length}</div>
-            <p class="text-xs text-emerald-600 font-medium mt-0.5"><i class="fas fa-circle-check"></i> ${myChildren.filter(c => c.status === 'Active').length} Active caseload</p>
+        <!-- Stat 1: Assigned Children -->
+        <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('children')" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">ACTIVE CASELOAD</span>
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
+            </div>
           </div>
-          <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
-            <i class="fas fa-children"></i>
-          </div>
-        </div>
-
-        <!-- Stat 2 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
-          <div>
-            <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Completed Assessments</span>
-            <div class="text-2xl font-extrabold text-slate-900 mt-1">${assessments.length}</div>
-            <p class="text-xs text-blue-600 font-medium mt-0.5"><i class="fas fa-chart-pie"></i> 5 clinical batteries</p>
-          </div>
-          <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
-            <i class="fas fa-clipboard-check"></i>
+          <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${myChildren.length}</div>
+          <div style="font-size: 11.5px; font-weight: 600; color: #16a34a; display: flex; align-items: center; gap: 4px;">
+            <span>▲</span> ${myChildren.filter(c => c.status === 'Active').length} Active pediatric cases
           </div>
         </div>
 
-        <!-- Stat 3 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
-          <div>
-            <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Active Therapy Plans</span>
-            <div class="text-2xl font-extrabold text-slate-900 mt-1">${activePlans.length}</div>
-            <p class="text-xs text-emerald-600 font-medium mt-0.5"><i class="fas fa-bullseye"></i> Goal progress tracked</p>
+        <!-- Stat 2: Assessments Conducted -->
+        <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('assessments')" onmouseover="this.style.borderColor='#10b981'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">ASSESSMENTS</span>
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            </div>
           </div>
-          <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
-            <i class="fas fa-route"></i>
+          <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${assessments.length}</div>
+          <div style="font-size: 11.5px; font-weight: 600; color: #2563eb; display: flex; align-items: center; gap: 4px;">
+            <span>●</span> 5-point clinical batteries
           </div>
         </div>
 
-        <!-- Stat 4 -->
-        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between hover:shadow-md transition-shadow">
-          <div>
-            <span class="text-xs font-bold text-slate-600 uppercase tracking-wider">Teacher Observations</span>
-            <div class="text-2xl font-extrabold text-slate-900 mt-1">${teacherObservations.length}</div>
-            <p class="text-xs text-purple-600 font-medium mt-0.5"><i class="fas fa-school"></i> Classroom context</p>
+        <!-- Stat 3: Active Therapy Plans -->
+        <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('therapy-plans')" onmouseover="this.style.borderColor='#8b5cf6'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">ACTIVE PLANS</span>
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #f5f3ff; color: #8b5cf6; display: flex; align-items: center; justify-content: center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            </div>
           </div>
-          <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl font-bold">
-            <i class="fas fa-chalkboard-teacher"></i>
+          <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${activePlans.length}</div>
+          <div style="font-size: 11.5px; font-weight: 600; color: #8b5cf6; display: flex; align-items: center; gap: 4px;">
+            <span>▲</span> Goal progress tracked
+          </div>
+        </div>
+
+        <!-- Stat 4: Teacher Observations Feed -->
+        <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('observations')" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#e2e8f0'">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">TEACHER LOGS</span>
+            <div style="width: 28px; height: 28px; border-radius: 50%; background: #fffbeb; color: #f59e0b; display: flex; align-items: center; justify-content: center;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            </div>
+          </div>
+          <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${teacherObservations.length}</div>
+          <div style="font-size: 11.5px; font-weight: 600; color: #d97706; display: flex; align-items: center; gap: 4px;">
+            <span>●</span> Classroom context feed
           </div>
         </div>
 
       </div>
 
-      <!-- Supporting Teacher Observations Review Banner -->
-      <div class="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-100 rounded-2xl p-6 shadow-sm">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-sm">
-              <i class="fas fa-eye"></i>
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-900 text-base">Teacher & Educator Observations Feed</h3>
-              <p class="text-xs text-slate-600">Review real-world classroom context before updating clinical assessments and therapy plans.</p>
-            </div>
-          </div>
-          <button onclick="window.navigateTo('observations')" class="text-xs font-semibold text-indigo-700 hover:text-indigo-900 flex items-center gap-1">
-            View All Observations →
-          </button>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          ${teacherObservations.slice(0, 3).map(obs => {
-            const child = window.neuroDB.getChildById(obs.child_id);
-            return `
-              <div class="bg-white p-4 rounded-xl border border-indigo-100/70 shadow-sm flex flex-col justify-between space-y-3">
+      <!-- Main 2-Column Dashboard Layout -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 24px;">
+        
+        <!-- Left Column: Supporting Teacher Notes & Active Therapy Plans -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          
+          <!-- Supporting Teacher Observations Feed Card -->
+          <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 32px; height: 32px; border-radius: 8px; background: #fdf2f8; color: #db2777; display: flex; align-items: center; justify-content: center;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                </div>
                 <div>
-                  <div class="flex items-start justify-between gap-2">
-                    <span class="font-bold text-sm text-slate-900">${child ? `${child.first_name} ${child.last_name}` : 'Student'}</span>
-                    <span class="text-[11px] font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">${obs.observation_date}</span>
-                  </div>
-                  <span class="inline-block text-[11px] font-semibold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded mt-1.5 border border-indigo-100">
-                    ${obs.activity_context}
-                  </span>
-                  <p class="text-xs text-slate-600 italic mt-2 line-clamp-2">
-                    "${obs.teacher_note || 'Structured classroom observation.'}"
-                  </p>
-                </div>
-                <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <button onclick="window.teacherModule.openObservationModal('${obs.id}')" class="text-indigo-600 hover:text-indigo-800 font-semibold">
-                    View Ratings
-                  </button>
-                  <button onclick="window.startAssessmentForChild('${obs.child_id}')" class="text-blue-600 hover:text-blue-800 font-semibold flex items-center gap-1">
-                    Assess Child <i class="fas fa-arrow-right text-[10px]"></i>
-                  </button>
+                  <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Supporting Teacher Observations (Classroom Feed)</h3>
+                  <p style="font-size: 12.5px; color: #64748b; margin: 0;">Real-world classroom behaviors observed by school educators to inform therapy goals.</p>
                 </div>
               </div>
-            `;
-          }).join('')}
-        </div>
-      </div>
+              <span class="badge badge-info" style="font-size: 11.5px; padding: 4px 10px;">${teacherObservations.length} Logs Available</span>
+            </div>
 
-      <!-- Middle Grid: Active Therapy Plans (Left 2fr) + Clinical Schedule (Right 1fr) -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        <!-- Left: Active Therapy Plans & Goal Tracking -->
-        <div class="lg:col-span-2 space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-              <i class="fas fa-route text-blue-600"></i> Active Individualized Therapy Plans
-            </h2>
-            <button onclick="window.showCreateTherapyPlanModal()" class="text-xs font-semibold text-blue-600 hover:text-blue-800">
-              + New Plan
-            </button>
+            ${teacherObservations.length === 0 ? `
+              <div style="text-align: center; padding: 32px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                <p style="font-size: 13.5px; color: #64748b; margin: 0;">No classroom observations logged yet by teachers.</p>
+              </div>
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 12px;">
+                ${teacherObservations.slice(0, 3).map(obs => {
+                  const child = window.neuroDB.getChildById(obs.child_id);
+                  const teacher = window.neuroDB.getUserById(obs.teacher_id);
+                  const sevColor = obs.overall_severity === 'Significant Concern' ? '#ef4444' : (obs.overall_severity === 'Moderate Concern' ? '#f59e0b' : '#10b981');
+                  const sevBg = obs.overall_severity === 'Significant Concern' ? '#fee2e2' : (obs.overall_severity === 'Moderate Concern' ? '#fef3c7' : '#ecfdf5');
+                  
+                  return `
+                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; transition: all 0.2s;" onmouseover="this.style.background='#f1f5f9'" onmouseout="this.style.background='#f8fafc'">
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                          <div style="width: 32px; height: 32px; border-radius: 50%; background: #eff6ff; color: #2563eb; font-weight: 700; font-size: 12.5px; display: flex; align-items: center; justify-content: center;">
+                            ${(child?.first_name || 'C')[0]}${(child?.last_name || 'H')[0]}
+                          </div>
+                          <div>
+                            <span style="font-weight: 700; font-size: 14.5px; color: #0f172a;">${child ? `${child.first_name} ${child.last_name}` : 'Student'}</span>
+                            <span style="font-size: 12px; color: #64748b; margin-left: 6px;">(${child?.child_code || ''})</span>
+                            <div style="font-size: 11.5px; color: #64748b;">Logged by ${teacher?.full_name || 'Teacher'} • ${obs.observation_date || 'Recent'}</div>
+                          </div>
+                        </div>
+                        <span style="background: ${sevBg}; color: ${sevColor}; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">
+                          ${obs.overall_severity || 'Typical'}
+                        </span>
+                      </div>
+
+                      <p style="font-size: 13px; color: #334155; line-height: 1.45; margin: 8px 0 10px; background: #ffffff; padding: 10px 12px; border-radius: 8px; border: 1px solid #f1f5f9;">
+                        "${obs.educator_notes || 'Classroom routine completed with mild sensory seeking behaviors during group circle.'}"
+                      </p>
+
+                      <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                          <span style="font-size: 11px; background: #e0e7ff; color: #3730a3; padding: 2px 7px; border-radius: 4px; font-weight: 600;">Activity: ${obs.environmental_context?.activity_type || 'Classroom'}</span>
+                          <span style="font-size: 11px; background: #f1f5f9; color: #475569; padding: 2px 7px; border-radius: 4px; font-weight: 600;">Noise: ${obs.environmental_context?.noise_level || 'Moderate'}</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="window.teacherModule && window.teacherModule.openObservationModal('${obs.id}')" style="font-size: 11.5px; padding: 4px 8px;">
+                          Review Details &rarr;
+                        </button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            `}
           </div>
 
-          <div class="space-y-4">
+          <!-- Active Therapy Plans with Goal Progress Tracking -->
+          <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Active Therapy Plans & Goals</h3>
+                <p style="font-size: 12.5px; color: #64748b; margin: 0;">Milestone goals with real-time percentage progression.</p>
+              </div>
+              <button class="btn btn-primary btn-sm" onclick="window.showCreateTherapyPlanModal()" style="display: flex; align-items: center; gap: 4px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Add Plan
+              </button>
+            </div>
+
             ${activePlans.length === 0 ? `
-              <div class="bg-white p-8 rounded-2xl border border-slate-100 text-center text-slate-600 text-sm">
-                <i class="fas fa-clipboard-list text-3xl text-slate-300 mb-2 block"></i>
-                No active therapy plans. Click <strong>+ New Plan</strong> to create one.
+              <div style="text-align: center; padding: 32px; background: #f8fafc; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                <p style="font-size: 13.5px; color: #64748b; margin: 0 0 10px;">No active therapy plans recorded.</p>
+                <button class="btn btn-primary btn-sm" onclick="window.showCreateTherapyPlanModal()">Create First Plan</button>
               </div>
-            ` : activePlans.map(plan => {
-              const child = window.neuroDB.getChildById(plan.child_id);
-              const goals = plan.goals || [];
-              const avgProgress = goals.length > 0 
-                ? Math.round(goals.reduce((acc, g) => acc + (g.progress_pct || 0), 0) / goals.length) 
-                : 0;
+            ` : `
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                ${activePlans.slice(0, 3).map(plan => {
+                  const child = window.neuroDB.getChildById(plan.child_id);
+                  const goals = plan.goals || [];
+                  const avgProgress = goals.length > 0 
+                    ? Math.round(goals.reduce((sum, g) => sum + (g.progress_pct || 0), 0) / goals.length) 
+                    : 0;
 
-              return `
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                    <div>
-                      <div class="flex items-center gap-2">
-                        <h3 class="font-bold text-base text-slate-900">${child ? `${child.first_name} ${child.last_name}` : 'Child'}</h3>
-                        <span class="text-xs font-mono text-slate-600 bg-slate-100 px-2 py-0.5 rounded">${child ? child.child_code : ''}</span>
-                        <span class="px-2 py-0.5 text-xs font-bold rounded-full bg-emerald-100 text-emerald-700">Active</span>
-                      </div>
-                      <p class="text-xs font-medium text-slate-600 mt-1">${plan.title}</p>
-                    </div>
-                    <div class="text-right">
-                      <span class="text-xs text-slate-600">Overall Progress:</span>
-                      <span class="text-sm font-extrabold text-blue-600 ml-1">${avgProgress}%</span>
-                    </div>
-                  </div>
-
-                  <!-- Goal Bars -->
-                  <div class="space-y-3">
-                    ${goals.map(goal => `
-                      <div class="space-y-1 text-xs">
-                        <div class="flex justify-between font-medium">
-                          <span class="text-slate-800 font-semibold">${goal.title}</span>
-                          <span class="text-blue-600 font-bold">${goal.progress_pct || 0}% (${goal.status || 'In Progress'})</span>
+                  return `
+                    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
+                      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div>
+                          <strong style="font-size: 15px; color: #0f172a;">${plan.title || 'Individualized Therapy Plan'}</strong>
+                          <div style="font-size: 12px; color: #64748b;">Patient: <strong>${child ? `${child.first_name} ${child.last_name}` : 'Child'}</strong> • ${plan.frequency || '2x Weekly'}</div>
                         </div>
-                        <p class="text-slate-600 text-[11px]">${goal.target}</p>
-                        <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex items-center">
-                          <div class="bg-gradient-to-r from-blue-500 to-indigo-600 h-full rounded-full transition-all" style="width: ${goal.progress_pct || 0}%;"></div>
-                        </div>
+                        <span class="badge badge-success" style="font-size: 11px;">${avgProgress}% Overall</span>
                       </div>
-                    `).join('')}
-                  </div>
 
-                  <!-- Plan Actions Bar -->
-                  <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100 text-xs">
-                    <span class="text-slate-600">
-                      <i class="far fa-calendar-alt mr-1"></i> ${plan.frequency || '2 Sessions/Week'} • Target: ${plan.target_date || 'May 2026'}
-                    </span>
-                    <div class="flex items-center gap-2">
-                      <button onclick="window.showLogTherapySessionModal('${plan.id}')" class="btn btn-primary text-xs py-1.5 px-3 rounded-lg font-semibold">
-                        <i class="fas fa-pen-to-square mr-1"></i> Log Session
-                      </button>
-                      <button onclick="window.showEditGoalModal('${plan.id}')" class="btn btn-outline text-xs py-1.5 px-3 rounded-lg font-semibold text-blue-600 border-blue-200">
-                        <i class="fas fa-sliders mr-1"></i> Update Goals
-                      </button>
+                      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
+                        ${goals.slice(0, 2).map(goal => `
+                          <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 8px; padding: 10px 12px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                              <span style="font-size: 12.5px; font-weight: 600; color: #334155;">${goal.goal_text}</span>
+                              <span style="font-size: 12px; font-weight: 700; color: #2563eb;">${goal.progress_pct || 0}%</span>
+                            </div>
+                            <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 9999px; overflow: hidden; margin-bottom: 6px;">
+                              <div style="width: ${goal.progress_pct || 0}%; height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 9999px;"></div>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                              <span style="font-size: 11px; color: #94a3b8;">Target: ${goal.target_date || 'Q2 2026'}</span>
+                              <button class="btn btn-outline btn-sm" onclick="window.showEditGoalModal('${plan.id}', '${goal.id}')" style="font-size: 11px; padding: 2px 6px;">
+                                Update Goal %
+                              </button>
+                            </div>
+                          </div>
+                        `).join('')}
+                      </div>
+
+                      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <button class="btn btn-secondary btn-sm" onclick="window.showLogTherapySessionModal('${plan.id}')" style="font-size: 12px;">
+                          + Log Session for Plan
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
+                  `;
+                }).join('')}
+              </div>
+            `}
           </div>
+
+          <!-- Today's Clinical Schedule -->
+          <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
+              <div>
+                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Today's Clinical Schedule</h3>
+                <p style="font-size: 12.5px; color: #64748b; margin: 0;">Consultations and behavioral therapy sessions.</p>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="window.showBookAppointmentModal()">+ New Appointment</button>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              ${todayApts.length === 0 ? `
+                <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 16px;">
+                    <span style="background: #eff6ff; color: #2563eb; font-weight: 700; font-size: 12.5px; padding: 6px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;">
+                      09:00 AM
+                    </span>
+                    <div>
+                      <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">Aarav Sharma</div>
+                      <div style="font-size: 12px; color: #64748b;">Pediatric Speech & Language Therapy</div>
+                    </div>
+                  </div>
+                  <div style="font-size: 12.5px; color: #94a3b8; font-weight: 500;">45 mins</div>
+                </div>
+
+                <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+                  <div style="display: flex; align-items: center; gap: 16px;">
+                    <span style="background: #eff6ff; color: #2563eb; font-weight: 700; font-size: 12.5px; padding: 6px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;">
+                      11:30 AM
+                    </span>
+                    <div>
+                      <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">Lucas Miller</div>
+                      <div style="font-size: 12px; color: #64748b;">Social Skills Play Therapy</div>
+                    </div>
+                  </div>
+                  <div style="font-size: 12.5px; color: #94a3b8; font-weight: 500;">60 mins</div>
+                </div>
+              ` : `
+                ${todayApts.map(a => {
+                  const child = window.neuroDB.getChildById(a.child_id);
+                  return `
+                    <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 12px; padding: 14px 18px; display: flex; align-items: center; justify-content: space-between;">
+                      <div style="display: flex; align-items: center; gap: 16px;">
+                        <span style="background: #eff6ff; color: #2563eb; font-weight: 700; font-size: 12.5px; padding: 6px 12px; border-radius: 8px; font-family: 'JetBrains Mono', monospace;">
+                          ${a.start_time || '10:00 AM'}
+                        </span>
+                        <div>
+                          <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">${child ? `${child.first_name} ${child.last_name}` : 'Child'}</div>
+                          <div style="font-size: 12px; color: #64748b;">${a.title || a.service_type || 'Therapy Session'}</div>
+                        </div>
+                      </div>
+                      <span class="badge badge-${a.status === 'Confirmed' ? 'success' : 'info'}">${a.status}</span>
+                    </div>
+                  `;
+                }).join('')}
+              `}
+            </div>
+          </div>
+
         </div>
 
-        <!-- Right: Today's Clinical Schedule & Tools -->
-        <div class="space-y-5">
-          <!-- Schedule Card -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-            <div class="flex items-center justify-between">
-              <h3 class="font-bold text-base text-slate-900">Today's Schedule</h3>
-              <button onclick="window.navigateTo('appointments')" class="text-xs font-semibold text-blue-600 hover:text-blue-800">Full Calendar</button>
-            </div>
-
-            <div class="space-y-3">
-              ${appointments.slice(0, 4).map(apt => {
-                const child = window.neuroDB.getChildById(apt.child_id);
-                return `
-                  <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                      <span class="bg-blue-100 text-blue-700 font-bold text-xs px-2.5 py-1 rounded-lg font-mono">
-                        ${apt.start_time}
-                      </span>
-                      <div>
-                        <div class="font-bold text-xs text-slate-900">${child ? `${child.first_name} ${child.last_name}` : 'Child'}</div>
-                        <div class="text-[11px] text-slate-600">${apt.type || 'Therapy Session'}</div>
-                      </div>
-                    </div>
-                    <span class="text-[11px] text-slate-600 font-medium">45m</span>
-                  </div>
-                `;
-              }).join('')}
-            </div>
-          </div>
-
-          <!-- Quick Actions Panel -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-            <h3 class="font-bold text-sm text-slate-900">Therapist Quick Actions</h3>
-            <div class="space-y-2">
-              <button onclick="window.startNewAssessment()" class="w-full btn btn-primary text-xs py-2.5 rounded-xl font-semibold flex items-center justify-start gap-2.5">
-                <i class="fas fa-stethoscope"></i> Conduct Clinical Assessment
+        <!-- Right Column: Quick Clinical Actions & Consultation -->
+        <div style="display: flex; flex-direction: column; gap: 24px;">
+          
+          <!-- Quick Clinical Actions Card -->
+          <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+            <div style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Quick Clinical Actions</div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <button class="btn btn-primary" onclick="window.startNewAssessment()" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+                Conduct 5-Point Assessment
               </button>
-              <button onclick="window.showCreateTherapyPlanModal()" class="w-full btn btn-outline text-xs py-2.5 rounded-xl font-semibold flex items-center justify-start gap-2.5 text-indigo-700 border-indigo-200 hover:bg-indigo-50">
-                <i class="fas fa-clipboard-list"></i> Create Therapy Plan
+              
+              <button class="btn btn-outline" onclick="window.showCreateTherapyPlanModal()" style="width: 100%; justify-content: flex-start; padding: 11px 16px; border-color: #dbeafe; color: #2563eb; background: #eff6ff;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                Create Individualized Plan
               </button>
-              <button onclick="window.showLogTherapySessionModal()" class="w-full btn btn-outline text-xs py-2.5 rounded-xl font-semibold flex items-center justify-start gap-2.5 text-emerald-700 border-emerald-200 hover:bg-emerald-50">
-                <i class="fas fa-notes-medical"></i> Log Session & Update Goals
+
+              <button class="btn btn-outline" onclick="window.showLogTherapySessionModal()" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Log Therapy Session
+              </button>
+
+              <button class="btn btn-outline" onclick="window.navigateTo('reports')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Diagnostic & Progress Reports
               </button>
             </div>
           </div>
 
-          <!-- Multidisciplinary Consultation Card -->
-          <div class="bg-slate-900 p-5 rounded-2xl text-white shadow-md space-y-3">
-            <div class="flex items-center gap-2 text-amber-400 font-bold text-xs uppercase tracking-wider">
-              <i class="fas fa-shield-alt"></i> Multidisciplinary Consultation
+          <!-- Board Consultation / Interdisciplinary Collaboration Card -->
+          <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #334155; background: #1e293b; color: #ffffff;">
+            <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Multidisciplinary Consultation
             </div>
-            <p class="text-xs text-slate-300 leading-relaxed">
-              Connect with pediatricians, child psychologists, and classroom teachers inside secure messaging.
+            <p style="font-size: 12.5px; color: #94a3b8; line-height: 1.55; margin-bottom: 16px;">
+              Instantly collaborate with classroom educators, developmental pediatricians, and clinical psychologists.
             </p>
-            <button onclick="window.navigateTo('messages')" class="w-full btn bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold py-2 rounded-xl shadow">
-              Open Collaboration Chat
+            <button style="width: 100%; background: #2563eb; color: #ffffff; font-weight: 600; font-size: 13.5px; padding: 10px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); transition: all 0.2s;" onclick="window.navigateTo('messages')" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+              Launch Secure Messages
             </button>
           </div>
+
         </div>
 
       </div>
@@ -288,294 +365,197 @@ window.renderTherapistDashboard = function() {
   `;
 };
 
-// Global Modals & Helper Functions for Therapist Module
+// ============================================================================
+// 2. THERAPY PLAN & GOAL MODAL HANDLERS
+// ============================================================================
 
-window.startNewAssessment = function() {
-  window.location.hash = '#assessment-conduct';
-};
-
-window.startAssessmentForChild = function(childId) {
-  window.location.hash = `#assessment-conduct?childId=${childId}`;
-};
-
-window.showCreateTherapyPlanModal = function(preselectedChildId = null) {
+window.showCreateTherapyPlanModal = function(childId) {
   const children = window.neuroDB.getChildren();
-  const today = new Date().toISOString().split('T')[0];
-  const targetDefault = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  const selectedChildId = childId || (children.length > 0 ? children[0].id : '');
 
-  const modalHtml = `
-    <div id="createTherapyPlanModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 my-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
-              <i class="fas fa-route"></i>
-            </div>
-            <div>
-              <h3 class="text-lg font-bold text-slate-900">Create Individualized Therapy Plan</h3>
-              <p class="text-xs text-slate-600">Establish SMART developmental goals, session frequency, and target milestones.</p>
-            </div>
-          </div>
-          <button onclick="document.getElementById('createTherapyPlanModal').remove()" class="text-slate-600 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100">
-            <i class="fas fa-times text-lg"></i>
-          </button>
-        </div>
+  const content = `
+    <div style="padding: 24px; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          Create Individualized Therapy Plan
+        </h3>
+        <button onclick="window.closeActiveModal()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8;">&times;</button>
+      </div>
 
-        <form id="newTherapyPlanForm" onsubmit="window.handleCreateTherapyPlan(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Child <span class="text-rose-500">*</span></label>
-              <select name="child_id" required class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-                <option value="">Select Child...</option>
-                ${children.map(c => `<option value="${c.id}" ${preselectedChildId === c.id ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Plan Title <span class="text-rose-500">*</span></label>
-              <input type="text" name="title" required placeholder="e.g., Speech & Sensory Integration Plan" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Frequency</label>
-              <select name="frequency" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-                <option value="1 Session / Week">1 Session / Week</option>
-                <option value="2 Sessions / Week" selected>2 Sessions / Week</option>
-                <option value="3 Sessions / Week">3 Sessions / Week</option>
-                <option value="Bi-Weekly">Bi-Weekly</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Session Duration</label>
-              <select name="duration_mins" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-                <option value="30">30 Minutes</option>
-                <option value="45" selected>45 Minutes</option>
-                <option value="60">60 Minutes</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Start Date</label>
-              <input type="date" name="start_date" value="${today}" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Target Evaluation Date</label>
-              <input type="date" name="target_date" value="${targetDefault}" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-            </div>
-          </div>
-
-          <!-- Goals Section -->
-          <div class="space-y-3 pt-2 border-t border-slate-100">
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">SMART Developmental Goals</label>
-            <div id="planGoalsContainer" class="space-y-3">
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-2 goal-item">
-                <input type="text" name="goal_title_1" required placeholder="Goal 1 Title (e.g., Joint Attention & Eye Gaze)" class="input w-full rounded-lg border border-slate-200 py-1.5 px-3 text-xs bg-white font-medium">
-                <textarea name="goal_target_1" rows="2" required placeholder="Measurable Target (e.g., Maintain 3+ seconds eye contact during play across 8/10 trials)" class="input w-full rounded-lg border border-slate-200 p-2 text-xs bg-white"></textarea>
-              </div>
-
-              <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 space-y-2 goal-item">
-                <input type="text" name="goal_title_2" placeholder="Goal 2 Title (e.g., Functional Verbal Requesting)" class="input w-full rounded-lg border border-slate-200 py-1.5 px-3 text-xs bg-white font-medium">
-                <textarea name="goal_target_2" rows="2" placeholder="Measurable Target (e.g., Use 2-word phrase or picture card independently for requests)" class="input w-full rounded-lg border border-slate-200 p-2 text-xs bg-white"></textarea>
-              </div>
-            </div>
+      <form id="create-therapy-plan-form" onsubmit="window.handleCreateTherapyPlan(event)">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Child Patient *</label>
+            <select id="plan-child-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" required>
+              ${children.map(c => `<option value="${c.id}" ${c.id === selectedChildId ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
+            </select>
           </div>
 
           <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Therapist Clinical Notes</label>
-            <textarea name="notes" rows="2" placeholder="Recommended home activities, sensory precautions..." class="input w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white"></textarea>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Plan Title *</label>
+            <input type="text" id="plan-title" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Speech & Sensory Integration Plan" required>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Session Frequency</label>
+            <select id="plan-frequency" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;">
+              <option value="1x Weekly">1x Weekly</option>
+              <option value="2x Weekly" selected>2x Weekly</option>
+              <option value="3x Weekly">3x Weekly</option>
+              <option value="Intensive Daily">Intensive Daily</option>
+            </select>
           </div>
 
-          <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-            <button type="button" onclick="document.getElementById('createTherapyPlanModal').remove()" class="btn btn-outline text-xs px-4 py-2 rounded-xl font-semibold">
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-primary text-xs px-6 py-2 rounded-xl font-semibold shadow-md">
-              Create Therapy Plan
-            </button>
+          <div>
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Therapist Focus Area</label>
+            <input type="text" id="plan-focus-area" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Expressive Language & Joint Attention">
           </div>
-        </form>
-      </div>
+        </div>
+
+        <!-- Initial Goals Section -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Target Goal 1 *</label>
+          <input type="text" id="plan-goal-1" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; margin-bottom: 8px;" placeholder="e.g. Increase non-verbal pointing gesture across 4 play trials" required>
+          
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Target Goal 2</label>
+          <input type="text" id="plan-goal-2" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Tolerate sensory auditory changes during transitions without distress">
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+          <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="font-weight: 600;">Save Therapy Plan</button>
+        </div>
+      </form>
     </div>
   `;
 
-  const existing = document.getElementById('createTherapyPlanModal');
-  if (existing) existing.remove();
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  window.showCustomModal(content);
 };
 
 window.handleCreateTherapyPlan = function(event) {
   event.preventDefault();
-  const form = event.target;
-  const formData = new FormData(form);
   const user = window.neuroAuth.getCurrentUser();
+  const childId = document.getElementById('plan-child-id').value;
+  const title = document.getElementById('plan-title').value;
+  const frequency = document.getElementById('plan-frequency').value;
+  const focusArea = document.getElementById('plan-focus-area').value;
+  const goal1Text = document.getElementById('plan-goal-1').value;
+  const goal2Text = document.getElementById('plan-goal-2')?.value;
 
-  const childId = formData.get('child_id');
-  const title = formData.get('title');
-  const frequency = formData.get('frequency');
-  const durationMins = formData.get('duration_mins');
-  const startDate = formData.get('start_date');
-  const targetDate = formData.get('target_date');
-  const notes = formData.get('notes');
+  const goals = [
+    {
+      id: 'g_' + Date.now() + '_1',
+      goal_text: goal1Text,
+      target_date: new Date(Date.now() + 60*24*60*60*1000).toISOString().split('T')[0],
+      progress_pct: 10,
+      notes: 'Baseline initiated'
+    }
+  ];
 
-  const goals = [];
-  const g1Title = formData.get('goal_title_1');
-  const g1Target = formData.get('goal_target_1');
-  if (g1Title && g1Target) {
-    goals.push({ id: 'g_' + Date.now() + '_1', title: g1Title, target: g1Target, status: 'In Progress', progress_pct: 10 });
+  if (goal2Text && goal2Text.trim()) {
+    goals.push({
+      id: 'g_' + Date.now() + '_2',
+      goal_text: goal2Text,
+      target_date: new Date(Date.now() + 90*24*60*60*1000).toISOString().split('T')[0],
+      progress_pct: 0,
+      notes: 'Initial target'
+    });
   }
 
-  const g2Title = formData.get('goal_title_2');
-  const g2Target = formData.get('goal_target_2');
-  if (g2Title && g2Target) {
-    goals.push({ id: 'g_' + Date.now() + '_2', title: g2Title, target: g2Target, status: 'In Progress', progress_pct: 0 });
-  }
-
-  const newPlan = window.neuroDB.createTherapyPlan({
+  const newPlan = {
+    id: 'plan_' + Date.now(),
     child_id: childId,
-    therapist_id: user?.id || 'usr_therapist_1',
+    therapist_id: user ? user.id : 'usr_therapist_01',
     title: title,
     frequency: frequency,
-    duration_mins: durationMins,
-    start_date: startDate,
-    target_date: targetDate,
+    focus_area: focusArea,
+    status: 'Active',
     goals: goals,
-    notes: notes,
-    status: 'Active'
-  });
+    created_at: new Date().toISOString()
+  };
 
-  alert('Therapy Plan created successfully.');
-  document.getElementById('createTherapyPlanModal')?.remove();
-  if (window.renderApp) window.renderApp();
+  const plans = window.neuroDB.getTherapyPlans();
+  plans.unshift(newPlan);
+  window.neuroDB.saveTherapyPlans(plans);
+
+  window.closeActiveModal();
+  if (window.showToast) window.showToast('Therapy Plan created successfully with target goals!', 'success');
+  window.renderCurrentView();
 };
 
-window.showLogTherapySessionModal = function(preselectedPlanId = null) {
-  const plans = window.neuroDB.getTherapyPlans().filter(p => p.status === 'Active');
-  const today = new Date().toISOString().split('T')[0];
+window.showLogTherapySessionModal = function(preselectedPlanId) {
+  const plans = window.neuroDB.getTherapyPlans();
+  const children = window.neuroDB.getChildren();
 
-  const modalHtml = `
-    <div id="logSessionModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-slate-100 my-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div class="flex items-center gap-2">
-            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
-              <i class="fas fa-notes-medical"></i>
-            </div>
-            <div>
-              <h3 class="text-lg font-bold text-slate-900">Log Clinical Therapy Session</h3>
-              <p class="text-xs text-slate-600">Document session activities, clinical observations, and advance goal progress.</p>
-            </div>
-          </div>
-          <button onclick="document.getElementById('logSessionModal').remove()" class="text-slate-600 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100">
-            <i class="fas fa-times text-lg"></i>
-          </button>
+  const content = `
+    <div style="padding: 24px; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0; display: flex; align-items: center; gap: 8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          Log Therapy Session & Update Goal Progress
+        </h3>
+        <button onclick="window.closeActiveModal()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8;">&times;</button>
+      </div>
+
+      <form id="log-session-form" onsubmit="window.handleLogTherapySession(event)">
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Associated Therapy Plan *</label>
+          <select id="session-plan-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" onchange="window.handlePlanSelectForSession(this.value)" required>
+            <option value="">-- Select Child & Therapy Plan --</option>
+            ${plans.map(p => {
+              const child = children.find(c => c.id === p.child_id);
+              return `<option value="${p.id}" ${p.id === preselectedPlanId ? 'selected' : ''}>${child ? `${child.first_name} ${child.last_name}` : 'Child'} - ${p.title}</option>`;
+            }).join('')}
+          </select>
         </div>
 
-        <form id="logSessionForm" onsubmit="window.handleLogTherapySession(event)" class="space-y-4">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="md:col-span-2">
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Active Therapy Plan <span class="text-rose-500">*</span></label>
-              <select name="therapy_plan_id" required onchange="window.handlePlanSelectForSession(this.value)" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white font-medium">
-                <option value="">Select Plan...</option>
-                ${plans.map(p => {
-                  const child = window.neuroDB.getChildById(p.child_id);
-                  return `<option value="${p.id}" ${preselectedPlanId === p.id ? 'selected' : ''}>${child ? `${child.first_name} ${child.last_name}` : 'Child'} - ${p.title}</option>`;
-                }).join('')}
-              </select>
-            </div>
+        <div id="session-goals-container" style="margin-bottom: 16px;">
+          <!-- Dynamically populated goals -->
+        </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Session Date <span class="text-rose-500">*</span></label>
-              <input type="date" name="session_date" required value="${today}" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-            </div>
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Clinical Session Notes & Observations *</label>
+          <textarea id="session-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Document child's engagement, sensory regulation, and target goal progress..." required></textarea>
+        </div>
 
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Session Duration</label>
-              <select name="duration_mins" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-                <option value="30">30 Minutes</option>
-                <option value="45" selected>45 Minutes</option>
-                <option value="60">60 Minutes</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Session Modality</label>
-              <input type="text" name="session_type" placeholder="e.g., Speech & Sensory Play" required value="Speech & Sensory Play" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white">
-            </div>
-
-            <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Overall Session Rating (1-5)</label>
-              <select name="progress_rating" class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white font-bold">
-                <option value="5">5 - Excellent Engagement</option>
-                <option value="4" selected>4 - Very Good Progress</option>
-                <option value="3">3 - Moderate / Baseline</option>
-                <option value="2">2 - Needed High Prompting</option>
-                <option value="1">1 - Severe Resistance</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Activities Conducted <span class="text-rose-500">*</span></label>
-            <textarea name="activities_done" rows="2" required placeholder="e.g., Bubble popping waiting game, visual schedule matching..." class="input w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white"></textarea>
-          </div>
-
-          <div>
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Clinical Observations & Response</label>
-            <textarea name="observations" rows="2" required placeholder="e.g., Initiated 4 spontaneous eye contacts, transitioned smoothly between sensory tasks..." class="input w-full rounded-xl border border-slate-200 p-2.5 text-xs bg-white"></textarea>
-          </div>
-
-          <!-- Goal Progress Increments -->
-          <div id="sessionGoalsContainer" class="space-y-3 pt-2 border-t border-slate-100">
-            <!-- Populated on plan selection -->
-          </div>
-
-          <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-            <button type="button" onclick="document.getElementById('logSessionModal').remove()" class="btn btn-outline text-xs px-4 py-2 rounded-xl font-semibold">
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-primary text-xs px-6 py-2 rounded-xl font-semibold shadow-md">
-              Save Session Log
-            </button>
-          </div>
-        </form>
-      </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+          <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="font-weight: 600;">Save Session Record</button>
+        </div>
+      </form>
     </div>
   `;
 
-  const existing = document.getElementById('logSessionModal');
-  if (existing) existing.remove();
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
-
+  window.showCustomModal(content);
   if (preselectedPlanId) {
     window.handlePlanSelectForSession(preselectedPlanId);
+  } else if (plans.length > 0) {
+    window.handlePlanSelectForSession(plans[0].id);
   }
 };
 
 window.handlePlanSelectForSession = function(planId) {
-  const container = document.getElementById('sessionGoalsContainer');
+  const container = document.getElementById('session-goals-container');
   if (!container) return;
-
-  const plan = window.neuroDB.getTherapyPlans().find(p => p.id === planId);
+  const plan = window.neuroDB.getTherapyPlanById ? window.neuroDB.getTherapyPlanById(planId) : (window.neuroDB.getTherapyPlans().find(p => p.id === planId));
   if (!plan || !plan.goals || plan.goals.length === 0) {
-    container.innerHTML = `<p class="text-xs text-slate-600">No specific SMART goals linked to this plan.</p>`;
+    container.innerHTML = `<div style="font-size: 12.5px; color: #64748b; background: #f8fafc; padding: 10px; border-radius: 8px;">No specific goals attached to this plan.</div>`;
     return;
   }
 
   container.innerHTML = `
-    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700">Update Goal Progress in this Session</h4>
-    <div class="space-y-2">
-      ${plan.goals.map(g => `
-        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
-          <div>
-            <span class="font-bold text-slate-800">${g.title}</span>
-            <p class="text-[11px] text-slate-600">${g.target}</p>
+    <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 8px; text-transform: uppercase;">Update Goal Progress During This Session</label>
+    <div style="display: flex; flex-direction: column; gap: 10px;">
+      ${plan.goals.map((g, idx) => `
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <span style="font-size: 13px; font-weight: 600; color: #334155;">${g.goal_text}</span>
+            <span id="goal-val-lbl-${g.id}" style="font-weight: 700; color: #2563eb; font-size: 13px;">${g.progress_pct || 0}%</span>
           </div>
-          <div class="flex items-center gap-2">
-            <label class="text-slate-600">Progress (%):</label>
-            <input type="number" min="0" max="100" step="5" name="goal_prog_${g.id}" value="${g.progress_pct || 0}" class="input w-20 text-center font-bold text-blue-600 border border-slate-300 rounded-lg py-1 px-2 text-xs bg-white">
-          </div>
+          <input type="range" min="0" max="100" step="5" value="${g.progress_pct || 0}" data-goal-id="${g.id}" style="width: 100%; cursor: pointer;" oninput="document.getElementById('goal-val-lbl-${g.id}').innerText = this.value + '%'">
         </div>
       `).join('')}
     </div>
@@ -584,116 +564,115 @@ window.handlePlanSelectForSession = function(planId) {
 
 window.handleLogTherapySession = function(event) {
   event.preventDefault();
-  const form = event.target;
-  const formData = new FormData(form);
   const user = window.neuroAuth.getCurrentUser();
-
-  const planId = formData.get('therapy_plan_id');
+  const planId = document.getElementById('session-plan-id').value;
+  const notes = document.getElementById('session-notes').value;
   const plan = window.neuroDB.getTherapyPlans().find(p => p.id === planId);
-  const sessionDate = formData.get('session_date');
-  const durationMins = formData.get('duration_mins');
-  const sessionType = formData.get('session_type');
-  const progressRating = formData.get('progress_rating');
-  const activitiesDone = formData.get('activities_done');
-  const observations = formData.get('observations');
 
-  const newSession = window.neuroDB.createTherapySession({
-    therapy_plan_id: planId,
-    child_id: plan ? plan.child_id : '',
-    therapist_id: user?.id || 'usr_therapist_1',
-    session_date: sessionDate,
-    duration_mins: durationMins,
-    session_type: sessionType,
-    progress_rating: progressRating,
-    activities_done: activitiesDone,
-    observations: observations
+  // Update goals from range inputs
+  const goalSliders = document.querySelectorAll('#session-goals-container input[type="range"]');
+  goalSliders.forEach(slider => {
+    const goalId = slider.getAttribute('data-goal-id');
+    const newPct = parseInt(slider.value, 10);
+    window.neuroDB.updateGoalProgress(planId, goalId, newPct, 'Updated in therapy session');
   });
 
-  // Update goals if provided
-  if (plan && plan.goals) {
-    plan.goals.forEach(g => {
-      const val = formData.get(`goal_prog_${g.id}`);
-      if (val !== null && val !== undefined) {
-        window.neuroDB.updateGoalProgress(planId, g.id, val);
-      }
-    });
+  const newSession = {
+    id: 'ses_' + Date.now(),
+    plan_id: planId,
+    child_id: plan ? plan.child_id : '',
+    therapist_id: user ? user.id : 'usr_therapist_01',
+    session_date: new Date().toISOString().split('T')[0],
+    notes: notes,
+    created_at: new Date().toISOString()
+  };
+
+  const sessions = window.neuroDB.getTherapySessions ? window.neuroDB.getTherapySessions() : [];
+  sessions.unshift(newSession);
+  if (window.neuroDB.saveTherapySessions) {
+    window.neuroDB.saveTherapySessions(sessions);
   }
 
-  alert('Session logged and goal progress updated.');
-  document.getElementById('logSessionModal')?.remove();
-  if (window.renderApp) window.renderApp();
+  window.closeActiveModal();
+  if (window.showToast) window.showToast('Therapy Session logged and goal progress updated!', 'success');
+  window.renderCurrentView();
 };
 
-window.showEditGoalModal = function(planId) {
+window.showEditGoalModal = function(planId, goalId) {
   const plan = window.neuroDB.getTherapyPlans().find(p => p.id === planId);
   if (!plan) return;
+  const goal = plan.goals.find(g => g.id === goalId);
+  if (!goal) return;
 
-  const child = window.neuroDB.getChildById(plan.child_id);
+  const content = `
+    <div style="padding: 24px; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #e2e8f0; padding-bottom: 14px;">
+        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0;">Update Milestone Goal Progress</h3>
+        <button onclick="window.closeActiveModal()" style="background: none; border: none; cursor: pointer; font-size: 20px; color: #94a3b8;">&times;</button>
+      </div>
 
-  const modalHtml = `
-    <div id="editGoalModal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
-      <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-4 animate-in fade-in zoom-in-95 duration-150">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-          <div>
-            <h3 class="font-bold text-base text-slate-900">Update Goal Progress</h3>
-            <p class="text-xs text-slate-600">${child ? `${child.first_name} ${child.last_name}` : 'Child'} • ${plan.title}</p>
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+        <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; margin-bottom: 4px;">Milestone Goal</div>
+        <div style="font-size: 14.5px; font-weight: 700; color: #0f172a;">${goal.goal_text}</div>
+      </div>
+
+      <form onsubmit="window.handleSaveGoalProgress(event, '${planId}', '${goalId}')">
+        <div style="margin-bottom: 16px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+            <label style="font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase;">Completion Level</label>
+            <span id="quick-goal-pct-lbl" style="font-weight: 800; color: #2563eb; font-size: 16px;">${goal.progress_pct || 0}%</span>
           </div>
-          <button onclick="document.getElementById('editGoalModal').remove()" class="text-slate-600 hover:text-slate-700 p-2 rounded-lg">
-            <i class="fas fa-times"></i>
-          </button>
+          <input type="range" id="quick-goal-slider" min="0" max="100" step="5" value="${goal.progress_pct || 0}" style="width: 100%; cursor: pointer;" oninput="document.getElementById('quick-goal-pct-lbl').innerText = this.value + '%'">
         </div>
 
-        <form onsubmit="window.handleSaveGoalProgress(event, '${plan.id}')" class="space-y-4">
-          ${(plan.goals || []).map(g => `
-            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 space-y-2 text-xs">
-              <span class="font-bold text-slate-800 block">${g.title}</span>
-              <p class="text-[11px] text-slate-600">${g.target}</p>
-              <div class="flex items-center justify-between pt-1">
-                <span class="text-slate-600">Progress:</span>
-                <div class="flex items-center gap-2">
-                  <input type="range" min="0" max="100" step="5" value="${g.progress_pct || 0}" oninput="document.getElementById('pct_label_${g.id}').textContent = this.value + '%'; document.getElementById('pct_input_${g.id}').value = this.value" class="w-32">
-                  <input type="number" id="pct_input_${g.id}" name="goal_${g.id}" value="${g.progress_pct || 0}" min="0" max="100" class="input w-16 text-center font-bold text-blue-600 border border-slate-300 rounded-lg py-1 text-xs bg-white">
-                  <span id="pct_label_${g.id}" class="font-mono font-bold text-blue-600 w-10 text-right">${g.progress_pct || 0}%</span>
-                </div>
-              </div>
-            </div>
-          `).join('')}
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Therapist Progress Notes</label>
+          <textarea id="quick-goal-notes" class="form-control" rows="2" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Optional notes on progress...">${goal.notes || ''}</textarea>
+        </div>
 
-          <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
-            <button type="button" onclick="document.getElementById('editGoalModal').remove()" class="btn btn-outline text-xs px-4 py-2 rounded-xl">
-              Cancel
-            </button>
-            <button type="submit" class="btn btn-primary text-xs px-6 py-2 rounded-xl font-semibold shadow-md">
-              Save Progress
-            </button>
-          </div>
-        </form>
-      </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+          <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary" style="font-weight: 600;">Save Progress</button>
+        </div>
+      </form>
     </div>
   `;
 
-  const existing = document.getElementById('editGoalModal');
-  if (existing) existing.remove();
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  window.showCustomModal(content);
 };
 
-window.handleSaveGoalProgress = function(event, planId) {
+window.handleSaveGoalProgress = function(event, planId, goalId) {
   event.preventDefault();
-  const form = event.target;
-  const formData = new FormData(form);
-  const plan = window.neuroDB.getTherapyPlans().find(p => p.id === planId);
+  const slider = document.getElementById('quick-goal-slider');
+  const notes = document.getElementById('quick-goal-notes')?.value;
+  const newPct = parseInt(slider.value, 10);
 
-  if (plan && plan.goals) {
-    plan.goals.forEach(g => {
-      const val = formData.get(`goal_${g.id}`);
-      if (val !== null && val !== undefined) {
-        window.neuroDB.updateGoalProgress(planId, g.id, val);
-      }
-    });
+  window.neuroDB.updateGoalProgress(planId, goalId, newPct, notes);
+  window.closeActiveModal();
+  if (window.showToast) window.showToast('Goal progress successfully updated!', 'success');
+  window.renderCurrentView();
+};
+
+window.showCustomModal = function(htmlContent) {
+  let modalRoot = document.getElementById('custom-modal-container');
+  if (!modalRoot) {
+    modalRoot = document.createElement('div');
+    modalRoot.id = 'custom-modal-container';
+    document.body.appendChild(modalRoot);
   }
 
-  alert('Goal progress updated successfully.');
-  document.getElementById('editGoalModal')?.remove();
-  if (window.renderApp) window.renderApp();
+  modalRoot.innerHTML = `
+    <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px;">
+      <div style="background: #ffffff; border-radius: 16px; width: 100%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2); border: 1px solid #e2e8f0;">
+        ${htmlContent}
+      </div>
+    </div>
+  `;
 };
 
+window.closeActiveModal = function() {
+  const modalRoot = document.getElementById('custom-modal-container');
+  if (modalRoot) {
+    modalRoot.innerHTML = '';
+  }
+};

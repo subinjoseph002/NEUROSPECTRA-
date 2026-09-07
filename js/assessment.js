@@ -2,6 +2,7 @@
  * NEUROSPECTRA - Standardized Screening & Assessment Engine
  * Supports 5-Point Child-Friendly Assessment Batteries & Standardized M-CHAT-R/F,
  * with supporting teacher observation cross-referencing and automated therapy plan linking.
+ * Native Healthcare Design System with SVG Icons & Live DB Binding.
  */
 
 window.currentAssessmentState = {
@@ -30,28 +31,37 @@ window.renderAssessmentConductView = function(childId) {
     : [];
 
   return `
-    <div class="space-y-6">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div class="assessment-conduct-view" style="color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
+      
+      <!-- Header -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
         <div>
-          <h1 class="text-2xl font-bold text-slate-900 tracking-tight">Clinical Developmental Assessment</h1>
-          <p class="text-sm text-slate-600 mt-1">Multi-battery developmental assessment engine with teacher classroom observations cross-referencing.</p>
+          <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
+            Clinical Developmental Assessment Engine
+          </h1>
+          <p style="font-size: 13.5px; color: #64748b; margin: 0;">
+            Standardized pediatric evaluations cross-referenced with teacher classroom logs.
+          </p>
         </div>
-        <button class="btn btn-outline text-xs px-4 py-2 rounded-xl font-semibold" onclick="window.navigateTo('assessments')">
+        <button class="btn btn-outline btn-sm" onclick="window.navigateTo('assessments')">
           &larr; Back to Assessments
         </button>
       </div>
 
       <!-- Config & Supporting Teacher Context Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <!-- Configuration Card (2 cols) -->
-        <div class="lg:col-span-2 bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-4">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
-            <i class="fas fa-sliders text-blue-600"></i> Assessment Battery Configuration
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-bottom: 24px;">
+        
+        <!-- Configuration Card -->
+        <div class="card" style="padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff;">
+          <h3 style="font-size: 14px; font-weight: 700; color: #0f172a; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Assessment Configuration
           </h3>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Child Patient <span class="text-rose-500">*</span></label>
-              <select class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white font-medium" onchange="window.currentAssessmentState.childId = this.value; window.renderCurrentView();">
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Child Patient *</label>
+              <select class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px;" onchange="window.currentAssessmentState.childId = this.value; window.renderCurrentView();">
                 ${children.map(c => `
                   <option value="${c.id}" ${c.id === window.currentAssessmentState.childId ? 'selected' : ''}>
                     ${c.first_name} ${c.last_name} (${c.child_code} - Age ${c.age_months ? `${Math.floor(c.age_months / 12)}y ${c.age_months % 12}m` : '3y'})
@@ -61,8 +71,8 @@ window.renderAssessmentConductView = function(childId) {
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Assessment Instrument <span class="text-rose-500">*</span></label>
-              <select class="input w-full rounded-xl border border-slate-200 py-2 px-3 text-sm bg-white font-medium" onchange="window.currentAssessmentState.templateId = this.value; window.currentAssessmentState.responses = {}; window.renderCurrentView();">
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Instrument Battery *</label>
+              <select class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px;" onchange="window.currentAssessmentState.templateId = this.value; window.currentAssessmentState.responses = {}; window.renderCurrentView();">
                 ${templates.map(t => `
                   <option value="${t.id}" ${t.id === selectedTemplate.id ? 'selected' : ''}>
                     ${t.title} (${t.total_questions} Items)
@@ -72,95 +82,93 @@ window.renderAssessmentConductView = function(childId) {
             </div>
           </div>
 
-          <div class="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-blue-900 flex items-start gap-2.5">
-            <i class="fas fa-info-circle text-blue-600 mt-0.5"></i>
-            <div>
-              <strong>${selectedTemplate.title}:</strong> ${selectedTemplate.description}
-            </div>
+          <div style="background: #eff6ff; border: 1px solid #dbeafe; border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: #1e40af;">
+            <strong>${selectedTemplate.title}:</strong> ${selectedTemplate.description}
           </div>
         </div>
 
-        <!-- Teacher Observations Context Card (1 col) -->
-        <div class="bg-gradient-to-br from-indigo-50 to-purple-50 p-5 rounded-2xl border border-indigo-100 shadow-sm space-y-3">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-indigo-950 flex items-center gap-1.5">
-              <i class="fas fa-school text-indigo-600"></i> Teacher Observations
+        <!-- Teacher Observations Context Card -->
+        <div class="card" style="padding: 20px; border-radius: 14px; border: 1px solid #e0e7ff; background: #f5f3ff;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="font-size: 13.5px; font-weight: 700; color: #3730a3; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 6px;">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+              Teacher Classroom Logs
             </h3>
-            <span class="text-[11px] font-bold bg-white text-indigo-700 px-2 py-0.5 rounded-full border border-indigo-200">
-              ${teacherObservations.length} Logs
-            </span>
+            <span class="badge badge-purple" style="font-size: 11px;">${teacherObservations.length} Logs</span>
           </div>
 
           ${teacherObservations.length === 0 ? `
-            <p class="text-xs text-indigo-900/70 italic py-2">No teacher observations logged yet for this child.</p>
+            <p style="font-size: 12.5px; color: #6b7280; font-style: italic; margin: 0;">No teacher classroom observations logged yet for this child.</p>
           ` : `
-            <div class="space-y-2 max-h-48 overflow-y-auto pr-1">
+            <div style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto;">
               ${teacherObservations.slice(0, 2).map(obs => `
-                <div class="p-2.5 bg-white rounded-xl border border-indigo-100 text-xs space-y-1">
-                  <div class="flex justify-between font-medium text-[11px] text-indigo-950">
-                    <span><i class="far fa-calendar-alt text-slate-600 mr-1"></i>${obs.observation_date}</span>
-                    <span class="font-semibold text-indigo-600">${obs.activity_context}</span>
+                <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 12px;">
+                  <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                    <strong style="color: #0f172a;">${obs.observation_date}</strong>
+                    <span style="color: #4f46e5; font-weight: 600;">${obs.environmental_context?.activity_type || 'Classroom'}</span>
                   </div>
-                  <p class="text-slate-600 text-[11px] italic line-clamp-2">"${obs.teacher_note || 'Observation recorded.'}"</p>
-                  <button type="button" onclick="window.teacherModule.openObservationModal('${obs.id}')" class="text-indigo-600 hover:text-indigo-800 text-[11px] font-semibold block pt-1">
-                    View 5-Domain Ratings →
+                  <p style="color: #475569; margin: 0 0 4px; font-style: italic;">"${obs.educator_notes || 'Observed behaviors recorded.'}"</p>
+                  <button type="button" class="btn btn-outline btn-sm" onclick="window.teacherModule && window.teacherModule.openObservationModal('${obs.id}')" style="font-size: 10.5px; padding: 2px 6px;">
+                    View Ratings &rarr;
                   </button>
                 </div>
               `).join('')}
             </div>
           `}
         </div>
+
       </div>
 
-      <!-- Questionnaire Interactive Area -->
-      <div class="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-6">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
+      <!-- Questionnaire Interactive Form Card -->
+      <div class="card" style="padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px;">
           <div>
-            <h2 class="text-lg font-bold text-slate-900">${selectedTemplate.title}</h2>
-            <p class="text-xs text-slate-600 mt-0.5">Category: ${selectedTemplate.category} • Scoring: ${selectedTemplate.scoring_method === 'Rating_Scale_5' ? '5-Point Developmental Scale' : 'Standardized Risk Index'}</p>
+            <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 2px;">${selectedTemplate.title}</h2>
+            <div style="font-size: 12.5px; color: #64748b;">
+              Category: <strong>${selectedTemplate.category}</strong> • Scoring: <strong>${selectedTemplate.scoring_method === 'Rating_Scale_5' ? '5-Point Frequency Scale' : 'Standardized Diagnostic Index'}</strong>
+            </div>
           </div>
-          <span class="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100 self-start sm:self-auto" id="answered-counter">
+          <span class="badge badge-info" id="answered-counter" style="font-size: 12px; padding: 6px 12px;">
             ${Object.keys(window.currentAssessmentState.responses).length} of ${questions.length} Answered
           </span>
         </div>
 
-        <!-- Questionnaire Items Form -->
-        <form id="assessment-form" onsubmit="window.submitAssessment(event)" class="space-y-6">
-          <div class="space-y-4">
+        <form id="assessment-form" onsubmit="window.submitAssessment(event)">
+          <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
             ${questions.map((q, idx) => {
               const currentVal = window.currentAssessmentState.responses[q.id];
               const is5Point = q.type === 'rating_5' || (q.options && q.options.length > 2);
               const options = q.options || ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'];
 
               return `
-                <div class="p-5 rounded-2xl bg-slate-50 border border-slate-100 space-y-3" id="q-card-${q.id}">
-                  <div class="flex items-center justify-between gap-2">
-                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100">
+                <div id="q-card-${q.id}" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 11.5px; font-weight: 700; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 6px; text-transform: uppercase;">
                       Item ${idx + 1} • ${q.domain}
                     </span>
-                    ${q.reverse_scored ? '<span class="text-[10px] font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Reverse Scored</span>' : ''}
+                    ${q.reverse_scored ? '<span class="badge badge-warning" style="font-size: 10.5px;">Reverse Scored</span>' : ''}
                   </div>
-                  
-                  <p class="text-sm font-semibold text-slate-900">${q.text}</p>
+
+                  <p style="font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 12px;">${q.text}</p>
 
                   ${is5Point ? `
-                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                       ${options.map(opt => `
-                        <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-blue-50/80 cursor-pointer transition-colors text-xs font-medium text-slate-700 ${currentVal === opt ? 'border-blue-500 bg-blue-50 text-blue-800 ring-2 ring-blue-500/20' : ''}">
-                          <input type="radio" name="response_${q.id}" value="${opt}" ${currentVal === opt ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', '${opt}')" required class="text-blue-600 focus:ring-blue-500">
-                          <span>${opt}</span>
+                        <label style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid ${currentVal === opt ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: ${currentVal === opt ? '#2563eb' : '#334155'}; transition: all 0.2s;">
+                          <input type="radio" name="response_${q.id}" value="${opt}" ${currentVal === opt ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', '${opt}')" required style="cursor: pointer;">
+                          ${opt}
                         </label>
                       `).join('')}
                     </div>
                   ` : `
-                    <div class="grid grid-cols-2 gap-3 pt-1 max-w-md">
-                      <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 cursor-pointer transition-colors text-xs font-bold text-slate-800 ${currentVal === 'yes' ? 'border-blue-500 bg-blue-50 text-blue-800 ring-2 ring-blue-500/20' : ''}">
-                        <input type="radio" name="response_${q.id}" value="yes" ${currentVal === 'yes' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'yes')" required class="text-blue-600">
-                        <span>Yes</span>
+                    <div style="display: flex; gap: 12px;">
+                      <label style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid ${currentVal === 'yes' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: #334155;">
+                        <input type="radio" name="response_${q.id}" value="yes" ${currentVal === 'yes' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'yes')" required>
+                        Yes
                       </label>
-                      <label class="flex items-center gap-2.5 p-3 rounded-xl border border-slate-200 bg-white hover:bg-blue-50 cursor-pointer transition-colors text-xs font-bold text-slate-800 ${currentVal === 'no' ? 'border-blue-500 bg-blue-50 text-blue-800 ring-2 ring-blue-500/20' : ''}">
-                        <input type="radio" name="response_${q.id}" value="no" ${currentVal === 'no' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'no')" required class="text-blue-600">
-                        <span>No</span>
+                      <label style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid ${currentVal === 'no' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: #334155;">
+                        <input type="radio" name="response_${q.id}" value="no" ${currentVal === 'no' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'no')" required>
+                        No
                       </label>
                     </div>
                   `}
@@ -169,33 +177,24 @@ window.renderAssessmentConductView = function(childId) {
             }).join('')}
           </div>
 
-          <!-- Therapist Clinical Observations -->
-          <div class="bg-white p-5 rounded-2xl border border-slate-200 space-y-2">
-            <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-              Therapist Clinical Observations & Environmental Synthesis <span class="text-rose-500">*</span>
+          <!-- Therapist Clinical Observations Synthesis -->
+          <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
+            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">
+              Therapist Clinical Observations & Synthesis *
             </label>
-            <textarea id="therapist-obs-notes" class="input w-full rounded-xl border border-slate-200 p-3 text-xs bg-white font-normal" rows="3" required placeholder="Synthesize direct clinical observation findings with supporting teacher classroom logs...">${window.currentAssessmentState.therapistNotes || ''}</textarea>
-            <p class="text-[11px] text-slate-600">Note child sensory tolerance, attention span, vocal attempts, and consistency with educator report.</p>
-          </div>
-
-          <!-- Clinical Disclaimer -->
-          <div class="p-3.5 bg-amber-50 border-l-4 border-amber-500 rounded-xl text-xs text-amber-900 flex items-start gap-2.5">
-            <i class="fas fa-shield-alt text-amber-600 mt-0.5"></i>
-            <div>
-              <strong>Clinical Assessment Notice:</strong> Submitting this battery calculates developmental milestone metrics and risk indicators to structure targeted therapy plans.
-            </div>
+            <textarea id="therapist-obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px;" placeholder="Synthesize direct clinical observation findings with supporting teacher classroom logs..." required>${window.currentAssessmentState.therapistNotes || ''}</textarea>
+            <p style="font-size: 12px; color: #64748b; margin: 6px 0 0;">Note sensory tolerance, attention span, vocal attempts, and consistency with educator report.</p>
           </div>
 
           <!-- Action Buttons -->
-          <div class="flex flex-wrap items-center justify-end gap-3 pt-2">
-            <button type="button" class="btn btn-outline text-xs px-4 py-2 rounded-xl font-semibold" onclick="window.navigateTo('assessments')">Cancel</button>
-            <button type="button" class="btn btn-secondary text-xs px-4 py-2 rounded-xl font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200" onclick="window.fillDemoAssessmentAnswers()">Auto-Fill Sample Responses</button>
-            <button type="submit" class="btn btn-primary text-xs px-6 py-2.5 rounded-xl font-semibold shadow-md flex items-center gap-2">
-              <i class="fas fa-calculator"></i> Calculate & Submit Assessment
-            </button>
+          <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 18px; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline" onclick="window.navigateTo('assessments')">Cancel</button>
+            <button type="button" class="btn btn-secondary" onclick="window.fillDemoAssessmentAnswers()">Auto-Fill Sample Responses</button>
+            <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 10px 20px;">Calculate & Submit Assessment</button>
           </div>
         </form>
       </div>
+
     </div>
   `;
 };
@@ -211,7 +210,6 @@ window.selectAnswer = function(questionId, value) {
 
 window.fillDemoAssessmentAnswers = function() {
   const questions = window.neuroDB.getQuestionsByTemplateId(window.currentAssessmentState.templateId);
-  const selectedTemplate = window.neuroDB.getAssessmentTemplates().find(t => t.id === window.currentAssessmentState.templateId);
 
   questions.forEach((q, idx) => {
     if (q.type === 'rating_5' || (q.options && q.options.length > 2)) {
@@ -318,11 +316,9 @@ window.submitAssessment = function(e) {
 
   window.showToast('Assessment completed and recorded successfully!', 'success');
   
-  // Show quick prompt to create therapy plan if needed
   if (confirm(`Assessment saved (Result: ${riskLevel}). Would you like to create an Individualized Therapy Plan for ${child ? child.first_name : 'this child'} now?`)) {
     window.showCreateTherapyPlanModal(window.currentAssessmentState.childId);
   } else {
     window.openChildProfileTab(window.currentAssessmentState.childId, 'assessments');
   }
 };
-
