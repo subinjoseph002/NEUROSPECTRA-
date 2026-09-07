@@ -1,51 +1,77 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { Shield, Stethoscope, ClipboardList, Users, GraduationCap, Globe } from 'lucide-react';
+import { userApi } from '../api/userApi';
 
 export const DemoSwitcher = () => {
   const { role, switchDemoRole } = useAuth();
+  const [usersList, setUsersList] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const users = await userApi.getUsers();
+        if (Array.isArray(users) && users.length > 0) {
+          setUsersList(users);
+        }
+      } catch (e) {}
+    };
+    fetchUsers();
+  }, []);
+
+  const findUserByRole = (targetRole, fallback) => {
+    const matched = usersList.find(u => u.role === targetRole && (u.is_active === 1 || u.is_active === true || u.is_active === undefined));
+    if (matched) return matched;
+    return fallback;
+  };
+
+  const admin = findUserByRole('Administrator', { id: 'usr_admin_1', full_name: 'Dr. Eleanor Vance', email: 'admin@neurospectra.org', role: 'Administrator' });
+  const therapist = findUserByRole('Therapist', { id: 'usr_therapist_1', full_name: 'Dr. Aisha Khan, Ph.D.', email: 'therapist@neurospectra.org', role: 'Therapist' });
+  const receptionist = findUserByRole('Receptionist', { id: 'usr_receptionist_1', full_name: 'Sarah Jenkins', email: 'receptionist@neurospectra.org', role: 'Receptionist' });
+  const parent = findUserByRole('Parent / Caregiver', { id: 'usr_parent_1', full_name: 'Priya Sharma', email: 'parent@neurospectra.org', role: 'Parent / Caregiver' });
+  const teacher = findUserByRole('Teacher', { id: 'usr_teacher_1', full_name: 'Marcus Brody', email: 'teacher@neurospectra.org', role: 'Teacher' });
 
   const personas = [
     {
       role: 'Administrator',
-      name: 'Dr. Eleanor Vance',
-      label: '👑 Administrator',
+      full_name: admin.full_name,
+      label: `👑 Admin (${admin.full_name.split(' ')[0]})`,
       icon: Shield,
-      email: 'admin@neurospectra.org',
-      avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
+      email: admin.email,
+      avatar_url: admin.avatar_url || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
     },
     {
       role: 'Therapist',
-      name: 'Dr. Aisha Khan',
-      label: '🩺 Therapist (Dr. Aisha)',
+      full_name: therapist.full_name,
+      label: `🩺 Therapist (${therapist.full_name.replace('Dr. ', '').split(',')[0].trim()})`,
       icon: Stethoscope,
-      email: 'therapist@neurospectra.org',
-      avatar_url: 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
+      email: therapist.email,
+      avatar_url: therapist.avatar_url || 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
     },
     {
       role: 'Receptionist',
-      name: 'Sarah Jenkins',
-      label: '📋 Receptionist (Sarah)',
+      full_name: receptionist.full_name,
+      label: `📋 Receptionist (${receptionist.full_name.split(' ')[0]})`,
       icon: ClipboardList,
-      email: 'receptionist@neurospectra.org',
-      avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
+      email: receptionist.email,
+      avatar_url: receptionist.avatar_url || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
     },
     {
       role: 'Parent / Caregiver',
-      name: 'Priya Sharma',
-      label: '👨‍👩‍👧 Parent (Priya Sharma)',
+      full_name: parent.full_name,
+      label: `👨‍👩‍👧 Parent (${parent.full_name.split(' ')[0]})`,
       icon: Users,
-      email: 'parent@neurospectra.org',
-      avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
+      email: parent.email,
+      avatar_url: parent.avatar_url || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
     },
     {
       role: 'Teacher',
-      name: 'Marcus Brody',
-      label: '🎓 Teacher (Marcus)',
+      full_name: teacher.full_name,
+      label: `🎓 Teacher (${teacher.full_name.split(' ')[0]})`,
       icon: GraduationCap,
-      email: 'teacher@neurospectra.org',
-      avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256',
+      email: teacher.email,
+      avatar_url: teacher.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256',
     },
   ];
 

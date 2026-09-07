@@ -255,19 +255,51 @@ while ($listener.IsListening) {
                 continue
             }
 
-            # 3.1 POST /api/auth/users/update/
-            if ($rawPath -eq "/api/auth/users/update/" -and $httpMethod -eq "POST") {
+            # 3.1 POST /api/auth/users/update/ & PUT /api/auth/profile/
+            if (($rawPath -eq "/api/auth/users/update/" -or $rawPath -eq "/api/auth/profile/" -or $rawPath -eq "/auth/profile/") -and ($httpMethod -eq "POST" -or $httpMethod -eq "PUT" -or $httpMethod -eq "PATCH")) {
                 if ($payload) {
-                    $uid = $payload.id
-                    $cleanFullName = ($payload.full_name -as [string]).Replace("'", "''")
-                    $cleanEmail = ($payload.email -as [string]).Replace("'", "''")
-                    $cleanRole = ($payload.role -as [string]).Replace("'", "''")
-                    $cleanPhone = ($payload.phone -as [string]).Replace("'", "''")
+                    $uid = if ($payload.id) { $payload.id } else { "" }
+                    $cleanFullName = if ($payload.full_name) { ($payload.full_name -as [string]).Replace("'", "''") } else { "" }
+                    $cleanEmail = if ($payload.email) { ($payload.email -as [string]).Replace("'", "''") } else { "" }
+                    $cleanRole = if ($payload.role) { ($payload.role -as [string]).Replace("'", "''") } else { "" }
+                    $cleanPhone = if ($payload.phone) { ($payload.phone -as [string]).Replace("'", "''") } else { "" }
                     $act = if ($payload.is_active -ne $null) { [int]$payload.is_active } else { 1 }
-                    $sql = "UPDATE users SET full_name = '$cleanFullName', email = '$cleanEmail', role = '$cleanRole', phone = '$cleanPhone', is_active = $act, updated_at = CURRENT_TIMESTAMP WHERE id = '$uid';"
-                    Invoke-PgSql $sql
+
+                    $pwdVal = if ($payload.raw_pwd_hash) { $payload.raw_pwd_hash } elseif ($payload.password) { $payload.password } elseif ($payload.password_hash) { $payload.password_hash } else { $null }
+
+                    # 1. Update in db.json
+                    try {
+                        $db = Get-Content $dbFile -Raw | ConvertFrom-Json
+                        $idx = -1
+                        for ($i = 0; $i -lt $db.users.Count; $i++) {
+                            if (($uid -and $db.users[$i].id -eq $uid) -or ($cleanEmail -and $db.users[$i].email -eq $cleanEmail)) {
+                                $idx = $i
+                                if (-not $uid) { $uid = $db.users[$i].id }
+                                break
+                            }
+                        }
+                        if ($idx -ne -1) {
+                            if ($payload.full_name) { $db.users[$idx].full_name = $payload.full_name }
+                            if ($payload.email) { $db.users[$idx].email = $payload.email }
+                            if ($payload.phone) { $db.users[$idx].phone = $payload.phone }
+                            if ($payload.role) { $db.users[$idx].role = $payload.role }
+                            if ($pwdVal) { $db.users[$idx].password = $pwdVal }
+                        }
+                        $db | ConvertTo-Json -Depth 10 | Set-Content $dbFile -Encoding UTF8
+                    } catch {}
+
+                    # 2. Update in PostgreSQL
+                    $pwdSql = ""
+                    if ($pwdVal) {
+                        $cleanPwd = ($pwdVal -as [string]).Replace("'", "''")
+                        $pwdSql = ", password_hash = '$cleanPwd'"
+                    }
+                    if ($uid) {
+                        $sql = "UPDATE users SET full_name = '$cleanFullName', email = '$cleanEmail', role = '$cleanRole', phone = '$cleanPhone', is_active = $act $pwdSql, updated_at = CURRENT_TIMESTAMP WHERE id = '$uid';"
+                        Invoke-PgSql $sql
+                    }
                 }
-                Send-JsonResponse $response 200 @{ message = "User updated in PostgreSQL." }
+                Send-JsonResponse $response 200 @{ message = "User updated in database." }
                 continue
             }
 

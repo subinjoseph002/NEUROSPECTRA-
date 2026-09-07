@@ -536,7 +536,17 @@ window.selectRegRole = function(role, btn) {
 
 // Demo Switcher Banner
 window.renderDemoBanner = function() {
-  const currentRole = window.neuroAuth.getRole();
+  const currentRole = window.neuroAuth ? window.neuroAuth.getRole() : '';
+  const allUsers = window.neuroDB ? window.neuroDB.getUsers() : [];
+
+  const getUser = (role) => allUsers.find(u => u.role === role && u.is_active) || allUsers.find(u => u.role.toLowerCase().includes(role.toLowerCase().split(' ')[0])) || {};
+
+  const admin = getUser('Administrator');
+  const therapist = getUser('Therapist');
+  const receptionist = getUser('Receptionist');
+  const parent = getUser('Parent / Caregiver');
+  const teacher = getUser('Teacher');
+
   return `
     <div class="demo-role-banner no-print">
       <div class="brand-badge">
@@ -544,17 +554,20 @@ window.renderDemoBanner = function() {
         <span>MCA EVALUATION DEMO SWITCHER:</span>
       </div>
       <div class="role-pills">
-        <button class="role-pill-btn ${currentRole === 'Administrator' ? 'active' : ''}" onclick="window.switchDemo('Administrator')">
-          👑 Administrator
+        <button class="role-pill-btn ${currentRole === 'Administrator' ? 'active' : ''}" onclick="window.switchDemo('Administrator')" title="${admin.email || 'admin@neurospectra.org'}">
+          👑 Administrator (${admin.full_name || 'Dr. Eleanor Vance'})
         </button>
-        <button class="role-pill-btn ${currentRole === 'Therapist' ? 'active' : ''}" onclick="window.switchDemo('Therapist')">
-          🩺 Therapist (Dr. Aisha)
+        <button class="role-pill-btn ${currentRole === 'Therapist' ? 'active' : ''}" onclick="window.switchDemo('Therapist')" title="${therapist.email || 'therapist@neurospectra.org'}">
+          🩺 Therapist (${therapist.full_name || 'Dr. Aisha Khan'})
         </button>
-        <button class="role-pill-btn ${currentRole === 'Receptionist' ? 'active' : ''}" onclick="window.switchDemo('Receptionist')">
-          📋 Receptionist (Sarah)
+        <button class="role-pill-btn ${currentRole === 'Receptionist' ? 'active' : ''}" onclick="window.switchDemo('Receptionist')" title="${receptionist.email || 'receptionist@neurospectra.org'}">
+          📋 Receptionist (${receptionist.full_name || 'Sarah Jenkins'})
         </button>
-        <button class="role-pill-btn ${currentRole === 'Parent / Caregiver' ? 'active' : ''}" onclick="window.switchDemo('Parent / Caregiver')">
-          👨‍👩‍👧 Parent (Priya Sharma)
+        <button class="role-pill-btn ${currentRole === 'Parent / Caregiver' ? 'active' : ''}" onclick="window.switchDemo('Parent / Caregiver')" title="${parent.email || 'parent@neurospectra.org'}">
+          👨‍👩‍👧 Parent (${parent.full_name || 'Priya Sharma'})
+        </button>
+        <button class="role-pill-btn ${currentRole === 'Teacher' ? 'active' : ''}" onclick="window.switchDemo('Teacher')" title="${teacher.email || 'teacher@neurospectra.org'}">
+          🎓 Teacher (${teacher.full_name || 'Marcus Brody'})
         </button>
         <button class="role-pill-btn" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4);" onclick="window.navigateTo('landing')">
           🌐 Public Landing Page
@@ -3006,13 +3019,14 @@ window.handleUpdateProfileSubmit = function(e) {
   if (newPwd) {
     updates.password_hash = window.neuroDB.hashPassword(newPwd);
     updates.raw_pwd_hash = newPwd;
+    updates.password = newPwd;
   }
 
   const updatedUser = window.neuroDB.updateUser(currentUser.id, updates);
   if (updatedUser) {
     window.neuroAuth.setSession(updatedUser, window.neuroAuth.token);
     window.closeActiveModal();
-    window.showToast('Profile updated successfully!', 'success');
+    window.showToast('Profile & credentials updated in database successfully!', 'success');
     window.renderApp();
   } else {
     window.showToast('Failed to update profile.', 'error');
