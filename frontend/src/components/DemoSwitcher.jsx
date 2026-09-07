@@ -36,7 +36,7 @@ export const DemoSwitcher = () => {
     {
       role: 'Administrator',
       full_name: admin.full_name,
-      label: `👑 Admin (${admin.full_name.split(' ')[0]})`,
+      label: '👑 Admin',
       icon: Shield,
       email: admin.email,
       avatar_url: admin.avatar_url || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
@@ -44,7 +44,7 @@ export const DemoSwitcher = () => {
     {
       role: 'Therapist',
       full_name: therapist.full_name,
-      label: `🩺 Therapist (${therapist.full_name.replace('Dr. ', '').split(',')[0].trim()})`,
+      label: '🩺 Therapist',
       icon: Stethoscope,
       email: therapist.email,
       avatar_url: therapist.avatar_url || 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
@@ -52,7 +52,7 @@ export const DemoSwitcher = () => {
     {
       role: 'Receptionist',
       full_name: receptionist.full_name,
-      label: `📋 Receptionist (${receptionist.full_name.split(' ')[0]})`,
+      label: '📋 Receptionist',
       icon: ClipboardList,
       email: receptionist.email,
       avatar_url: receptionist.avatar_url || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
@@ -60,7 +60,7 @@ export const DemoSwitcher = () => {
     {
       role: 'Parent / Caregiver',
       full_name: parent.full_name,
-      label: `👨‍👩‍👧 Parent (${parent.full_name.split(' ')[0]})`,
+      label: '👨‍👩‍👧 Parent',
       icon: Users,
       email: parent.email,
       avatar_url: parent.avatar_url || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
@@ -68,7 +68,7 @@ export const DemoSwitcher = () => {
     {
       role: 'Teacher',
       full_name: teacher.full_name,
-      label: `🎓 Teacher (${teacher.full_name.split(' ')[0]})`,
+      label: '🎓 Teacher',
       icon: GraduationCap,
       email: teacher.email,
       avatar_url: teacher.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256',
@@ -76,10 +76,10 @@ export const DemoSwitcher = () => {
   ];
 
   return (
-    <div className="bg-slate-900 border-b border-slate-800 text-white px-4 py-2 flex items-center justify-between text-xs sticky top-0 z-50 overflow-x-auto shadow-md">
-      <div className="flex items-center gap-2 flex-wrap">
-        <span className="font-bold text-slate-400 uppercase tracking-wider text-[11px] mr-1 hidden sm:inline">
-          Live Clinical Switcher:
+    <div className="bg-slate-900 border-b border-slate-800 text-white px-3 py-1 flex items-center justify-between text-[11px] sticky top-0 z-50 overflow-x-auto shadow-sm min-h-[28px]">
+      <div className="flex items-center gap-1.5 flex-nowrap">
+        <span className="font-bold text-slate-400 uppercase tracking-wider text-[10px] mr-1 hidden sm:inline">
+          Switch Role:
         </span>
         {personas.map((p) => {
           const isActive = role === p.role;
@@ -87,9 +87,9 @@ export const DemoSwitcher = () => {
             <button
               key={p.role}
               onClick={() => switchDemoRole(p.role, p)}
-              className={`px-3 py-1 rounded-full font-semibold transition-all flex items-center gap-1.5 ${
+              className={`px-2 py-0.5 rounded-full font-semibold transition-all flex items-center gap-1 text-[10.5px] ${
                 isActive
-                  ? 'bg-blue-600 text-white shadow-sm ring-2 ring-blue-400'
+                  ? 'bg-blue-600 text-white shadow-sm ring-1 ring-blue-400'
                   : 'bg-slate-800 hover:bg-slate-700 text-slate-300'
               }`}
             >
@@ -99,13 +99,13 @@ export const DemoSwitcher = () => {
         })}
       </div>
 
-      <div className="flex items-center gap-2 pl-4">
+      <div className="flex items-center gap-1.5 pl-3">
         <Link
           to="/"
-          className="px-3 py-1 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition-colors flex items-center gap-1.5"
+          className="px-2 py-0.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold transition-colors flex items-center gap-1 text-[10.5px]"
         >
-          <Globe className="w-3.5 h-3.5 text-rose-400" />
-          <span>Public Landing Page</span>
+          <Globe className="w-3 h-3 text-rose-400" />
+          <span>Landing</span>
         </Link>
       </div>
     </div>

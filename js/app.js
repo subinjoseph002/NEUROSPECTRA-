@@ -534,43 +534,34 @@ window.selectRegRole = function(role, btn) {
   }
 };
 
-// Demo Switcher Banner
+// Demo Switcher Banner (Compact & Slim)
 window.renderDemoBanner = function() {
   const currentRole = window.neuroAuth ? window.neuroAuth.getRole() : '';
-  const allUsers = window.neuroDB ? window.neuroDB.getUsers() : [];
-
-  const getUser = (role) => allUsers.find(u => u.role === role && u.is_active) || allUsers.find(u => u.role.toLowerCase().includes(role.toLowerCase().split(' ')[0])) || {};
-
-  const admin = getUser('Administrator');
-  const therapist = getUser('Therapist');
-  const receptionist = getUser('Receptionist');
-  const parent = getUser('Parent / Caregiver');
-  const teacher = getUser('Teacher');
 
   return `
     <div class="demo-role-banner no-print">
       <div class="brand-badge">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-        <span>MCA EVALUATION DEMO SWITCHER:</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+        <span>SWITCH ROLE:</span>
       </div>
       <div class="role-pills">
-        <button class="role-pill-btn ${currentRole === 'Administrator' ? 'active' : ''}" onclick="window.switchDemo('Administrator')" title="${admin.email || 'admin@neurospectra.org'}">
-          👑 Administrator (${admin.full_name || 'Dr. Eleanor Vance'})
+        <button class="role-pill-btn ${currentRole === 'Administrator' ? 'active' : ''}" onclick="window.switchDemo('Administrator')">
+          👑 Admin
         </button>
-        <button class="role-pill-btn ${currentRole === 'Therapist' ? 'active' : ''}" onclick="window.switchDemo('Therapist')" title="${therapist.email || 'therapist@neurospectra.org'}">
-          🩺 Therapist (${therapist.full_name || 'Dr. Aisha Khan'})
+        <button class="role-pill-btn ${currentRole === 'Therapist' ? 'active' : ''}" onclick="window.switchDemo('Therapist')">
+          🩺 Therapist
         </button>
-        <button class="role-pill-btn ${currentRole === 'Receptionist' ? 'active' : ''}" onclick="window.switchDemo('Receptionist')" title="${receptionist.email || 'receptionist@neurospectra.org'}">
-          📋 Receptionist (${receptionist.full_name || 'Sarah Jenkins'})
+        <button class="role-pill-btn ${currentRole === 'Receptionist' ? 'active' : ''}" onclick="window.switchDemo('Receptionist')">
+          📋 Receptionist
         </button>
-        <button class="role-pill-btn ${currentRole === 'Parent / Caregiver' ? 'active' : ''}" onclick="window.switchDemo('Parent / Caregiver')" title="${parent.email || 'parent@neurospectra.org'}">
-          👨‍👩‍👧 Parent (${parent.full_name || 'Priya Sharma'})
+        <button class="role-pill-btn ${currentRole === 'Parent / Caregiver' ? 'active' : ''}" onclick="window.switchDemo('Parent / Caregiver')">
+          👨‍👩‍👧 Parent
         </button>
-        <button class="role-pill-btn ${currentRole === 'Teacher' ? 'active' : ''}" onclick="window.switchDemo('Teacher')" title="${teacher.email || 'teacher@neurospectra.org'}">
-          🎓 Teacher (${teacher.full_name || 'Marcus Brody'})
+        <button class="role-pill-btn ${currentRole === 'Teacher' ? 'active' : ''}" onclick="window.switchDemo('Teacher')">
+          🎓 Teacher
         </button>
-        <button class="role-pill-btn" style="background: rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.4);" onclick="window.navigateTo('landing')">
-          🌐 Public Landing Page
+        <button class="role-pill-btn" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.35); color: #fca5a5;" onclick="window.navigateTo('landing')">
+          🌐 Landing
         </button>
       </div>
     </div>
