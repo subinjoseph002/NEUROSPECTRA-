@@ -2749,6 +2749,7 @@ window.renderUserProfileView = function() {
 
         <div style="text-align: left; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; font-size: 12.5px; color: #475569; margin-bottom: 18px;">
           <div style="margin-bottom: 6px;"><strong>User ID:</strong> <span style="font-family: monospace; color: #0f172a;">${currentUser.id}</span></div>
+          <div style="margin-bottom: 6px;"><strong>Email:</strong> <span style="color: #0f172a;">${currentUser.email}</span></div>
           <div style="margin-bottom: 6px;"><strong>Phone:</strong> <span style="color: #0f172a;">${currentUser.phone || '+91 9876543210'}</span></div>
           <div><strong>Status:</strong> <span style="color: #16a34a; font-weight: 700;">Active Account</span></div>
         </div>
@@ -2784,10 +2785,11 @@ window.renderUserProfileView = function() {
               </div>
             </div>
 
+            <!-- Email Section -->
             <div class="form-group" style="margin-bottom: 16px;">
-              <label class="form-label">Work / Account Email</label>
-              <input type="email" class="form-control" value="${currentUser.email}" disabled style="background: #f1f5f9; color: #64748b; cursor: not-allowed;" title="Email cannot be modified directly">
-              <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Email is tied to your NEUROSPECTRA clinical authorization ID.</div>
+              <label class="form-label">Email Address <span class="required">*</span></label>
+              <input type="email" id="edit-profile-email" class="form-control" value="${currentUser.email}" required placeholder="user@neurospectra.org">
+              <div style="font-size: 11px; color: #64748b; margin-top: 4px;">Primary email address used for clinic communications, appointment notifications, and reports.</div>
             </div>
 
             <!-- Password Update (Optional) -->
@@ -2920,6 +2922,13 @@ window.showUserProfileModal = function() {
           </div>
         </div>
 
+        <!-- Email Section -->
+        <div class="form-group" style="margin-bottom: 14px;">
+          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Email Address <span style="color: #ef4444;">*</span></label>
+          <input type="email" id="edit-profile-email" class="form-control" value="${currentUser.email}" required placeholder="user@neurospectra.org" style="padding: 8px 12px; font-size: 13px;">
+          <div style="font-size: 11px; color: #64748b; margin-top: 3px;">Primary address for session reminders and clinical reports.</div>
+        </div>
+
         <!-- Password update -->
         <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-bottom: 16px;">
           <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px;">Change Password (Optional)</div>
@@ -2943,6 +2952,8 @@ window.showUserProfileModal = function() {
 window.handleUpdateProfileSubmit = function(e) {
   e.preventDefault();
   const name = document.getElementById('edit-profile-name').value.trim();
+  const emailInput = document.getElementById('edit-profile-email');
+  const email = emailInput ? emailInput.value.trim() : null;
   const phone = document.getElementById('edit-profile-phone').value.trim();
   const newPwd = document.getElementById('edit-profile-newpwd')?.value;
   const confirmPwd = document.getElementById('edit-profile-confirmpwd')?.value;
@@ -2950,6 +2961,14 @@ window.handleUpdateProfileSubmit = function(e) {
   if (name.length < 3) {
     window.showToast('Full name must be at least 3 characters.', 'error');
     return;
+  }
+
+  if (email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      window.showToast('Please enter a valid email address.', 'error');
+      return;
+    }
   }
 
   if (newPwd) {
@@ -2966,10 +2985,23 @@ window.handleUpdateProfileSubmit = function(e) {
   const currentUser = window.neuroAuth.getCurrentUser();
   if (!currentUser) return;
 
+  if (email && email.toLowerCase() !== (currentUser.email || '').toLowerCase()) {
+    const allUsers = window.neuroDB.getUsers ? window.neuroDB.getUsers() : [];
+    const duplicate = allUsers.find(u => u.id !== currentUser.id && (u.email || '').toLowerCase() === email.toLowerCase());
+    if (duplicate) {
+      window.showToast('This email is already registered to another account.', 'error');
+      return;
+    }
+  }
+
   const updates = {
     full_name: name,
     phone: phone
   };
+
+  if (email) {
+    updates.email = email;
+  }
 
   if (newPwd) {
     updates.password_hash = window.neuroDB.hashPassword(newPwd);
