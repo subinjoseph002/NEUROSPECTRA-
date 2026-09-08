@@ -687,22 +687,70 @@ class NeurospectraDB {
           modified = true;
         }
         if (data.users) {
-          data.users.forEach(u => {
-            const initUser = INITIAL_DB_DATA.users.find(iu => iu.id === u.id);
-            if (initUser && (u.phone?.includes('+1 (555)') || u.phone?.includes('987654321') || !u.phone?.startsWith('+91'))) {
-              u.phone = initUser.phone;
-              modified = true;
+          const userPhoneMap = {
+            'usr_admin_1': '+91 98201 45672',
+            'usr_therapist_1': '+91 98451 89234',
+            'usr_therapist_2': '+91 97114 62890',
+            'usr_receptionist_1': '+91 98230 41589',
+            'usr_parent_1': '+91 94471 63820',
+            'usr_parent_2': '+91 99802 75419',
+            'usr_parent_3': '+91 98190 38472',
+            'usr_teacher_1': '+91 98300 94165',
+            'admin@neurospectra.org': '+91 98201 45672',
+            'therapist@neurospectra.org': '+91 98451 89234',
+            'marcus.vance@neurospectra.org': '+91 97114 62890',
+            'receptionist@neurospectra.org': '+91 98230 41589',
+            'parent@neurospectra.org': '+91 94471 63820',
+            'david.miller@gmail.com': '+91 99802 75419',
+            'lin.chen@gmail.com': '+91 98190 38472',
+            'teacher@neurospectra.org': '+91 98300 94165'
+          };
+
+          const fallbackIndianPhones = [
+            '+91 98920 18472', '+91 97412 83910', '+91 98402 71829', 
+            '+91 98435 67891', '+91 85908 36961', '+91 91234 56780',
+            '+91 98573 63678', '+91 98711 52938'
+          ];
+
+          data.users.forEach((u, idx) => {
+            const mapped = userPhoneMap[u.id] || userPhoneMap[u.email?.toLowerCase()];
+            if (mapped) {
+              if (u.phone !== mapped) {
+                u.phone = mapped;
+                modified = true;
+              }
+            } else {
+              let rawDigits = (u.phone || '').replace(/\D/g, '');
+              if (rawDigits.length === 12 && rawDigits.startsWith('91')) {
+                rawDigits = rawDigits.slice(2);
+              }
+              if (rawDigits.length === 10 && /^[6-9]/.test(rawDigits)) {
+                const formatted = '+91 ' + rawDigits;
+                if (u.phone !== formatted) {
+                  u.phone = formatted;
+                  modified = true;
+                }
+              } else if (!u.phone || !u.phone.startsWith('+91')) {
+                u.phone = fallbackIndianPhones[idx % fallbackIndianPhones.length];
+                modified = true;
+              }
             }
           });
         }
         if (data.children) {
+          const childEmergencyMap = {
+            'ch_101': 'Priya Sharma (+91 94471 63820)',
+            'ch_102': 'David Miller (+91 99802 75419)',
+            'ch_103': 'Lin Chen (+91 98190 38472)',
+            'ch_104': 'Anita Patel (+91 98711 52938)'
+          };
           data.children.forEach(c => {
-            const initChild = INITIAL_DB_DATA.children.find(ic => ic.id === c.id);
-            if (initChild && (c.emergency_contact?.includes('+1 555') || c.emergency_contact?.includes('987654321'))) {
-              c.emergency_contact = initChild.emergency_contact;
+            if (childEmergencyMap[c.id] && c.emergency_contact !== childEmergencyMap[c.id]) {
+              c.emergency_contact = childEmergencyMap[c.id];
               modified = true;
             }
             if (!c.assigned_teacher_id) {
+              const initChild = INITIAL_DB_DATA.children.find(ic => ic.id === c.id);
               c.assigned_teacher_id = initChild ? initChild.assigned_teacher_id : 'usr_teacher_1';
               c.classroom_group = initChild ? initChild.classroom_group : 'Classroom Observation Group';
               modified = true;

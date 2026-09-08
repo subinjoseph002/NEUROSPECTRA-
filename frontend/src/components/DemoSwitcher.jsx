@@ -26,51 +26,61 @@ export const DemoSwitcher = () => {
     return fallback;
   };
 
-  const admin = findUserByRole('Administrator', { id: 'usr_admin_1', full_name: 'Dr. Eleanor Vance', email: 'admin@neurospectra.org', role: 'Administrator' });
-  const therapist = findUserByRole('Therapist', { id: 'usr_therapist_1', full_name: 'Dr. Aisha Khan, Ph.D.', email: 'therapist@neurospectra.org', role: 'Therapist' });
-  const receptionist = findUserByRole('Receptionist', { id: 'usr_receptionist_1', full_name: 'Sarah Jenkins', email: 'receptionist@neurospectra.org', role: 'Receptionist' });
-  const parent = findUserByRole('Parent / Caregiver', { id: 'usr_parent_1', full_name: 'Priya Sharma', email: 'parent@neurospectra.org', role: 'Parent / Caregiver' });
-  const teacher = findUserByRole('Teacher', { id: 'usr_teacher_1', full_name: 'Marcus Brody', email: 'teacher@neurospectra.org', role: 'Teacher' });
+  const admin = findUserByRole('Administrator', { id: 'usr_admin_1', full_name: 'Dr. Eleanor Vance', email: 'admin@neurospectra.org', role: 'Administrator', phone: '+91 98201 45672' });
+  const therapist = findUserByRole('Therapist', { id: 'usr_therapist_1', full_name: 'Dr. Aisha Khan, Ph.D.', email: 'therapist@neurospectra.org', role: 'Therapist', phone: '+91 98451 89234' });
+  const receptionist = findUserByRole('Receptionist', { id: 'usr_receptionist_1', full_name: 'Sarah Jenkins', email: 'receptionist@neurospectra.org', role: 'Receptionist', phone: '+91 98230 41589' });
+  const parent = findUserByRole('Parent / Caregiver', { id: 'usr_parent_1', full_name: 'Priya Sharma', email: 'parent@neurospectra.org', role: 'Parent / Caregiver', phone: '+91 94471 63820' });
+  const teacher = findUserByRole('Teacher', { id: 'usr_teacher_1', full_name: 'Marcus Brody', email: 'teacher@neurospectra.org', role: 'Teacher', phone: '+91 98300 94165' });
 
   const personas = [
     {
+      id: admin.id,
       role: 'Administrator',
       full_name: admin.full_name,
       label: '👑 Admin',
       icon: Shield,
       email: admin.email,
+      phone: admin.phone || '+91 98201 45672',
       avatar_url: admin.avatar_url || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
     },
     {
+      id: therapist.id,
       role: 'Therapist',
       full_name: therapist.full_name,
       label: '🩺 Therapist',
       icon: Stethoscope,
       email: therapist.email,
+      phone: therapist.phone || '+91 98451 89234',
       avatar_url: therapist.avatar_url || 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
     },
     {
+      id: receptionist.id,
       role: 'Receptionist',
       full_name: receptionist.full_name,
       label: '📋 Receptionist',
       icon: ClipboardList,
       email: receptionist.email,
+      phone: receptionist.phone || '+91 98230 41589',
       avatar_url: receptionist.avatar_url || 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
     },
     {
+      id: parent.id,
       role: 'Parent / Caregiver',
       full_name: parent.full_name,
       label: '👨‍👩‍👧 Parent',
       icon: Users,
       email: parent.email,
+      phone: parent.phone || '+91 94471 63820',
       avatar_url: parent.avatar_url || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
     },
     {
+      id: teacher.id,
       role: 'Teacher',
       full_name: teacher.full_name,
       label: '🎓 Teacher',
       icon: GraduationCap,
       email: teacher.email,
+      phone: teacher.phone || '+91 98300 94165',
       avatar_url: teacher.avatar_url || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256',
     },
   ];

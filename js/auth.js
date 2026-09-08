@@ -22,6 +22,17 @@ class AuthService {
         if (user && user.is_active) {
           this.currentUser = user;
           this.token = session.token;
+          if (session.user && (session.user.phone !== user.phone || session.user.full_name !== user.full_name || session.user.email !== user.email)) {
+            session.user = {
+              id: user.id,
+              full_name: user.full_name,
+              email: user.email,
+              phone: user.phone,
+              role: user.role,
+              avatar_url: user.avatar_url
+            };
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(session));
+          }
         } else {
           this.clearSession();
         }
