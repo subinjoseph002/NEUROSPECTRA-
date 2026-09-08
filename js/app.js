@@ -2204,23 +2204,55 @@ window.renderSessionsListView = function() {
 
 window.renderAppointmentsMasterView = function() {
   const currentUser = window.neuroAuth.getCurrentUser();
+  const role = window.neuroAuth.getRole();
   let appointments = window.neuroDB.getAppointments();
 
-  // If Parent / Caregiver, only show appointments for their own registered children
-  if (currentUser && currentUser.role === 'Parent / Caregiver') {
+  const isTeacher = role === 'Teacher';
+  const isTherapist = role === 'Therapist';
+  const isParent = role === 'Parent / Caregiver';
+  const isReceptionistOrAdmin = role === 'Administrator' || role === 'Receptionist';
+
+  // Role-specific appointment scoping
+  if (isParent) {
     const myChildIds = window.neuroDB.getChildren().filter(c => c.primary_parent_id === currentUser.id).map(c => c.id);
     appointments = appointments.filter(a => myChildIds.includes(a.child_id));
+  } else if (isTeacher) {
+    const myChildren = window.teacherModule ? window.teacherModule.getAssignedChildren() : window.neuroDB.getChildren();
+    const myChildIds = myChildren.map(c => c.id);
+    appointments = appointments.filter(a => myChildIds.includes(a.child_id));
+  } else if (isTherapist) {
+    appointments = appointments.filter(a => a.therapist_id === currentUser.id || !a.therapist_id);
   }
+
+  const pageTitle = isTeacher ? "Educational & IEP Appointment Schedule" :
+                    isTherapist ? "Therapist Clinical & Session Schedule" :
+                    isParent ? "My Child's Appointment Schedule" : "Appointment Master Schedule";
+
+  const pageSubtitle = isTeacher ? "Track multidisciplinary IEP reviews, school consultation conferences, and scheduled therapy sessions for your students." :
+                       isTherapist ? "Manage one-on-one pediatric therapy sessions, behavioral milestones, and caregiver consultations." :
+                       isParent ? "View your child's upcoming therapy sessions and clinical consultations." :
+                       "Schedule, reschedule, filter and confirm clinical sessions across all pediatric practitioners.";
 
   return `
     <div class="page-header">
       <div>
-        <h1 class="page-title">${currentUser && currentUser.role === 'Parent / Caregiver' ? "My Child's Appointment Schedule" : "Appointment Master Schedule"}</h1>
-        <p class="page-subtitle">${currentUser && currentUser.role === 'Parent / Caregiver' ? "View your child's upcoming therapy sessions and clinical consultations." : "Schedule, reschedule, filter and confirm clinical sessions."}</p>
+        <h1 class="page-title">${pageTitle}</h1>
+        <p class="page-subtitle">${pageSubtitle}</p>
       </div>
-      ${currentUser && currentUser.role !== 'Parent / Caregiver' ? `
-        <button class="btn btn-primary" onclick="window.showBookAppointmentModal()">+ Book Appointment</button>
-      ` : ''}
+      <div style="display: flex; gap: 10px;">
+        ${isTeacher ? `
+          <button class="btn btn-outline" onclick="window.navigateTo('observations')" style="display: flex; align-items: center; gap: 6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Observation Log
+          </button>
+          <button class="btn btn-primary" onclick="window.navigateTo('reports')" style="display: flex; align-items: center; gap: 6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            View Student Reports
+          </button>
+        ` : isReceptionistOrAdmin ? `
+          <button class="btn btn-primary" onclick="window.showBookAppointmentModal()">+ Book Appointment</button>
+        ` : ''}
+      </div>
     </div>
 
     <div class="card">
@@ -2229,40 +2261,66 @@ window.renderAppointmentsMasterView = function() {
           <thead>
             <tr>
               <th>Date & Time</th>
-              <th>Child Patient</th>
-              <th>Assigned Therapist</th>
-              <th>Type</th>
+              <th>${isTeacher ? 'Enrolled Student' : 'Child Patient'}</th>
+              <th>${isTeacher ? 'Consulting Therapist' : isTherapist ? 'Caregiver Contact' : 'Assigned Therapist'}</th>
+              <th>${isTeacher ? 'Meeting / Session Type' : 'Type'}</th>
               <th>Status</th>
-              <th>Notes</th>
-              ${currentUser && currentUser.role !== 'Parent / Caregiver' ? `<th style="text-align: right;">Action</th>` : ''}
+              <th>${isTeacher ? 'Educational Focus / Notes' : 'Notes'}</th>
+              <th style="text-align: right;">Action</th>
             </tr>
           </thead>
           <tbody>
             ${appointments.length === 0 ? `
               <tr>
                 <td colspan="7" style="text-align: center; padding: 36px; color: var(--slate-500);">
-                  No appointments scheduled for your registered child.
+                  No appointments scheduled for your assigned students at this time.
                 </td>
               </tr>
             ` : appointments.map(a => {
               const child = window.neuroDB.getChildById(a.child_id);
               const therapist = window.neuroDB.getUserById(a.therapist_id);
+              const parent = child ? window.neuroDB.getUserById(child.primary_parent_id) : null;
+              
+              const typeLabel = isTeacher && a.type === 'Therapy Session' ? 'Multidisciplinary Therapy Session' : a.type;
+
               return `
                 <tr>
                   <td>
-                    <div style="font-weight: 700; font-size: 13px;">${a.appointment_date}</div>
+                    <div style="font-weight: 700; font-size: 13px; color: #0f172a;">${a.appointment_date}</div>
                     <div style="font-size: 11.5px; color: var(--primary-600); font-weight: 600;">${a.start_time} - ${a.end_time || '11:00 AM'}</div>
                   </td>
-                  <td style="font-weight: 700;">${child ? child.first_name + ' ' + child.last_name : 'N/A'}</td>
-                  <td>${therapist ? therapist.full_name : 'Clinic Specialist'}</td>
-                  <td>${a.type}</td>
+                  <td>
+                    <div style="font-weight: 700; color: #0f172a;">${child ? child.first_name + ' ' + child.last_name : 'N/A'}</div>
+                    <div style="font-size: 11px; color: #64748b; font-family: 'JetBrains Mono', monospace;">${child ? child.child_code : ''} ${isTeacher && child?.classroom_group ? `&bull; ${child.classroom_group}` : ''}</div>
+                  </td>
+                  <td>
+                    ${isTherapist ? `
+                      <div style="font-size: 13px; font-weight: 600; color: #0f172a;">${parent ? parent.full_name : 'Caregiver'}</div>
+                      <div style="font-size: 11px; color: #64748b;">${parent ? parent.phone : ''}</div>
+                    ` : `
+                      <div style="font-size: 13px; font-weight: 600; color: #0f172a;">${therapist ? therapist.full_name : 'Clinic Specialist'}</div>
+                      <div style="font-size: 11px; color: #64748b;">${therapist ? therapist.role : 'BCBA Specialist'}</div>
+                    `}
+                  </td>
+                  <td>
+                    <span style="font-size: 12.5px; font-weight: 600; color: #1e293b;">${typeLabel}</span>
+                  </td>
                   <td><span class="badge badge-${a.status === 'Confirmed' ? 'active' : a.status === 'Scheduled' ? 'scheduled' : 'neutral'}">${a.status}</span></td>
-                  <td style="font-size: 12px; color: var(--slate-600);">${a.notes || '—'}</td>
-                  ${currentUser && currentUser.role !== 'Parent / Caregiver' ? `
-                    <td style="text-align: right;">
+                  <td style="font-size: 12px; color: var(--slate-600); max-width: 240px;">${a.notes || '—'}</td>
+                  <td style="text-align: right; white-space: nowrap;">
+                    ${isTeacher ? `
+                      <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${a.child_id}')" style="font-size: 11.5px; padding: 4px 8px;" title="View Student Clinical Report">
+                        📄 Full Report
+                      </button>
+                      <button class="btn btn-primary btn-sm" onclick="window.navigateTo('observation-create', { childId: '${a.child_id}' })" style="font-size: 11.5px; padding: 4px 8px; margin-left: 4px;">
+                        + Obs
+                      </button>
+                    ` : isReceptionistOrAdmin || isTherapist ? `
                       <button class="btn btn-outline btn-sm" onclick="window.showRescheduleModal('${a.id}')">Reschedule</button>
-                    </td>
-                  ` : ''}
+                    ` : `
+                      <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${a.child_id}')">View Report</button>
+                    `}
+                  </td>
                 </tr>
               `;
             }).join('')}
@@ -2287,36 +2345,81 @@ window.renderReportsMasterList = function() {
   // If user is Parent / Caregiver, strictly scope list to only their own children
   if (currentUser && currentUser.role === 'Parent / Caregiver') {
     children = children.filter(ch => ch.primary_parent_id === currentUser.id);
+  } else if (currentUser && currentUser.role === 'Teacher') {
+    children = window.teacherModule ? window.teacherModule.getAssignedChildren() : children;
   }
+
+  const isTeacher = role === 'Teacher';
+  const isParent = role === 'Parent / Caregiver';
+
+  const pageTitle = isParent ? "My Child's Clinical Reports" :
+                    isTeacher ? "Student Clinical & Progress Reports" : "Clinical Reports Center";
+
+  const pageSubtitle = isParent ? "View and download official screening summaries and milestone progress evaluations for your child." :
+                       isTeacher ? "Access full multidisciplinary clinical evaluations, screening milestones, active therapy goals, and printable reports for your assigned students." :
+                       "Generate official printable screening summaries and progress evaluations.";
 
   return `
     <div class="page-header">
       <div>
-        <h1 class="page-title">${currentUser && currentUser.role === 'Parent / Caregiver' ? "My Child's Clinical Reports" : "Clinical Reports Center"}</h1>
-        <p class="page-subtitle">${currentUser && currentUser.role === 'Parent / Caregiver' ? "View and download official screening summaries and milestone progress evaluations for your child." : "Generate official printable screening summaries and progress evaluations."}</p>
+        <h1 class="page-title">${pageTitle}</h1>
+        <p class="page-subtitle">${pageSubtitle}</p>
       </div>
+      ${isTeacher ? `
+        <button class="btn btn-outline" onclick="window.navigateTo('observations')" style="display: flex; align-items: center; gap: 6px;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Classroom Observations Log
+        </button>
+      ` : ''}
     </div>
 
     <div class="grid-2">
       ${children.length === 0 ? `
         <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">
-          <p style="color: var(--slate-500); font-size: 14px;">No registered child profile associated with your caregiver account.</p>
+          <p style="color: var(--slate-500); font-size: 14px;">No student records found in your assigned classroom roster.</p>
         </div>
-      ` : children.map(ch => `
-        <div class="card">
-          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-            <div>
-              <h3 style="font-size: 16px; font-weight: 800; color: var(--slate-900);">${ch.first_name} ${ch.last_name}</h3>
-              <div style="font-size: 12px; color: var(--slate-500); font-family: 'JetBrains Mono', monospace;">${ch.child_code} &bull; Age: ${ch.age_months} Months</div>
+      ` : children.map(ch => {
+        const therapist = window.neuroDB.getUserById(ch.assigned_therapist_id);
+        const parent = window.neuroDB.getUserById(ch.primary_parent_id);
+        const plans = (window.neuroDB.getTherapyPlans() || []).filter(p => p.child_id === ch.id);
+        const activePlan = plans.find(p => p.status === 'Active') || plans[0];
+
+        return `
+          <div class="card" style="padding: 22px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+              <div>
+                <h3 style="font-size: 17px; font-weight: 800; color: var(--slate-900); margin: 0 0 3px 0;">${ch.first_name} ${ch.last_name}</h3>
+                <div style="font-size: 12px; color: var(--slate-500); font-family: 'JetBrains Mono', monospace;">
+                  ${ch.child_code} &bull; Age: ${ch.age_months ? `${Math.floor(ch.age_months/12)}y ${ch.age_months%12}m` : '3y'} ${ch.classroom_group ? `&bull; ${ch.classroom_group}` : ''}
+                </div>
+              </div>
+              <span class="badge badge-active">${ch.status}</span>
             </div>
-            <span class="badge badge-active">${ch.status}</span>
+
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 12px; color: #475569; display: flex; flex-direction: column; gap: 4px;">
+              <div><strong>Lead Therapist:</strong> ${therapist ? therapist.full_name : 'Dr. Aisha Khan (BCBA)'}</div>
+              <div><strong>Caregiver Contact:</strong> ${parent ? `${parent.full_name} (${parent.phone})` : 'Priya Sharma'}</div>
+              <div><strong>Active IEP Goals:</strong> ${activePlan ? `${activePlan.goals ? activePlan.goals.length : 3} Target Objectives` : 'Formulated'}</div>
+            </div>
+
+            <p style="font-size: 12.5px; color: var(--slate-600); margin-bottom: 16px; line-height: 1.5;">
+              Comprehensive evaluation including standardized M-CHAT-R/F screening indicators, active behavioral therapy IEP roadmap, and chronological session progression logs.
+            </p>
+            
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-primary btn-sm" onclick="window.generateAndPrintChildReport('${ch.id}')" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                View Full Student Report
+              </button>
+              ${isTeacher ? `
+                <button class="btn btn-outline btn-sm" onclick="window.navigateTo('observation-create', { childId: '${ch.id}' })" title="Log Classroom Observation">
+                  + Obs
+                </button>
+              ` : ''}
+            </div>
           </div>
-          <p style="font-size: 12.5px; color: var(--slate-600); margin-bottom: 16px;">Comprehensive clinical evaluation including M-CHAT-R/F screening, active therapy goals, and chronological session logs.</p>
-          <button class="btn btn-primary btn-sm" onclick="window.generateAndPrintChildReport('${ch.id}')">
-            View & Print Clinical Report
-          </button>
-        </div>
-      `).join('')}
+        `;
+      }).join('')}
     </div>
   `;
 };

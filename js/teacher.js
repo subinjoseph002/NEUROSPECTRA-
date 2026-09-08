@@ -176,11 +176,14 @@ class TeacherModule {
                         </div>
                       </div>
 
-                      <div style="display: flex; gap: 8px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
-                        <button class="btn btn-primary btn-sm" onclick="window.navigateTo('observation-create', { childId: '${child.id}' })" style="flex: 1; font-size: 12px; padding: 6px 10px;">
-                          + Observation
+                      <div style="display: flex; gap: 6px; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+                        <button class="btn btn-primary btn-sm" onclick="window.navigateTo('observation-create', { childId: '${child.id}' })" style="flex: 1; font-size: 11.5px; padding: 6px 8px;">
+                          + Obs
                         </button>
-                        <button class="btn btn-outline btn-sm" onclick="window.navigateTo('child-profile', { childId: '${child.id}' })" style="font-size: 12px; padding: 6px 10px;">
+                        <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${child.id}')" style="font-size: 11.5px; padding: 6px 8px; color: #2563eb; font-weight: 700;" title="View Full Student Report">
+                          📄 Report
+                        </button>
+                        <button class="btn btn-outline btn-sm" onclick="window.navigateTo('child-profile', { childId: '${child.id}' })" style="font-size: 11.5px; padding: 6px 8px;">
                           Profile
                         </button>
                       </div>
@@ -258,9 +261,19 @@ class TeacherModule {
                   Observation Records Log
                 </button>
 
+                <button class="btn btn-outline" onclick="window.navigateTo('reports')" style="width: 100%; justify-content: flex-start; padding: 11px 16px; color: #2563eb; font-weight: 700;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                  Student Clinical & Progress Reports
+                </button>
+
+                <button class="btn btn-outline" onclick="window.navigateTo('appointments')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Educational & IEP Schedule
+                </button>
+
                 <button class="btn btn-outline" onclick="window.navigateTo('my-children')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-                  Assigned Students List
+                  Assigned Students Roster
                 </button>
               </div>
             </div>
@@ -691,6 +704,10 @@ class TeacherModule {
           </div>
           <div style="display: flex; gap: 8px;">
             <button class="btn btn-outline btn-sm" onclick="window.navigateTo('my-children')">Back to Roster</button>
+            <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${child.id}')" style="display: flex; align-items: center; gap: 6px; color: #2563eb; font-weight: 700;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              📄 View Full Student Report
+            </button>
             <button class="btn btn-primary btn-sm" onclick="window.navigateTo('observation-create', { childId: '${child.id}' })">
               + Log Observation
             </button>
