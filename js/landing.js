@@ -449,7 +449,7 @@ window.renderLandingPage = function() {
                 </div>
                 <div>
                   <div style="font-size: 12px; color: #64748b; font-weight: 600;">Phone Line</div>
-                  <div style="font-size: 15px; font-weight: 700; color: #0f172a;">+1 (555) 234-5678</div>
+                  <div style="font-size: 15px; font-weight: 700; color: #0f172a;">+91 98450 12345</div>
                 </div>
               </div>
 

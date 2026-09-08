@@ -747,7 +747,7 @@ window.renderReceptionistReports = function() {
                     <tr>
                       <td>
                         <div style="font-weight: 700; color: #0f172a; font-size: 13px;">${ts.therapist.full_name}</div>
-                        <div style="font-size: 11px; color: #64748b;">${ts.therapist.email} &bull; ${ts.therapist.phone || '+91 9876543211'}</div>
+                        <div style="font-size: 11px; color: #64748b;">${ts.therapist.email} &bull; ${ts.therapist.phone || '+91 98451 89234'}</div>
                       </td>
                       <td style="text-align: center; font-weight: 700; font-size: 13px;">${ts.total}</td>
                       <td style="text-align: center; color: #2563eb; font-weight: 700;">${ts.scheduled}</td>
@@ -852,7 +852,7 @@ window.renderReceptionistReports = function() {
                         </td>
                         <td>
                           <div style="font-weight: 600; color: #1e293b; font-size: 13px;">${parent ? parent.full_name : 'Priya Sharma'}</div>
-                          <div style="font-size: 11.5px; color: #64748b;">${parent ? parent.phone : '+91 9876543214'}</div>
+                          <div style="font-size: 11.5px; color: #64748b;">${parent ? parent.phone : '+91 94471 63820'}</div>
                         </td>
                         <td>
                           <div style="font-weight: 600; color: #1e293b; font-size: 13px;">${therapist ? therapist.full_name : 'Dr. Aisha Khan'}</div>
@@ -1197,7 +1197,7 @@ window.showReceptionistReportDetailModal = function(type, id) {
             <div><strong style="color: #64748b;">Time Slot:</strong> <div style="font-weight: 700; color: #2563eb;">${apt.start_time} - ${apt.end_time || '10:45 AM'}</div></div>
             <div><strong style="color: #64748b;">Child Patient:</strong> <div style="font-weight: 700; color: #0f172a;">${child ? `${child.first_name} ${child.last_name}` : 'Unknown'}</div></div>
             <div><strong style="color: #64748b;">Clinical File ID:</strong> <div style="font-weight: 700; font-family: monospace; color: #2563eb;">${child ? child.child_code : 'N/A'}</div></div>
-            <div><strong style="color: #64748b;">Primary Caregiver:</strong> <div>${parent ? parent.full_name : 'Priya Sharma'} (${parent ? parent.phone : '+91 9876543214'})</div></div>
+            <div><strong style="color: #64748b;">Primary Caregiver:</strong> <div>${parent ? parent.full_name : 'Priya Sharma'} (${parent ? parent.phone : '+91 94471 63820'})</div></div>
             <div><strong style="color: #64748b;">Assigned Specialist:</strong> <div style="font-weight: 700; color: #0f172a;">${therapist ? therapist.full_name : 'Unassigned'}</div></div>
             <div><strong style="color: #64748b;">Reminder Dispatch:</strong> <div>${apt.reminder_sent ? '<span style="color: #16a34a; font-weight: 700;">Delivered via SMS/App</span>' : '<span style="color: #64748b;">Pending Dispatch</span>'}</div></div>
             <div><strong style="color: #64748b;">Booking Timestamp:</strong> <div style="color: #64748b;">${apt.created_at ? new Date(apt.created_at).toLocaleString() : apt.appointment_date}</div></div>
@@ -1234,7 +1234,7 @@ window.showReceptionistReportDetailModal = function(type, id) {
             <div><strong style="color: #64748b;">Gender / Blood Group:</strong> <div>${child.gender} &bull; ${child.blood_group || 'O+'}</div></div>
             <div><strong style="color: #64748b;">Registration Date:</strong> <div style="font-weight: 700; color: #0f172a;">${child.created_at ? new Date(child.created_at).toLocaleDateString() : '2026-02-01'}</div></div>
             <div><strong style="color: #64748b;">Primary Parent / Caregiver:</strong> <div style="font-weight: 700;">${parent ? parent.full_name : 'Priya Sharma'}</div></div>
-            <div><strong style="color: #64748b;">Emergency Phone:</strong> <div>${parent ? parent.phone : '+91 9876543214'}</div></div>
+            <div><strong style="color: #64748b;">Emergency Phone:</strong> <div>${parent ? parent.phone : '+91 94471 63820'}</div></div>
             <div><strong style="color: #64748b;">Assigned Clinical Specialist:</strong> <div style="font-weight: 700; color: #0f172a;">${therapist ? therapist.full_name : 'Dr. Aisha Khan'}</div></div>
             <div><strong style="color: #64748b;">Intake Notes:</strong> <div style="color: #475569;">${child.notes || 'Routine pediatric developmental intake completed.'}</div></div>
           </div>
@@ -1475,7 +1475,7 @@ window.showGeneratedAdministrativeDocumentModal = function(category = 'all') {
                     <td style="padding: 8px; font-weight: 700;">${ch.first_name} ${ch.last_name}</td>
                     <td style="padding: 8px; font-family: monospace; color: #2563eb;">${ch.child_code}</td>
                     <td style="padding: 8px;">${ch.age_months} Mos (${ch.gender})</td>
-                    <td style="padding: 8px;">${parent ? parent.full_name : 'Priya Sharma'} (${parent ? parent.phone : '+91 9876543214'})</td>
+                    <td style="padding: 8px;">${parent ? parent.full_name : 'Priya Sharma'} (${parent ? parent.phone : '+91 94471 63820'})</td>
                     <td style="padding: 8px; text-align: right; font-weight: 700;">${ch.status}</td>
                   </tr>
                 `;
@@ -1536,7 +1536,7 @@ window.downloadReceptionistReportCSV = function(category = 'all') {
         `"${ch.gender}"`,
         `"${ch.blood_group || 'O+'}"`,
         `"${parent ? parent.full_name : 'Priya Sharma'}"`,
-        `"${parent ? parent.phone : '+91 9876543214'}"`,
+        `"${parent ? parent.phone : '+91 94471 63820'}"`,
         `"${therapist ? therapist.full_name : 'Dr. Aisha Khan'}"`,
         `"${ch.status}"`
       ];

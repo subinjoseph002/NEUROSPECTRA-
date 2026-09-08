@@ -179,7 +179,7 @@ window.renderAdminDashboard = function() {
                     </span>
                   </td>
                   <td style="padding: 14px 16px; color: #475569;">${u.email}</td>
-                  <td style="padding: 14px 16px; color: #64748b;">${u.phone || '+91 9876543210'}</td>
+                  <td style="padding: 14px 16px; color: #64748b;">${u.phone || '+91 98201 45672'}</td>
                   <td style="padding: 14px 16px;">
                     <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: ${u.is_active ? '#15803d' : '#94a3b8'}; background: ${u.is_active ? '#dcfce7' : '#f1f5f9'}; padding: 3px 9px; border-radius: 9999px;">
                       <span style="width: 6px; height: 6px; border-radius: 50%; background: ${u.is_active ? '#16a34a' : '#94a3b8'};"></span>
@@ -454,7 +454,7 @@ window.renderAdminUsers = function() {
                   </td>
 
                   <td style="padding: 14px 18px; color: #64748b;">
-                    ${u.phone || '+91 9876543210'}
+                    ${u.phone || '+91 98201 45672'}
                   </td>
 
                   <td style="padding: 14px 18px;">
@@ -607,7 +607,7 @@ window.openAddUserModal = function(defaultRole = 'Therapist') {
             </div>
             <div class="form-group">
               <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">Phone Number <span style="color: #ef4444;">*</span></label>
-              <input type="tel" id="modal-user-phone" required placeholder="9876543210" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none;">
+              <input type="tel" id="modal-user-phone" required placeholder="9820145672" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none;">
             </div>
           </div>
 
@@ -730,7 +730,7 @@ window.openEditUserModal = function(userId) {
             </div>
             <div class="form-group">
               <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">Phone Number</label>
-              <input type="tel" id="edit-user-phone" value="${user.phone || ''}" placeholder="9876543210" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none;">
+              <input type="tel" id="edit-user-phone" value="${user.phone || ''}" placeholder="9820145672" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none;">
             </div>
           </div>
 

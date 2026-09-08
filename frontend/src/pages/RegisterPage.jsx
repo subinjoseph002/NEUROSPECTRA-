@@ -201,7 +201,7 @@ export const RegisterPage = () => {
                 label="Mobile Number"
                 name="phone"
                 type="tel"
-                placeholder="9876543210"
+                placeholder="9820145672"
                 register={register}
                 error={errors.phone}
                 isValid={touchedFields.phone && !errors.phone}

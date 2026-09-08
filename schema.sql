@@ -309,23 +309,23 @@ CREATE INDEX idx_notifications_user ON notifications(user_id, is_read);
 -- Users
 INSERT INTO users (id, full_name, email, password_hash, role, phone, is_active)
 VALUES
-('usr_admin_1', 'Dr. Eleanor Vance (Administrator)', 'admin@neurospectra.org', 'admin123', 'Administrator', '+91 9876543210', 1),
-('usr_therapist_1', 'Dr. Aisha Khan, Ph.D., BCBA-D', 'therapist@neurospectra.org', 'therapist123', 'Therapist', '+91 9876543211', 1),
-('usr_therapist_2', 'Dr. Marcus Vance, M.D.', 'marcus.vance@neurospectra.org', 'therapist123', 'Therapist', '+91 9876543212', 1),
-('usr_receptionist_1', 'Sarah Jenkins (Coordinator)', 'receptionist@neurospectra.org', 'receptionist123', 'Receptionist', '+91 9876543213', 1),
-('usr_parent_1', 'Priya Sharma (Parent)', 'parent@neurospectra.org', 'parent123', 'Parent / Caregiver', '+91 9876543214', 1),
-('usr_parent_2', 'David Miller (Caregiver)', 'david.miller@gmail.com', 'parent123', 'Parent / Caregiver', '+91 9876543215', 1),
-('usr_parent_3', 'Lin Chen (Parent)', 'lin.chen@gmail.com', 'parent123', 'Parent / Caregiver', '+91 9876543217', 1),
-('usr_teacher_1', 'Marcus Brody (Special Educator)', 'teacher@neurospectra.org', 'teacher123', 'Teacher', '+91 9876543216', 1)
+('usr_admin_1', 'Dr. Eleanor Vance (Administrator)', 'admin@neurospectra.org', 'admin123', 'Administrator', '+91 98201 45672', 1),
+('usr_therapist_1', 'Dr. Aisha Khan, Ph.D., BCBA-D', 'therapist@neurospectra.org', 'therapist123', 'Therapist', '+91 98451 89234', 1),
+('usr_therapist_2', 'Dr. Marcus Vance, M.D.', 'marcus.vance@neurospectra.org', 'therapist123', 'Therapist', '+91 97114 62890', 1),
+('usr_receptionist_1', 'Sarah Jenkins (Coordinator)', 'receptionist@neurospectra.org', 'receptionist123', 'Receptionist', '+91 98230 41589', 1),
+('usr_parent_1', 'Priya Sharma (Parent)', 'parent@neurospectra.org', 'parent123', 'Parent / Caregiver', '+91 94471 63820', 1),
+('usr_parent_2', 'David Miller (Caregiver)', 'david.miller@gmail.com', 'parent123', 'Parent / Caregiver', '+91 99802 75419', 1),
+('usr_parent_3', 'Lin Chen (Parent)', 'lin.chen@gmail.com', 'parent123', 'Parent / Caregiver', '+91 98190 38472', 1),
+('usr_teacher_1', 'Marcus Brody (Special Educator)', 'teacher@neurospectra.org', 'teacher123', 'Teacher', '+91 98300 94165', 1)
 ON CONFLICT (id) DO NOTHING;
 
 -- Children
 INSERT INTO children (id, child_code, first_name, last_name, dob, age_months, gender, blood_group, address, emergency_contact, primary_parent_id, assigned_therapist_id, status, notes)
 VALUES
-('ch_101', 'NS-2026-0101', 'Aarav', 'Sharma', '2023-04-15', 40, 'Male', 'B+', '742 Evergreen Terrace, Springfield', 'Priya Sharma (+91 9876543214)', 'usr_parent_1', 'usr_therapist_1', 'Active', 'Initial screening showed mild speech delay and sensitivity to loud auditory stimuli. Responsive to visual cues.'),
-('ch_102', 'NS-2026-0102', 'Liam', 'Miller', '2022-09-10', 47, 'Male', 'O+', '128 Willow Creek Road, Brookside', 'David Miller (+91 9876543215)', 'usr_parent_2', 'usr_therapist_1', 'Active', 'Showing steady progress in joint attention and vocal imitation. Enjoys sensory motor play.'),
-('ch_103', 'NS-2026-0103', 'Maya', 'Chen', '2023-11-22', 33, 'Female', 'A+', '45 Lotus Blossom Way, Metro City', 'Lin Chen (+91 9876543217)', 'usr_parent_3', 'usr_therapist_2', 'Under Assessment', 'Parent requested screening due to reduced eye contact during social interactions and toe-walking.'),
-('ch_104', 'NS-2026-0104', 'Noah', 'Patel', '2022-01-30', 54, 'Male', 'AB+', '88 Oakridge Boulevard, Lakeview', 'Anita Patel (+91 9876543218)', 'usr_parent_1', 'usr_therapist_1', 'Active', 'Focusing on peer turn-taking and emotional regulation during transition periods.')
+('ch_101', 'NS-2026-0101', 'Aarav', 'Sharma', '2023-04-15', 40, 'Male', 'B+', '742 Evergreen Terrace, Springfield', 'Priya Sharma (+91 94471 63820)', 'usr_parent_1', 'usr_therapist_1', 'Active', 'Initial screening showed mild speech delay and sensitivity to loud auditory stimuli. Responsive to visual cues.'),
+('ch_102', 'NS-2026-0102', 'Liam', 'Miller', '2022-09-10', 47, 'Male', 'O+', '128 Willow Creek Road, Brookside', 'David Miller (+91 99802 75419)', 'usr_parent_2', 'usr_therapist_1', 'Active', 'Showing steady progress in joint attention and vocal imitation. Enjoys sensory motor play.'),
+('ch_103', 'NS-2026-0103', 'Maya', 'Chen', '2023-11-22', 33, 'Female', 'A+', '45 Lotus Blossom Way, Metro City', 'Lin Chen (+91 98190 38472)', 'usr_parent_3', 'usr_therapist_2', 'Under Assessment', 'Parent requested screening due to reduced eye contact during social interactions and toe-walking.'),
+('ch_104', 'NS-2026-0104', 'Noah', 'Patel', '2022-01-30', 54, 'Male', 'AB+', '88 Oakridge Boulevard, Lakeview', 'Anita Patel (+91 98711 52938)', 'usr_parent_1', 'usr_therapist_1', 'Active', 'Focusing on peer turn-taking and emotional regulation during transition periods.')
 ON CONFLICT (id) DO NOTHING;
 
 -- Assessment Templates

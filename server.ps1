@@ -19,11 +19,11 @@ $dbFile = Join-Path $path "db.json"
 if (-not (Test-Path $dbFile)) {
     $initialDb = @{
         users = @(
-            @{ id = "usr_admin_1"; full_name = "Dr. Eleanor Vance"; email = "admin@neurospectra.org"; role = "Administrator"; phone = "+91 9876543210"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256" },
-            @{ id = "usr_therapist_1"; full_name = "Dr. Aisha Khan, Ph.D."; email = "therapist@neurospectra.org"; role = "Therapist"; phone = "+91 9876543211"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256" },
-            @{ id = "usr_receptionist_1"; full_name = "Sarah Jenkins"; email = "receptionist@neurospectra.org"; role = "Receptionist"; phone = "+91 9876543213"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256" },
-            @{ id = "usr_parent_1"; full_name = "Priya Sharma"; email = "parent@neurospectra.org"; role = "Parent / Caregiver"; phone = "+91 9876543214"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256" },
-            @{ id = "usr_teacher_1"; full_name = "Marcus Brody"; email = "teacher@neurospectra.org"; role = "Teacher"; phone = "+91 9876543216"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256" }
+            @{ id = "usr_admin_1"; full_name = "Dr. Eleanor Vance"; email = "admin@neurospectra.org"; role = "Administrator"; phone = "+91 98201 45672"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256" },
+            @{ id = "usr_therapist_1"; full_name = "Dr. Aisha Khan, Ph.D."; email = "therapist@neurospectra.org"; role = "Therapist"; phone = "+91 98451 89234"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256" },
+            @{ id = "usr_receptionist_1"; full_name = "Sarah Jenkins"; email = "receptionist@neurospectra.org"; role = "Receptionist"; phone = "+91 98230 41589"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256" },
+            @{ id = "usr_parent_1"; full_name = "Priya Sharma"; email = "parent@neurospectra.org"; role = "Parent / Caregiver"; phone = "+91 94471 63820"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256" },
+            @{ id = "usr_teacher_1"; full_name = "Marcus Brody"; email = "teacher@neurospectra.org"; role = "Teacher"; phone = "+91 98300 94165"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256" }
         )
         children = @(
             @{ id = "ch_101"; child_code = "NS-2026-0101"; first_name = "Aarav"; last_name = "Sharma"; dob = "2023-04-15"; age_months = 40; gender = "Male"; status = "Active"; primary_parent_id = "usr_parent_1"; assigned_therapist_id = "usr_therapist_1" },

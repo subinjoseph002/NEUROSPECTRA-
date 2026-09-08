@@ -28,12 +28,12 @@ export const AdminDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const defaultMockUsers = [
-    { id: 'usr_admin_1', full_name: 'Dr. Eleanor Vance', email: 'admin@neurospectra.org', role: 'Administrator', phone: '+91 9876543210', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256' },
-    { id: 'usr_therapist_1', full_name: 'Dr. Aisha Khan, Ph.D.', email: 'therapist@neurospectra.org', role: 'Therapist', phone: '+91 9876543211', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256' },
-    { id: 'usr_therapist_2', full_name: 'Dr. Marcus Vance, M.D.', email: 'marcus.vance@neurospectra.org', role: 'Therapist', phone: '+91 9876543212', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256' },
-    { id: 'usr_receptionist_1', full_name: 'Sarah Jenkins', email: 'receptionist@neurospectra.org', role: 'Receptionist', phone: '+91 9876543213', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256' },
-    { id: 'usr_parent_1', full_name: 'Priya Sharma', email: 'parent@neurospectra.org', role: 'Parent / Caregiver', phone: '+91 9876543214', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256' },
-    { id: 'usr_teacher_1', full_name: 'Marcus Brody', email: 'teacher@neurospectra.org', role: 'Teacher', phone: '+91 9876543216', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256' },
+    { id: 'usr_admin_1', full_name: 'Dr. Eleanor Vance', email: 'admin@neurospectra.org', role: 'Administrator', phone: '+91 98201 45672', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256' },
+    { id: 'usr_therapist_1', full_name: 'Dr. Aisha Khan, Ph.D.', email: 'therapist@neurospectra.org', role: 'Therapist', phone: '+91 98451 89234', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256' },
+    { id: 'usr_therapist_2', full_name: 'Dr. Marcus Vance, M.D.', email: 'marcus.vance@neurospectra.org', role: 'Therapist', phone: '+91 97114 62890', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256' },
+    { id: 'usr_receptionist_1', full_name: 'Sarah Jenkins', email: 'receptionist@neurospectra.org', role: 'Receptionist', phone: '+91 98230 41589', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256' },
+    { id: 'usr_parent_1', full_name: 'Priya Sharma', email: 'parent@neurospectra.org', role: 'Parent / Caregiver', phone: '+91 94471 63820', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256' },
+    { id: 'usr_teacher_1', full_name: 'Marcus Brody', email: 'teacher@neurospectra.org', role: 'Teacher', phone: '+91 98300 94165', is_active: 1, avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256' },
   ];
 
   useEffect(() => {
@@ -266,7 +266,7 @@ ON CONFLICT (id) DO UPDATE SET full_name = EXCLUDED.full_name, role = EXCLUDED.r
                         </span>
                       </td>
                       <td className="px-6 py-4 text-slate-600 font-medium">{u.email}</td>
-                      <td className="px-6 py-4 text-slate-500">{u.phone || '+91 9876543210'}</td>
+                      <td className="px-6 py-4 text-slate-500">{u.phone || '+91 98201 45672'}</td>
                       <td className="px-6 py-4">
                         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />

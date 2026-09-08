@@ -15,7 +15,7 @@ export const ParentDashboard = () => {
     therapist: {
       name: 'Dr. Aisha Khan, Ph.D.',
       email: 'therapist@neurospectra.org',
-      phone: '+91 9876543211',
+      phone: '+91 98451 89234',
     },
     appointments: [
       { id: '1', date: 'August 18, 2026', time: '10:00 AM', type: 'Occupational Therapy (Sensory Room)', status: 'Confirmed' },

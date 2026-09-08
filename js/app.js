@@ -490,7 +490,7 @@ window.renderRegisterPage = function() {
               <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 5px; display: block;">
                 Phone Number (Indian Mobile) <span style="color: #ef4444;">*</span>
               </label>
-              <input type="tel" id="reg-phone" class="form-control" placeholder="9876543210" required maxlength="15" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateRegPhone(false)" onblur="window.validateRegPhone(true)">
+              <input type="tel" id="reg-phone" class="form-control" placeholder="9820145672" required maxlength="15" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateRegPhone(false)" onblur="window.validateRegPhone(true)">
               <div id="reg-phone-error" class="field-error-msg" style="display: none;"></div>
             </div>
 
@@ -2097,8 +2097,8 @@ window.showAddUserModal = function() {
         </select>
       </div>
       <div class="form-group">
-        <label class="form-label">Phone Number</label>
-        <input type="tel" id="new-user-phone" class="form-control" placeholder="+1 (555) 123-4567">
+        <label class="form-label">Phone Number (Indian Mobile)</label>
+        <input type="tel" id="new-user-phone" class="form-control" placeholder="+91 98201 45672">
       </div>
       <div class="form-group">
         <label class="form-label">Temporary Password <span class="required">*</span></label>
@@ -2818,7 +2818,7 @@ window.renderUserProfileView = function() {
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; font-size: 12.5px;">
               <div><strong style="color: #64748b;">Age & Gender:</strong> <div>${myChild.age_months} Months (${myChild.gender})</div></div>
               <div><strong style="color: #64748b;">Assigned Specialist:</strong> <div style="font-weight: 700; color: #0f172a;">${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}</div></div>
-              <div><strong style="color: #64748b;">Caregiver Contact:</strong> <div>${currentUser.phone || '+91 9876543214'}</div></div>
+              <div><strong style="color: #64748b;">Caregiver Contact:</strong> <div>${currentUser.phone || '+91 94471 63820'}</div></div>
             </div>
           </div>
           <div style="display: flex; gap: 8px; flex-wrap: wrap;">
@@ -2878,7 +2878,7 @@ window.renderUserProfileView = function() {
         <div style="text-align: left; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 14px; font-size: 12.5px; color: #475569; margin-bottom: 18px;">
           <div style="margin-bottom: 6px;"><strong>User ID:</strong> <span style="font-family: monospace; color: #0f172a;">${currentUser.id}</span></div>
           <div style="margin-bottom: 6px;"><strong>Email:</strong> <span style="color: #0f172a;">${currentUser.email}</span></div>
-          <div style="margin-bottom: 6px;"><strong>Phone:</strong> <span style="color: #0f172a;">${currentUser.phone || '+91 9876543210'}</span></div>
+          <div style="margin-bottom: 6px;"><strong>Phone:</strong> <span style="color: #0f172a;">${currentUser.phone || '+91 98201 45672'}</span></div>
           <div><strong>Status:</strong> <span style="color: #16a34a; font-weight: 700;">Active Account</span></div>
         </div>
 
@@ -2909,7 +2909,7 @@ window.renderUserProfileView = function() {
               </div>
               <div class="form-group" style="margin-bottom: 0;">
                 <label class="form-label">Phone Number (Indian Mobile) <span class="required">*</span></label>
-                <input type="tel" id="edit-profile-phone" class="form-control" value="${currentUser.phone || ''}" placeholder="+91 9876543210" required>
+                <input type="tel" id="edit-profile-phone" class="form-control" value="${currentUser.phone || ''}" placeholder="+91 98201 45672" required>
               </div>
             </div>
 
@@ -3030,7 +3030,7 @@ window.showUserProfileModal = function() {
             <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0;">${currentUser.full_name}</h3>
             <span style="padding: 2px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 700; background: ${roleBadgeBg}; color: ${roleBadgeColor};">${role}</span>
           </div>
-          <div style="font-size: 13px; color: #64748b; margin-bottom: 4px;">${currentUser.email} &bull; ${currentUser.phone || '+91 9876543210'}</div>
+          <div style="font-size: 13px; color: #64748b; margin-bottom: 4px;">${currentUser.email} &bull; ${currentUser.phone || '+91 98201 45672'}</div>
           <div style="font-size: 12px; color: #475569; line-height: 1.4;">${roleDesc}</div>
         </div>
       </div>
@@ -3046,7 +3046,7 @@ window.showUserProfileModal = function() {
           </div>
           <div class="form-group" style="margin-bottom: 0;">
             <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Phone Number <span style="color: #ef4444;">*</span></label>
-            <input type="tel" id="edit-profile-phone" class="form-control" value="${currentUser.phone || ''}" placeholder="+91 9876543210" required style="padding: 8px 12px; font-size: 13px;">
+            <input type="tel" id="edit-profile-phone" class="form-control" value="${currentUser.phone || ''}" placeholder="+91 98201 45672" required style="padding: 8px 12px; font-size: 13px;">
           </div>
         </div>
 

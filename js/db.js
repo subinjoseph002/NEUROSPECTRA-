@@ -13,7 +13,7 @@ const INITIAL_DB_DATA = {
       email: 'admin@neurospectra.org',
       password_hash: 'admin123',
       role: 'Administrator',
-      phone: '+1 (555) 234-5678',
+      phone: '+91 98201 45672',
       avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
       created_at: '2026-01-10T08:00:00Z',
@@ -25,7 +25,7 @@ const INITIAL_DB_DATA = {
       email: 'therapist@neurospectra.org',
       password_hash: 'therapist123',
       role: 'Therapist',
-      phone: '+1 (555) 345-6789',
+      phone: '+91 98451 89234',
       avatar_url: 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
       created_at: '2026-01-12T09:30:00Z',
@@ -37,7 +37,7 @@ const INITIAL_DB_DATA = {
       email: 'marcus.vance@neurospectra.org',
       password_hash: 'therapist123',
       role: 'Therapist',
-      phone: '+1 (555) 987-6543',
+      phone: '+91 97114 62890',
       avatar_url: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
       created_at: '2026-01-15T10:00:00Z',
@@ -49,7 +49,7 @@ const INITIAL_DB_DATA = {
       email: 'receptionist@neurospectra.org',
       password_hash: 'receptionist123',
       role: 'Receptionist',
-      phone: '+1 (555) 456-7890',
+      phone: '+91 98230 41589',
       avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
       created_at: '2026-01-14T08:30:00Z',
@@ -61,7 +61,7 @@ const INITIAL_DB_DATA = {
       email: 'parent@neurospectra.org',
       password_hash: 'parent123',
       role: 'Parent / Caregiver',
-      phone: '+91 9876543214',
+      phone: '+91 94471 63820',
       avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
       created_at: '2026-01-16T11:00:00Z',
@@ -73,7 +73,7 @@ const INITIAL_DB_DATA = {
       email: 'david.miller@gmail.com',
       password_hash: 'parent123',
       role: 'Parent / Caregiver',
-      phone: '+91 9876543215',
+      phone: '+91 99802 75419',
       avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
       created_at: '2026-01-18T14:00:00Z',
@@ -85,7 +85,7 @@ const INITIAL_DB_DATA = {
       email: 'lin.chen@gmail.com',
       password_hash: 'parent123',
       role: 'Parent / Caregiver',
-      phone: '+91 9876543217',
+      phone: '+91 98190 38472',
       avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
       created_at: '2026-01-20T10:00:00Z',
@@ -97,7 +97,7 @@ const INITIAL_DB_DATA = {
       email: 'teacher@neurospectra.org',
       password_hash: 'teacher123',
       role: 'Teacher',
-      phone: '+91 9876543216',
+      phone: '+91 98300 94165',
       avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
       created_at: '2026-01-18T11:00:00Z',
@@ -116,7 +116,7 @@ const INITIAL_DB_DATA = {
       gender: 'Male',
       blood_group: 'B+',
       address: '742 Evergreen Terrace, Springfield',
-      emergency_contact: 'Priya Sharma (+91 9876543214)',
+      emergency_contact: 'Priya Sharma (+91 94471 63820)',
       primary_parent_id: 'usr_parent_1',
       assigned_therapist_id: 'usr_therapist_1',
       assigned_teacher_id: 'usr_teacher_1',
@@ -135,7 +135,7 @@ const INITIAL_DB_DATA = {
       gender: 'Male',
       blood_group: 'O+',
       address: '128 Willow Creek Road, Brookside',
-      emergency_contact: 'David Miller (+91 9876543215)',
+      emergency_contact: 'David Miller (+91 99802 75419)',
       primary_parent_id: 'usr_parent_2',
       assigned_therapist_id: 'usr_therapist_1',
       assigned_teacher_id: 'usr_teacher_1',
@@ -154,7 +154,7 @@ const INITIAL_DB_DATA = {
       gender: 'Female',
       blood_group: 'A+',
       address: '45 Lotus Blossom Way, Metro City',
-      emergency_contact: 'Lin Chen (+91 9876543217)',
+      emergency_contact: 'Lin Chen (+91 98190 38472)',
       primary_parent_id: 'usr_parent_3',
       assigned_therapist_id: 'usr_therapist_2',
       assigned_teacher_id: 'usr_teacher_1',
@@ -173,7 +173,7 @@ const INITIAL_DB_DATA = {
       gender: 'Male',
       blood_group: 'AB+',
       address: '88 Oakridge Boulevard, Lakeview',
-      emergency_contact: 'Anita Patel (+1 555-890-1234)',
+      emergency_contact: 'Anita Patel (+91 98711 52938)',
       primary_parent_id: 'usr_parent_2',
       assigned_therapist_id: 'usr_therapist_1',
       assigned_teacher_id: 'usr_teacher_1',
@@ -686,10 +686,23 @@ class NeurospectraDB {
           data.assessment_questions = INITIAL_DB_DATA.assessment_questions;
           modified = true;
         }
+        if (data.users) {
+          data.users.forEach(u => {
+            const initUser = INITIAL_DB_DATA.users.find(iu => iu.id === u.id);
+            if (initUser && (u.phone?.includes('+1 (555)') || u.phone?.includes('987654321') || !u.phone?.startsWith('+91'))) {
+              u.phone = initUser.phone;
+              modified = true;
+            }
+          });
+        }
         if (data.children) {
           data.children.forEach(c => {
+            const initChild = INITIAL_DB_DATA.children.find(ic => ic.id === c.id);
+            if (initChild && (c.emergency_contact?.includes('+1 555') || c.emergency_contact?.includes('987654321'))) {
+              c.emergency_contact = initChild.emergency_contact;
+              modified = true;
+            }
             if (!c.assigned_teacher_id) {
-              const initChild = INITIAL_DB_DATA.children.find(ic => ic.id === c.id);
               c.assigned_teacher_id = initChild ? initChild.assigned_teacher_id : 'usr_teacher_1';
               c.classroom_group = initChild ? initChild.classroom_group : 'Classroom Observation Group';
               modified = true;

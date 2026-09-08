@@ -99,7 +99,7 @@ window.renderParentDashboard = function() {
               ${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}
             </div>
             <div style="font-size: 12px; color: #cbd5e1; margin-top: 1px;">
-              ${therapist ? therapist.email : 'therapist@neurospectra.org'} &bull; ${therapist ? therapist.phone : '+91 9876543211'}
+              ${therapist ? therapist.email : 'therapist@neurospectra.org'} &bull; ${therapist ? therapist.phone : '+91 98451 89234'}
             </div>
           </div>
 

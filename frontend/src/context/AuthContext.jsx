@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
       full_name: demoUser.full_name,
       email: demoUser.email,
       role: role,
-      phone: '+91 9876543210',
+      phone: demoUser.phone || '+91 98201 45672',
       avatar_url: demoUser.avatar_url,
       is_active: 1,
     };
