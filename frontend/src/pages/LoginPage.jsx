@@ -112,11 +112,7 @@ export const LoginPage = () => {
           </div>
 
           {/* Quick Demo Autofill Selector */}
-          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              <span className="text-blue-600 flex items-center gap-1">⚡ Quick Demo Autofill</span>
-              <span className="text-[10px] text-slate-400 font-medium">Click to fill</span>
-            </div>
+          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
             <div className="grid grid-cols-3 gap-1.5">
               <button
                 type="button"

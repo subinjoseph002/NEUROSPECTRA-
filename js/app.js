@@ -353,14 +353,7 @@ window.renderLoginPage = function() {
           </p>
 
           <!-- Interactive Demo Persona Autofill Selector -->
-          <div style="margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px;">
-            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
-              <span style="display: flex; align-items: center; gap: 5px; color: #2563eb;">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                Quick Demo Autofill
-              </span>
-              <span style="font-size: 10.5px; color: #94a3b8; font-weight: 500;">Click to fill fields</span>
-            </div>
+          <div style="margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 12px;">
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px;">
               <button type="button" id="demo-btn-therapist" onclick="window.fillDemoCredentials('Therapist')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Dr. Aisha Khan (Therapist)">
                 🩺 Therapist
@@ -418,7 +411,7 @@ window.renderLoginPage = function() {
             </div>
 
             <button type="submit" id="btn-login-submit" style="width: 100%; background: #2563eb; color: #ffffff; font-weight: 700; font-size: 14.5px; padding: 12px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-              <span>Sign In to Platform</span>
+              <span>Sign In</span>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
