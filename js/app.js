@@ -1794,7 +1794,7 @@ window.renderTherapyPlansView = function() {
     <div class="page-header">
       <div>
         <h1 class="page-title">Therapy Plans & Intervention Goals</h1>
-        <p class="page-subtitle">Structured, goal-oriented therapy roadmaps for child developmental support.</p>
+        <p class="page-subtitle">Structured, goal-oriented therapy roadmaps integrating pediatric clinical evaluations and teacher classroom observations.</p>
       </div>
       <button class="btn btn-primary" onclick="window.showCreateTherapyPlanModal()">+ New Therapy Plan</button>
     </div>
@@ -1803,29 +1803,70 @@ window.renderTherapyPlansView = function() {
       ${plans.map(p => {
         const child = window.neuroDB.getChildById(p.child_id);
         const therapist = window.neuroDB.getUserById(p.therapist_id);
+        const teacherObs = window.neuroDB.getTeacherObservations({ child_id: p.child_id });
+        const latestObs = teacherObs && teacherObs.length > 0 ? teacherObs[0] : null;
+
         return `
-          <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-              <div>
-                <span class="badge ${p.status === 'Active' ? 'badge-active' : 'badge-on-hold'}" style="margin-bottom: 6px;">${p.status}</span>
-                <h3 style="font-size: 16px; font-weight: 800; color: var(--slate-900);">${p.title}</h3>
-                <div style="font-size: 12px; color: var(--slate-500);">Child: <strong>${child ? child.first_name + ' ' + child.last_name : 'N/A'}</strong> &bull; Clinician: ${therapist ? therapist.full_name : ''}</div>
+          <div class="card" style="padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; display: flex; flex-direction: column; justify-content: space-between;">
+            <div>
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                <div>
+                  <span class="badge ${p.status === 'Active' ? 'badge-success' : 'badge-neutral'}" style="margin-bottom: 6px; font-size: 11px;">${p.status}</span>
+                  <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin-bottom: 2px;">${p.title}</h3>
+                  <div style="font-size: 12px; color: #64748b;">
+                    Child: <strong>${child ? child.first_name + ' ' + child.last_name : 'N/A'}</strong> (${child?.child_code || ''}) &bull; Frequency: <strong>${p.frequency || '2x Weekly'}</strong>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Supporting Teacher Classroom Observation Context -->
+              ${latestObs ? `
+                <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-left: 3.5px solid #8b5cf6; border-radius: 8px; padding: 10px 12px; margin-bottom: 14px; font-size: 12px;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <span style="font-weight: 700; color: #5b21b6; text-transform: uppercase; font-size: 11px; display: flex; align-items: center; gap: 4px;">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                      Teacher Classroom Insight Considered (${latestObs.observation_date})
+                    </span>
+                    <span style="font-size: 10.5px; font-weight: 700; color: #6b21a8; background: #ffffff; padding: 1px 6px; border-radius: 4px; border: 1px solid #ddd6fe;">
+                      ${latestObs.overall_severity}
+                    </span>
+                  </div>
+                  <p style="color: #3b0764; margin: 0 0 4px; line-height: 1.4; font-style: italic;">
+                    "${latestObs.educator_notes}"
+                  </p>
+                  <div style="font-size: 11px; color: #7c3aed;">
+                    Context: ${latestObs.environmental_context?.activity_type || 'Classroom'} &bull; Noise: ${latestObs.environmental_context?.noise_level || 'Moderate'}
+                  </div>
+                </div>
+              ` : ''}
+
+              <!-- Milestone Goals -->
+              <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+                ${(p.goals || []).map(g => `
+                  <div style="background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 10px; padding: 10px 12px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; margin-bottom: 6px;">
+                      <span style="color: #334155;">${g.goal_text || g.title}</span>
+                      <span style="color: #2563eb; font-weight: 800;">${g.progress_pct || 0}%</span>
+                    </div>
+                    <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 9999px; overflow: hidden; margin-bottom: 6px;">
+                      <div style="width: ${g.progress_pct || 0}%; height: 100%; background: linear-gradient(90deg, #3b82f6, #10b981); border-radius: 9999px;"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: #94a3b8;">
+                      <span>Target: ${g.target_date || 'Q2 2026'}</span>
+                      <button class="btn btn-outline btn-sm" onclick="window.showEditGoalModal('${p.id}', '${g.id}')" style="font-size: 10.5px; padding: 2px 6px;">
+                        Update %
+                      </button>
+                    </div>
+                  </div>
+                `).join('')}
               </div>
             </div>
 
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
-              ${(p.goals || []).map(g => `
-                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); padding: 10px 12px;">
-                  <div style="display: flex; justify-content: space-between; font-size: 12.5px; font-weight: 700; margin-bottom: 4px;">
-                    <span>${g.title}</span>
-                    <span style="color: var(--primary-600);">${g.progress_pct}%</span>
-                  </div>
-                  <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${g.progress_pct}%;"></div></div>
-                </div>
-              `).join('')}
+            <div style="display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+              <button class="btn btn-primary btn-sm" onclick="window.showLogTherapySessionModal('${p.id}')">
+                + Log Session
+              </button>
             </div>
-
-            <button class="btn btn-outline btn-sm" onclick="window.openChildProfileTab('${p.child_id}', 'therapy-plan')">Manage Plan</button>
           </div>
         `;
       }).join('')}

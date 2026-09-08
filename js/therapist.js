@@ -378,15 +378,20 @@ window.showCreateTherapyPlanModal = function(childId) {
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
         <div>
           <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Child Patient *</label>
-          <select id="plan-child-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" required>
+          <select id="plan-child-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" onchange="window.updatePlanModalTeacherContext(this.value)" required>
             ${children.map(c => `<option value="${c.id}" ${c.id === selectedChildId ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
           </select>
         </div>
 
         <div>
           <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Plan Title *</label>
-          <input type="text" id="plan-title" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Speech & Sensory Integration Plan" required>
+          <input type="text" id="plan-title" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Speech & Sensory Integration Plan" value="Pediatric Developmental Therapy Plan" required>
         </div>
+      </div>
+
+      <!-- Supporting Teacher Observation Insights Callout -->
+      <div id="plan-teacher-context-container" style="margin-bottom: 16px;">
+        <!-- Dynamically rendered teacher observation context -->
       </div>
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
@@ -402,17 +407,17 @@ window.showCreateTherapyPlanModal = function(childId) {
 
         <div>
           <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Therapist Focus Area</label>
-          <input type="text" id="plan-focus-area" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Expressive Language & Joint Attention">
+          <input type="text" id="plan-focus-area" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Expressive Language & Sensory Modulation" value="Expressive Communication & Classroom Regulation">
         </div>
       </div>
 
       <!-- Initial Goals Section -->
       <div style="margin-bottom: 16px;">
         <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Target Goal 1 *</label>
-        <input type="text" id="plan-goal-1" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; margin-bottom: 8px;" placeholder="e.g. Increase non-verbal pointing gesture across 4 play trials" required>
+        <input type="text" id="plan-goal-1" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; margin-bottom: 8px;" placeholder="e.g. Increase non-verbal pointing gesture across 4 play trials" value="Demonstrate functional non-verbal pointing and expressive requests in 4 of 5 structured trials" required>
         
         <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Target Goal 2</label>
-        <input type="text" id="plan-goal-2" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Tolerate sensory auditory changes during transitions without distress">
+        <input type="text" id="plan-goal-2" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Tolerate sensory auditory changes during transitions without distress" value="Maintain calm sensory self-regulation during classroom group activity transitions">
       </div>
     </form>
   `;
@@ -423,6 +428,75 @@ window.showCreateTherapyPlanModal = function(childId) {
   `;
 
   window.openModal('Create Individualized Therapy Plan', bodyHtml, footerHtml);
+  window.updatePlanModalTeacherContext(selectedChildId);
+};
+
+window.updatePlanModalTeacherContext = function(childId) {
+  const container = document.getElementById('plan-teacher-context-container');
+  if (!container) return;
+
+  const obsList = window.neuroDB.getTeacherObservations({ child_id: childId });
+  if (!obsList || obsList.length === 0) {
+    container.innerHTML = `
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #64748b;">
+        <span>ℹ️ No classroom observations logged yet for this child by educators.</span>
+      </div>
+    `;
+    return;
+  }
+
+  const latest = obsList[0];
+  const teacher = window.neuroDB.getUserById(latest.teacher_id);
+  const sevColor = latest.overall_severity === 'Significant Concern' ? '#ef4444' : (latest.overall_severity === 'Moderate Concern' ? '#f59e0b' : '#10b981');
+  const sevBg = latest.overall_severity === 'Significant Concern' ? '#fee2e2' : (latest.overall_severity === 'Moderate Concern' ? '#fef3c7' : '#ecfdf5');
+
+  container.innerHTML = `
+    <div style="background: #f5f3ff; border: 1px solid #ddd6fe; border-left: 4px solid #8b5cf6; border-radius: 8px; padding: 12px 14px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span style="font-size: 12px; font-weight: 700; color: #5b21b6; text-transform: uppercase; display: flex; align-items: center; gap: 6px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Teacher Classroom Observation Considered (${latest.observation_date})
+        </span>
+        <span style="background: ${sevBg}; color: ${sevColor}; font-size: 11px; font-weight: 700; padding: 2px 7px; border-radius: 4px;">
+          ${latest.overall_severity}
+        </span>
+      </div>
+      
+      <p style="font-size: 12.5px; color: #3b0764; margin: 0 0 8px; line-height: 1.45; font-style: italic;">
+        "${latest.educator_notes || 'Observed classroom routines and peer interaction.'}"
+      </p>
+
+      <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
+        <span style="font-size: 11px; color: #6b21a8; font-weight: 600;">Setting: ${latest.environmental_context?.activity_type || 'Classroom'} (${latest.environmental_context?.noise_level || 'Moderate'})</span>
+        ${latest.triggers?.challenging ? `<span style="font-size: 11px; background: #fee2e2; color: #b91c1c; padding: 1px 6px; border-radius: 4px;">Trigger: ${latest.triggers.challenging}</span>` : ''}
+        ${latest.triggers?.positive ? `<span style="font-size: 11px; background: #ecfdf5; color: #047857; padding: 1px 6px; border-radius: 4px;">Worked: ${latest.triggers.positive}</span>` : ''}
+      </div>
+
+      <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #ddd6fe; display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-outline btn-sm" onclick="window.applyTeacherObservationGoalToPlan('sensory', '${(latest.triggers?.challenging || 'sensory triggers in class').replace(/'/g, "\\'")}')" style="font-size: 11px; padding: 2px 8px; background: #ffffff; color: #6b21a8; border-color: #c4b5fd;">
+          + Apply Sensory Transition Goal
+        </button>
+        <button type="button" class="btn btn-outline btn-sm" onclick="window.applyTeacherObservationGoalToPlan('social', 'peer play & turn-taking during group activities')" style="font-size: 11px; padding: 2px 8px; background: #ffffff; color: #6b21a8; border-color: #c4b5fd;">
+          + Apply Peer Social Interaction Goal
+        </button>
+      </div>
+    </div>
+  `;
+};
+
+window.applyTeacherObservationGoalToPlan = function(type, detail) {
+  const goal2Input = document.getElementById('plan-goal-2');
+  const focusInput = document.getElementById('plan-focus-area');
+
+  if (type === 'sensory') {
+    if (goal2Input) goal2Input.value = `Reduce sensory avoidance and tolerate ${detail} across 3 consecutive therapy sessions`;
+    if (focusInput) focusInput.value = `Sensory Integration & Environmental Regulation (${detail})`;
+    if (window.showToast) window.showToast('Goal updated with teacher sensory observation findings!', 'info');
+  } else if (type === 'social') {
+    if (goal2Input) goal2Input.value = `Engage in reciprocal peer play and shared attention for at least 8 minutes without withdrawal`;
+    if (focusInput) focusInput.value = `Social-Emotional Reciprocity & Peer Engagement`;
+    if (window.showToast) window.showToast('Goal updated with teacher social interaction findings!', 'info');
+  }
 };
 
 window.handleCreateTherapyPlan = function(event) {
