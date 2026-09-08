@@ -107,33 +107,37 @@ window.renderMessagingView = function(selectedChildId, selectedReceiverId = null
 
   const activeChildId = selectedChildId || availableChildren[0].id;
   const activeChild = window.neuroDB.getChildById(activeChildId);
-  const parent = window.neuroDB.getUserById(activeChild.primary_parent_id);
-  const therapist = window.neuroDB.getUserById(activeChild.assigned_therapist_id);
+  const parent = window.neuroDB.getUserById(activeChild.primary_parent_id) || window.neuroDB.getUsers().find(u => u.role === 'Parent / Caregiver');
+  const therapist = window.neuroDB.getUserById(activeChild.assigned_therapist_id) || window.neuroDB.getUsers().find(u => u.role === 'Therapist');
   const teacher = window.neuroDB.getUserById(activeChild.assigned_teacher_id) || window.neuroDB.getUsers().find(u => u.role === 'Teacher');
 
   // Determine potential conversation partners on this child's care team
   const careTeam = [];
-  if (therapist && therapist.id !== currentUser.id) careTeam.push({ role: 'Therapist', user: therapist });
-  if (parent && parent.id !== currentUser.id) careTeam.push({ role: 'Parent / Caregiver', user: parent });
-  if (teacher && teacher.id !== currentUser.id) careTeam.push({ role: 'Classroom Teacher', user: teacher });
+  if (therapist && therapist.id !== currentUser.id) careTeam.push({ label: 'Therapist', roleText: 'Clinical Therapist', user: therapist });
+  if (teacher && teacher.id !== currentUser.id) careTeam.push({ label: 'Classroom Teacher', roleText: 'Special Educator', user: teacher });
+  if (parent && parent.id !== currentUser.id) careTeam.push({ label: 'Parent / Caregiver', roleText: 'Primary Family Contact', user: parent });
 
   let otherPerson = null;
   if (selectedReceiverId) {
     otherPerson = window.neuroDB.getUserById(selectedReceiverId);
-  } else if (careTeam.length > 0) {
+  }
+  if (!otherPerson && careTeam.length > 0) {
     otherPerson = careTeam[0].user;
   }
 
-  const messages = window.neuroDB.getMessages(activeChild.id);
+  // Strictly query messages between currentUser and otherPerson for this specific child
+  const messages = window.neuroDB.getMessages(activeChild.id, currentUser.id, otherPerson ? otherPerson.id : null);
 
-  // Mark incoming messages as read
-  window.neuroDB.markMessagesRead(activeChild.id, currentUser.id);
+  // Mark incoming messages as read for this specific partner
+  if (otherPerson) {
+    window.neuroDB.markMessagesRead(activeChild.id, currentUser.id, otherPerson.id);
+  }
 
   return `
     <div class="page-header">
       <div>
         <h1 class="page-title">Multidisciplinary Collaboration Messages</h1>
-        <p class="page-subtitle">Secure, confidential messaging connecting clinical therapists, educators, and families for child care coordination.</p>
+        <p class="page-subtitle">Direct, confidential messaging between clinical therapists, classroom teachers, and parents.</p>
       </div>
     </div>
 
@@ -148,7 +152,7 @@ window.renderMessagingView = function(selectedChildId, selectedReceiverId = null
             const isSelected = c.id === activeChild.id;
 
             return `
-              <div onclick="window.navigateTo('messages', { childId: '${c.id}' })" 
+              <div onclick="window.navigateTo('messages', { childId: '${c.id}', receiverId: '${otherPerson ? otherPerson.id : ''}' })" 
                    style="padding: 12px 14px; border-radius: var(--radius-md); border: 1px solid ${isSelected ? 'var(--primary-500)' : 'var(--slate-200)'}; background: ${isSelected ? 'var(--primary-50)' : 'var(--white)'}; cursor: pointer; transition: var(--transition);">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                   <div style="font-weight: 700; font-size: 13.5px; color: var(--slate-900);">${c.first_name} ${c.last_name}</div>
@@ -167,44 +171,49 @@ window.renderMessagingView = function(selectedChildId, selectedReceiverId = null
       <div class="chat-container">
         <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="user-avatar" style="width: 36px; height: 36px; font-size: 13px;">${otherPerson ? otherPerson.full_name.charAt(0) : 'C'}</div>
+            <div class="user-avatar" style="width: 38px; height: 38px; font-size: 14px; font-weight: 700;">${otherPerson ? otherPerson.full_name.charAt(0) : 'C'}</div>
             <div>
-              <div style="font-weight: 700; font-size: 14px;">${otherPerson ? `${otherPerson.full_name} (${otherPerson.role})` : 'Care Team Specialist'}</div>
-              <div style="font-size: 11.5px; color: #38bdf8;">Child: ${activeChild.first_name} ${activeChild.last_name} (${activeChild.child_code})</div>
+              <div style="font-weight: 700; font-size: 14px; color: #ffffff;">${otherPerson ? otherPerson.full_name : 'Care Team Specialist'}</div>
+              <div style="font-size: 11.5px; color: #93c5fd;">
+                Role: <strong>${otherPerson ? otherPerson.role : 'Specialist'}</strong> &bull; Child: <strong>${activeChild.first_name} ${activeChild.last_name} (${activeChild.child_code})</strong>
+              </div>
             </div>
           </div>
 
-          <!-- Recipient Switcher Pills -->
-          <div style="display: flex; gap: 6px;">
-            ${careTeam.map(member => `
-              <button class="btn btn-outline btn-sm" onclick="window.navigateTo('messages', { childId: '${activeChild.id}', receiverId: '${member.user.id}' })" style="font-size: 11px; padding: 3px 8px; ${otherPerson?.id === member.user.id ? 'background: #eff6ff; color: #2563eb; border-color: #2563eb; font-weight: 700;' : ''}">
-                ${member.role.split(' ')[0]}
-              </button>
-            `).join('')}
+          <!-- Recipient Switcher Tabs -->
+          <div style="display: flex; gap: 6px; background: rgba(255,255,255,0.08); padding: 4px; border-radius: 8px;">
+            ${careTeam.map(member => {
+              const isActive = otherPerson?.id === member.user.id;
+              return `
+                <button type="button" class="btn btn-sm" onclick="window.navigateTo('messages', { childId: '${activeChild.id}', receiverId: '${member.user.id}' })" style="font-size: 11.5px; padding: 4px 10px; border-radius: 6px; ${isActive ? 'background: #2563eb; color: #ffffff; font-weight: 700; border: 1px solid #3b82f6;' : 'background: transparent; color: #cbd5e1; border: 1px solid transparent;'}">
+                  ${member.label}
+                </button>
+              `;
+            }).join('')}
           </div>
         </div>
 
-        <div class="chat-messages" id="chat-messages-container">
+        <div class="chat-messages" id="chat-messages-container" style="min-height: 280px; max-height: 420px; overflow-y: auto;">
           ${messages.length > 0 ? messages.map(m => {
             const isSentByMe = m.sender_id === currentUser.id;
             const sender = window.neuroDB.getUserById(m.sender_id);
             return `
               <div class="message-bubble ${isSentByMe ? 'sent' : 'received'}">
-                <div style="font-size: 11px; font-weight: 700; opacity: 0.85; margin-bottom: 3px;">${isSentByMe ? 'You' : (sender ? sender.full_name : 'Clinician')}</div>
+                <div style="font-size: 11px; font-weight: 700; opacity: 0.85; margin-bottom: 3px;">${isSentByMe ? 'You' : (sender ? sender.full_name : 'Care Team')}</div>
                 <div>${m.message_text}</div>
                 <span class="message-time">${new Date(m.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
               </div>
             `;
           }).join('') : `
-            <div style="text-align: center; color: var(--slate-400); font-size: 13px; margin: auto;">
-              No messages yet in this consultation thread. Start the conversation below.
+            <div style="text-align: center; color: var(--slate-400); font-size: 13px; margin: auto; padding: 30px;">
+              No messages yet in this consultation thread between you and ${otherPerson ? otherPerson.full_name : 'the specialist'}. Start the conversation below.
             </div>
           `}
         </div>
 
         <form class="chat-input-bar" onsubmit="window.handleSendMessage(event, '${activeChild.id}', '${otherPerson ? otherPerson.id : ''}')">
-          <input type="text" id="chat-message-input" class="form-control" placeholder="Type your message regarding ${activeChild.first_name}'s therapy..." required autocomplete="off">
-          <button type="submit" class="btn btn-primary">
+          <input type="text" id="chat-message-input" class="form-control" placeholder="Type your message to ${otherPerson ? otherPerson.full_name.split(' ')[0] : 'care team'} regarding ${activeChild.first_name}..." required autocomplete="off">
+          <button type="submit" class="btn btn-primary" style="display: flex; align-items: center; gap: 6px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             Send
           </button>
@@ -240,7 +249,7 @@ window.handleSendMessage = function(e, childId, receiverId) {
     link: '#messages'
   });
 
-  window.renderCurrentView();
+  window.navigateTo('messages', { childId: childId, receiverId: receiverId });
   setTimeout(() => {
     const container = document.getElementById('chat-messages-container');
     if (container) container.scrollTop = container.scrollHeight;

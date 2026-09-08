@@ -600,6 +600,33 @@ const INITIAL_DB_DATA = {
       message_text: 'Yes, exactly! Give him verbal praise immediately ("Great pointing, Aarav!") and hand him the cup within 2 seconds to reinforce the connection.',
       is_read: 0,
       created_at: '2026-02-08T11:20:00Z'
+    },
+    {
+      id: 'msg_604',
+      sender_id: 'usr_teacher_1',
+      receiver_id: 'usr_parent_1',
+      child_id: 'ch_101',
+      message_text: 'Hello Mrs. Sharma! Aarav had a calm morning during classroom story time today. He used his visual schedule card independently when moving to art time.',
+      is_read: 1,
+      created_at: '2026-02-09T08:30:00Z'
+    },
+    {
+      id: 'msg_605',
+      sender_id: 'usr_parent_1',
+      receiver_id: 'usr_teacher_1',
+      child_id: 'ch_101',
+      message_text: 'Thank you Mr. Marcus for the update! We are practicing the visual schedule card at home before breakfast as well.',
+      is_read: 1,
+      created_at: '2026-02-09T09:10:00Z'
+    },
+    {
+      id: 'msg_606',
+      sender_id: 'usr_teacher_1',
+      receiver_id: 'usr_therapist_1',
+      child_id: 'ch_101',
+      message_text: 'Hi Dr. Aisha, I noticed Aarav showed mild auditory sensitivity during the fire drill rehearsal today. Do you recommend noise-cancelling headphones for loud school bells?',
+      is_read: 1,
+      created_at: '2026-02-10T11:00:00Z'
     }
   ],
 
@@ -1067,10 +1094,18 @@ class NeurospectraDB {
   }
 
   // --- Messages Queries ---
-  getMessages(childId) {
+  getMessages(childId, userA_Id = null, userB_Id = null) {
     let msgs = this.getData().messages || [];
     if (childId) {
       msgs = msgs.filter(m => m.child_id === childId);
+    }
+    if (userA_Id && userB_Id) {
+      msgs = msgs.filter(m => 
+        (m.sender_id === userA_Id && m.receiver_id === userB_Id) ||
+        (m.sender_id === userB_Id && m.receiver_id === userA_Id)
+      );
+    } else if (userA_Id) {
+      msgs = msgs.filter(m => m.sender_id === userA_Id || m.receiver_id === userA_Id);
     }
     return msgs.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
   }
@@ -1092,11 +1127,12 @@ class NeurospectraDB {
     return newMsg;
   }
 
-  markMessagesRead(childId, currentUserId) {
+  markMessagesRead(childId, currentUserId, otherUserId = null) {
     const data = this.getData();
     let updated = false;
     (data.messages || []).forEach(m => {
-      if (m.child_id === childId && m.receiver_id === currentUserId && !m.is_read) {
+      const matchOther = !otherUserId || m.sender_id === otherUserId;
+      if (m.child_id === childId && m.receiver_id === currentUserId && matchOther && !m.is_read) {
         m.is_read = 1;
         updated = true;
       }
