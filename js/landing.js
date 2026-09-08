@@ -8,7 +8,7 @@ window.renderLandingPage = function() {
     <div class="landing-page-exact" style="background-color: #ffffff; color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden;">
       
       <!-- Top Navigation Header -->
-      <nav style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 18px 48px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 38px; z-index: 500;">
+      <nav style="background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 18px 48px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 500;">
         <!-- Brand Logo -->
         <div>
           ${window.renderBrandLogo ? window.renderBrandLogo('light', 'large', true) : `<span style="font-size: 20px; font-weight: 800; color: #0f172a;">NEURO<span style="color:#2563eb;">SPECTRA</span></span>`}
