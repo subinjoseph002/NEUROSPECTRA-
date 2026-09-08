@@ -742,7 +742,7 @@ window.renderRouteContent = function() {
   }
 
   if (route === 'messages') {
-    return window.renderMessagingView(params.childId);
+    return window.renderMessagingView(params.childId, params.receiverId);
   }
 
   if (route === 'profile' || route === 'settings') {

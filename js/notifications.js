@@ -78,8 +78,8 @@ window.handleNotificationClick = function(id, link) {
   }
 };
 
-// Messaging Interface (Parent <-> Therapist)
-window.renderMessagingView = function(selectedChildId) {
+// Messaging Interface (Multidisciplinary: Teacher <-> Therapist <-> Parent)
+window.renderMessagingView = function(selectedChildId, selectedReceiverId = null) {
   const currentUser = window.neuroAuth.getCurrentUser();
   const children = window.neuroDB.getChildren();
   
@@ -89,6 +89,9 @@ window.renderMessagingView = function(selectedChildId) {
     availableChildren = children.filter(c => c.primary_parent_id === currentUser.id);
   } else if (currentUser.role === 'Therapist') {
     availableChildren = children.filter(c => c.assigned_therapist_id === currentUser.id);
+  } else if (currentUser.role === 'Teacher') {
+    availableChildren = children.filter(c => c.assigned_teacher_id === currentUser.id);
+    if (availableChildren.length === 0) availableChildren = children;
   } else {
     availableChildren = children;
   }
@@ -106,18 +109,31 @@ window.renderMessagingView = function(selectedChildId) {
   const activeChild = window.neuroDB.getChildById(activeChildId);
   const parent = window.neuroDB.getUserById(activeChild.primary_parent_id);
   const therapist = window.neuroDB.getUserById(activeChild.assigned_therapist_id);
+  const teacher = window.neuroDB.getUserById(activeChild.assigned_teacher_id) || window.neuroDB.getUsers().find(u => u.role === 'Teacher');
+
+  // Determine potential conversation partners on this child's care team
+  const careTeam = [];
+  if (therapist && therapist.id !== currentUser.id) careTeam.push({ role: 'Therapist', user: therapist });
+  if (parent && parent.id !== currentUser.id) careTeam.push({ role: 'Parent / Caregiver', user: parent });
+  if (teacher && teacher.id !== currentUser.id) careTeam.push({ role: 'Classroom Teacher', user: teacher });
+
+  let otherPerson = null;
+  if (selectedReceiverId) {
+    otherPerson = window.neuroDB.getUserById(selectedReceiverId);
+  } else if (careTeam.length > 0) {
+    otherPerson = careTeam[0].user;
+  }
+
   const messages = window.neuroDB.getMessages(activeChild.id);
 
   // Mark incoming messages as read
   window.neuroDB.markMessagesRead(activeChild.id, currentUser.id);
 
-  const otherPerson = currentUser.role === 'Therapist' ? parent : therapist;
-
   return `
     <div class="page-header">
       <div>
-        <h1 class="page-title">Secure Clinical Communication</h1>
-        <p class="page-subtitle">Direct, confidential messaging between assigned therapist and caregiver with child context.</p>
+        <h1 class="page-title">Multidisciplinary Collaboration Messages</h1>
+        <p class="page-subtitle">Secure, confidential messaging connecting clinical therapists, educators, and families for child care coordination.</p>
       </div>
     </div>
 
@@ -125,13 +141,10 @@ window.renderMessagingView = function(selectedChildId) {
       <!-- Left: Conversations List -->
       <div class="card" style="padding: 16px;">
         <div style="font-weight: 700; font-size: 13.5px; color: var(--slate-900); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100);">
-          Active Child Conversations
+          Active Child Care Cases
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px;">
           ${availableChildren.map(c => {
-            const childParent = window.neuroDB.getUserById(c.primary_parent_id);
-            const childTherapist = window.neuroDB.getUserById(c.assigned_therapist_id);
-            const counterpart = currentUser.role === 'Therapist' ? childParent : childTherapist;
             const isSelected = c.id === activeChild.id;
 
             return `
@@ -141,8 +154,8 @@ window.renderMessagingView = function(selectedChildId) {
                   <div style="font-weight: 700; font-size: 13.5px; color: var(--slate-900);">${c.first_name} ${c.last_name}</div>
                   <span class="badge ${isSelected ? 'badge-active' : 'badge-neutral'}" style="font-size: 10px;">${c.child_code}</span>
                 </div>
-                <div style="font-size: 12px; color: var(--slate-600); margin-top: 3px;">
-                  With: ${counterpart ? counterpart.full_name : 'Unassigned'}
+                <div style="font-size: 11.5px; color: var(--slate-600); margin-top: 3px;">
+                  Care Team: Therapist, Teacher & Parent
                 </div>
               </div>
             `;
@@ -152,13 +165,22 @@ window.renderMessagingView = function(selectedChildId) {
 
       <!-- Right: Active Chat Window -->
       <div class="chat-container">
-        <div class="chat-header">
+        <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
           <div style="display: flex; align-items: center; gap: 12px;">
             <div class="user-avatar" style="width: 36px; height: 36px; font-size: 13px;">${otherPerson ? otherPerson.full_name.charAt(0) : 'C'}</div>
             <div>
-              <div style="font-weight: 700; font-size: 14px;">${otherPerson ? otherPerson.full_name : 'Clinical Specialist'}</div>
-              <div style="font-size: 11.5px; color: #38bdf8;">Patient: ${activeChild.first_name} ${activeChild.last_name} (${activeChild.child_code})</div>
+              <div style="font-weight: 700; font-size: 14px;">${otherPerson ? `${otherPerson.full_name} (${otherPerson.role})` : 'Care Team Specialist'}</div>
+              <div style="font-size: 11.5px; color: #38bdf8;">Child: ${activeChild.first_name} ${activeChild.last_name} (${activeChild.child_code})</div>
             </div>
+          </div>
+
+          <!-- Recipient Switcher Pills -->
+          <div style="display: flex; gap: 6px;">
+            ${careTeam.map(member => `
+              <button class="btn btn-outline btn-sm" onclick="window.navigateTo('messages', { childId: '${activeChild.id}', receiverId: '${member.user.id}' })" style="font-size: 11px; padding: 3px 8px; ${otherPerson?.id === member.user.id ? 'background: #eff6ff; color: #2563eb; border-color: #2563eb; font-weight: 700;' : ''}">
+                ${member.role.split(' ')[0]}
+              </button>
+            `).join('')}
           </div>
         </div>
 
