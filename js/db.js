@@ -687,6 +687,17 @@ class NeurospectraDB {
           modified = true;
         }
         if (data.users) {
+          if (!data.users.find(u => u.id === 'usr_parent_3' || u.email === 'lin.chen@gmail.com')) {
+            const lin = INITIAL_DB_DATA.users.find(u => u.id === 'usr_parent_3');
+            if (lin) data.users.push(lin);
+            modified = true;
+          }
+          if (!data.users.find(u => u.id === 'usr_parent_2' || u.email === 'david.miller@gmail.com')) {
+            const david = INITIAL_DB_DATA.users.find(u => u.id === 'usr_parent_2');
+            if (david) data.users.push(david);
+            modified = true;
+          }
+
           const userPhoneMap = {
             'usr_admin_1': '+91 98201 45672',
             'usr_therapist_1': '+91 98451 89234',
@@ -744,9 +755,19 @@ class NeurospectraDB {
             'ch_103': 'Lin Chen (+91 98190 38472)',
             'ch_104': 'Anita Patel (+91 98711 52938)'
           };
+          const childParentMap = {
+            'ch_101': 'usr_parent_1', // Aarav Sharma -> Priya Sharma
+            'ch_102': 'usr_parent_2', // Liam Miller -> David Miller
+            'ch_103': 'usr_parent_3', // Maya Chen -> Lin Chen
+            'ch_104': 'usr_parent_1'  // Noah Patel -> Priya Sharma
+          };
           data.children.forEach(c => {
             if (childEmergencyMap[c.id] && c.emergency_contact !== childEmergencyMap[c.id]) {
               c.emergency_contact = childEmergencyMap[c.id];
+              modified = true;
+            }
+            if (childParentMap[c.id] && c.primary_parent_id !== childParentMap[c.id]) {
+              c.primary_parent_id = childParentMap[c.id];
               modified = true;
             }
             if (!c.assigned_teacher_id) {
