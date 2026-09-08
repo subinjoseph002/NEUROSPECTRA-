@@ -16,11 +16,18 @@ export const LoginPage = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, touchedFields },
   } = useForm({
     resolver: zodResolver(loginSchema),
     mode: 'onBlur',
   });
+
+  const fillDemo = (email, password) => {
+    setValue('email', email, { shouldValidate: true });
+    setValue('password', password, { shouldValidate: true });
+    setServerError('');
+  };
 
   const onSubmit = async (data) => {
     setServerError('');
@@ -96,12 +103,59 @@ export const LoginPage = () => {
 
       {/* Right Login Form Container */}
       <div className="flex items-center justify-center p-6 sm:p-12 bg-white">
-        <div className="w-full max-w-md space-y-8">
+        <div className="w-full max-w-md space-y-6">
           
           {/* Header */}
-          <div className="text-left space-y-2">
+          <div className="text-left space-y-1">
             <h2 className="text-2xl font-extrabold text-slate-900 tracking-tight">Welcome back</h2>
             <p className="text-sm text-slate-500">Sign in to access your authorized clinical dashboard</p>
+          </div>
+
+          {/* Quick Demo Autofill Selector */}
+          <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+              <span className="text-blue-600 flex items-center gap-1">⚡ Quick Demo Autofill</span>
+              <span className="text-[10px] text-slate-400 font-medium">Click to fill</span>
+            </div>
+            <div className="grid grid-cols-3 gap-1.5">
+              <button
+                type="button"
+                onClick={() => fillDemo('therapist@neurospectra.org', 'therapist123')}
+                className="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+              >
+                🩺 Therapist
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemo('teacher@neurospectra.org', 'teacher123')}
+                className="px-2 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+              >
+                🎓 Teacher
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemo('parent@neurospectra.org', 'parent123')}
+                className="px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+              >
+                👨‍👩‍👧 Parent
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-1.5">
+              <button
+                type="button"
+                onClick={() => fillDemo('receptionist@neurospectra.org', 'receptionist123')}
+                className="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+              >
+                📋 Receptionist
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemo('admin@neurospectra.org', 'admin123')}
+                className="px-2 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+              >
+                👑 Admin
+              </button>
+            </div>
           </div>
 
           {/* Backend Error Banner */}

@@ -17,9 +17,6 @@ export const App = () => {
     <Router>
       <AuthProvider>
         <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-          {/* Top 1-Click Clinical Evaluation Switcher */}
-          <DemoSwitcher />
-
           {/* Route Outlet */}
           <div className="flex-1 flex flex-col">
             <Routes>

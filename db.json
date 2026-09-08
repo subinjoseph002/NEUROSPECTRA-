@@ -1,4 +1,4 @@
-{
+﻿{
     "users":  [
                   {
                       "id":  "usr_admin_1",
@@ -7,7 +7,7 @@
                       "role":  "Administrator",
                       "phone":  "+91 98201 45672",
                       "is_active":  1,
-                      "avatar_url":  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256"
+                      "avatar_url":  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
                   },
                   {
                       "id":  "usr_therapist_1",
@@ -16,7 +16,7 @@
                       "role":  "Therapist",
                       "phone":  "+91 98451 89234",
                       "is_active":  1,
-                      "avatar_url":  "https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256"
+                      "avatar_url":  "https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
                   },
                   {
                       "id":  "usr_therapist_2",
@@ -25,7 +25,7 @@
                       "role":  "Therapist",
                       "phone":  "+91 97114 62890",
                       "is_active":  1,
-                      "avatar_url":  "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256"
+                      "avatar_url":  "https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
                   },
                   {
                       "id":  "usr_receptionist_1",
@@ -34,7 +34,7 @@
                       "role":  "Receptionist",
                       "phone":  "+91 98230 41589",
                       "is_active":  1,
-                      "avatar_url":  "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256"
+                      "avatar_url":  "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
                   },
                   {
                       "id":  "usr_parent_1",
@@ -43,7 +43,7 @@
                       "role":  "Parent / Caregiver",
                       "phone":  "+91 94471 63820",
                       "is_active":  1,
-                      "avatar_url":  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256"
+                      "avatar_url":  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
                   },
                   {
                       "id":  "usr_parent_2",
@@ -52,7 +52,7 @@
                       "role":  "Parent / Caregiver",
                       "phone":  "+91 99802 75419",
                       "is_active":  1,
-                      "avatar_url":  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=256"
+                      "avatar_url":  "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
                   },
                   {
                       "id":  "usr_parent_3",
@@ -61,7 +61,7 @@
                       "role":  "Parent / Caregiver",
                       "phone":  "+91 98190 38472",
                       "is_active":  1,
-                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256"
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
                   },
                   {
                       "id":  "usr_teacher_1",
@@ -70,13 +70,13 @@
                       "role":  "Teacher",
                       "phone":  "+91 98300 94165",
                       "is_active":  1,
-                      "avatar_url":  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256"
+                      "avatar_url":  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format\u0026fit=crop\u0026q=80\u0026w=256"
                   },
                   {
                       "id":  "usr_test_demo",
                       "full_name":  "Ananya Roy",
                       "phone":  "+91 98920 18472",
-                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
                       "is_active":  1,
                       "email":  "ananya.roy@example.com",
                       "role":  "Parent / Caregiver"
@@ -88,41 +88,16 @@
                       "password_hash":  "Rich@1",
                       "role":  "Therapist",
                       "phone":  "+91 97412 83910",
-                      "avatar_url":  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=256",
+                      "avatar_url":  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format\u0026fit=crop\u0026q=80\u0026w=256",
                       "is_active":  1,
                       "created_at":  "2026-08-14T08:53:26.750Z",
                       "updated_at":  "2026-08-14T08:53:26.750Z"
                   },
                   {
-                      "id":  "usr_msspnvwumhd8",
-                      "full_name":  "Edson",
-                      "email":  "edson@example",
-                      "password_hash":  "Edson@1",
-                      "role":  "Parent / Caregiver",
-                      "phone":  "+91 98402 71829",
-                      "avatar_url":  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=256",
-                      "is_active":  1,
-                      "created_at":  "2026-08-14T08:54:33.294Z",
-                      "updated_at":  "2026-08-14T08:54:33.294Z"
-                  },
-                  {
-                      "id":  "usr_msssyhj9w08t",
-                      "full_name":  "Prince",
-                      "email":  "prince@example.com",
-                      "password_hash":  "nshash_52ae6723_UHJpbmNlQDE",
-                      "raw_pwd_hash":  "Prince@1",
-                      "role":  "Parent / Caregiver",
-                      "phone":  "+91 98435 67891",
-                      "avatar_url":  "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=256",
-                      "is_active":  1,
-                      "created_at":  "2026-08-14T10:26:46.725Z",
-                      "updated_at":  "2026-08-14T10:26:46.725Z"
-                  },
-                  {
                       "id":  "usr_msx14vepqzr0",
                       "full_name":  "Subu",
                       "phone":  "+91 85908 36961",
-                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
                       "is_active":  1,
                       "email":  "subinjoseph002@gmail.com",
                       "role":  "Receptionist"
@@ -131,7 +106,7 @@
                       "id":  "usr_auto_test",
                       "full_name":  "Dr. Samuel Evans",
                       "phone":  "+91 91234 56780",
-                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
                       "is_active":  1,
                       "email":  "samuel.evans@neurospectra.org",
                       "role":  "Therapist"
@@ -140,7 +115,7 @@
                       "id":  "usr_msx1qk2g0c6v",
                       "full_name":  "Edson",
                       "phone":  "+91 98573 63678",
-                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
                       "is_active":  1,
                       "email":  "edson@gmail.com",
                       "role":  "Parent / Caregiver"

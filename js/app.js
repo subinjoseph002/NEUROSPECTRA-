@@ -81,10 +81,7 @@ window.renderApp = function() {
       publicContent = window.renderLandingPage();
     }
 
-    root.innerHTML = `
-      ${window.renderDemoBanner()}
-      ${publicContent}
-    `;
+    root.innerHTML = publicContent;
     return;
   }
 
@@ -98,8 +95,7 @@ window.renderApp = function() {
                        currentRole === 'Receptionist' ? 'Clinical Staff' : 'Parent / Family';
 
   root.innerHTML = `
-    ${window.renderDemoBanner()}
-    <div class="app-shell" style="background: #f8fafc; min-height: calc(100vh - 38px);">
+    <div class="app-shell" style="background: #f8fafc; min-height: 100vh;">
       <!-- Exact Dark Navy Figma Sidebar -->
       <aside class="app-sidebar" id="app-sidebar" style="background: #0b1329; border-right: 1px solid rgba(255,255,255,0.06); width: 250px;">
         <div class="sidebar-brand" style="padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center;">
@@ -342,42 +338,72 @@ window.renderLoginPage = function() {
       </div>
 
       <!-- Right Column: Clean White Login Form -->
-      <div style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 48px 64px; background: #ffffff;">
+      <div style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 40px 54px; background: #ffffff;">
         <div style="width: 100%; max-width: 420px;">
           
-          <div style="margin-bottom: 20px;">
+          <div style="margin-bottom: 16px;">
             ${window.renderBrandLogo('light', 'small', false)}
           </div>
 
-          <h2 style="font-size: 30px; font-weight: 800; color: #0f172a; letter-spacing: -0.6px; margin-bottom: 6px;">
+          <h2 style="font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.6px; margin-bottom: 4px;">
             Welcome back
           </h2>
-          <p style="font-size: 14.5px; color: #64748b; margin-bottom: 24px;">
-            Access your personalized clinical dashboard
+          <p style="font-size: 13.5px; color: #64748b; margin-bottom: 18px;">
+            Sign in or choose a demo persona below to autofill credentials
           </p>
+
+          <!-- Interactive Demo Persona Autofill Selector -->
+          <div style="margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px;">
+            <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="display: flex; align-items: center; gap: 5px; color: #2563eb;">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Quick Demo Autofill
+              </span>
+              <span style="font-size: 10.5px; color: #94a3b8; font-weight: 500;">Click to fill fields</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px;">
+              <button type="button" id="demo-btn-therapist" onclick="window.fillDemoCredentials('Therapist')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Dr. Aisha Khan (Therapist)">
+                🩺 Therapist
+              </button>
+              <button type="button" id="demo-btn-teacher" onclick="window.fillDemoCredentials('Teacher')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #bae6fd; background: #f0f9ff; color: #0369a1; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Marcus Brody (Teacher)">
+                🎓 Teacher
+              </button>
+              <button type="button" id="demo-btn-parent" onclick="window.fillDemoCredentials('Parent / Caregiver')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Priya Sharma (Parent)">
+                👨‍👩‍👧 Parent
+              </button>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+              <button type="button" id="demo-btn-receptionist" onclick="window.fillDemoCredentials('Receptionist')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #fde68a; background: #fffbeb; color: #b45309; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Sarah Jenkins (Receptionist)">
+                📋 Receptionist
+              </button>
+              <button type="button" id="demo-btn-admin" onclick="window.fillDemoCredentials('Administrator')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #e9d5ff; background: #faf5ff; color: #7e22ce; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Dr. Eleanor Vance (Admin)">
+                👑 Admin
+              </button>
+            </div>
+          </div>
 
           <!-- Dynamic Form Error Alert -->
           <div id="login-alert-box" style="display: none;"></div>
 
           <form id="login-form" novalidate onsubmit="window.handleLoginForm(event)">
             
-            <div class="form-group" style="margin-bottom: 18px;">
-              <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 8px; display: block;">
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 7px; display: block;">
                 Email Address <span style="color: #ef4444;">*</span>
               </label>
-              <input type="email" id="login-email" class="form-control" placeholder="therapist@hopecenter.com" required value="therapist@neurospectra.org" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateLoginEmail(false)" onblur="window.validateLoginEmail(true)">
+              <input type="email" id="login-email" class="form-control" placeholder="therapist@neurospectra.org" required value="therapist@neurospectra.org" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateLoginEmail(false)" onblur="window.validateLoginEmail(true)">
               <div id="login-email-error" class="field-error-msg" style="display: none;"></div>
             </div>
 
-            <div class="form-group" style="margin-bottom: 18px;">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <div class="form-group" style="margin-bottom: 16px;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
                 <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 0;">
                   Password <span style="color: #ef4444;">*</span>
                 </label>
-                <a href="#" style="font-size: 12.5px; font-weight: 600; color: #2563eb; text-decoration: none;" onclick="window.showToast('Demo Credentials: Use quick switch pills on top banner anytime.', 'info'); return false;">Forgot Password?</a>
+                <a href="#" style="font-size: 12px; font-weight: 600; color: #2563eb; text-decoration: none;" onclick="window.showToast('Click any demo button above to autofill password.', 'info'); return false;">Forgot Password?</a>
               </div>
               <div style="position: relative;">
-                <input type="password" id="login-password" class="form-control" placeholder="••••••••••••" required value="therapist123" style="width: 100%; padding: 12px 42px 12px 16px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateLoginPassword(false)" onblur="window.validateLoginPassword(true)">
+                <input type="password" id="login-password" class="form-control" placeholder="••••••••••••" required value="therapist123" style="width: 100%; padding: 11px 40px 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateLoginPassword(false)" onblur="window.validateLoginPassword(true)">
                 <button type="button" onclick="window.togglePasswordVisibility('login-password', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px; display: flex; align-items: center; justify-content: center;" title="Show/Hide password">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
@@ -386,17 +412,18 @@ window.renderLoginPage = function() {
             </div>
 
             <!-- Keep me logged in Checkbox -->
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 26px;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 22px;">
               <input type="checkbox" id="keep-logged-in" checked style="width: 16px; height: 16px; accent-color: #2563eb; cursor: pointer; border-radius: 4px;">
-              <label for="keep-logged-in" style="font-size: 13.5px; color: #475569; cursor: pointer; user-select: none;">Keep me logged in for 30 days</label>
+              <label for="keep-logged-in" style="font-size: 13px; color: #475569; cursor: pointer; user-select: none;">Keep me logged in for 30 days</label>
             </div>
 
-            <button type="submit" id="btn-login-submit" style="width: 100%; background: #3b82f6; color: #ffffff; font-weight: 700; font-size: 15px; padding: 13px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3); transition: all 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">
-              Login to Platform
+            <button type="submit" id="btn-login-submit" style="width: 100%; background: #2563eb; color: #ffffff; font-weight: 700; font-size: 14.5px; padding: 12px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+              <span>Sign In to Platform</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
 
-          <div style="margin-top: 28px; text-align: center; font-size: 14px; color: #64748b;">
+          <div style="margin-top: 24px; text-align: center; font-size: 13.5px; color: #64748b;">
             Don't have an account? <a href="#" style="font-weight: 700; color: #2563eb; text-decoration: none;" onclick="window.navigateTo('register'); return false;">Register here</a>
           </div>
 
@@ -603,38 +630,49 @@ window.selectRegRole = function(role, btn) {
   }
 };
 
-// Demo Switcher Banner (Compact & Slim)
+// Demo Switcher Banner (Disabled as requested)
 window.renderDemoBanner = function() {
-  const currentRole = window.neuroAuth ? window.neuroAuth.getRole() : '';
+  return '';
+};
 
-  return `
-    <div class="demo-role-banner no-print">
-      <div class="brand-badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-        <span>SWITCH ROLE:</span>
-      </div>
-      <div class="role-pills">
-        <button class="role-pill-btn ${currentRole === 'Administrator' ? 'active' : ''}" onclick="window.switchDemo('Administrator')">
-          👑 Admin
-        </button>
-        <button class="role-pill-btn ${currentRole === 'Therapist' ? 'active' : ''}" onclick="window.switchDemo('Therapist')">
-          🩺 Therapist
-        </button>
-        <button class="role-pill-btn ${currentRole === 'Receptionist' ? 'active' : ''}" onclick="window.switchDemo('Receptionist')">
-          📋 Receptionist
-        </button>
-        <button class="role-pill-btn ${currentRole === 'Parent / Caregiver' ? 'active' : ''}" onclick="window.switchDemo('Parent / Caregiver')">
-          👨‍👩‍👧 Parent
-        </button>
-        <button class="role-pill-btn ${currentRole === 'Teacher' ? 'active' : ''}" onclick="window.switchDemo('Teacher')">
-          🎓 Teacher
-        </button>
-        <button class="role-pill-btn" style="background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.35); color: #fca5a5;" onclick="window.navigateTo('landing')">
-          🌐 Landing
-        </button>
-      </div>
-    </div>
-  `;
+// Quick Demo Autofill Helper for Login Page
+window.fillDemoCredentials = function(role) {
+  const credentialsMap = {
+    'Therapist': { email: 'therapist@neurospectra.org', password: 'therapist123', label: 'Therapist (Dr. Aisha Khan)' },
+    'Teacher': { email: 'teacher@neurospectra.org', password: 'teacher123', label: 'Teacher (Marcus Brody)' },
+    'Parent / Caregiver': { email: 'parent@neurospectra.org', password: 'parent123', label: 'Parent (Priya Sharma)' },
+    'Receptionist': { email: 'receptionist@neurospectra.org', password: 'receptionist123', label: 'Receptionist (Sarah Jenkins)' },
+    'Administrator': { email: 'admin@neurospectra.org', password: 'admin123', label: 'Admin (Dr. Eleanor Vance)' }
+  };
+
+  const cred = credentialsMap[role] || credentialsMap['Therapist'];
+  const emailInput = document.getElementById('login-email');
+  const pwdInput = document.getElementById('login-password');
+
+  if (emailInput && pwdInput) {
+    emailInput.value = cred.email;
+    pwdInput.value = cred.password;
+    if (window.clearFieldError) {
+      window.clearFieldError('login-email', 'login-email-error');
+      window.clearFieldError('login-password', 'login-password-error');
+    }
+    const alertBox = document.getElementById('login-alert-box');
+    if (alertBox) alertBox.style.display = 'none';
+
+    // Visual pulse effect
+    emailInput.style.borderColor = '#2563eb';
+    emailInput.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.15)';
+    pwdInput.style.borderColor = '#2563eb';
+    pwdInput.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.15)';
+    setTimeout(() => {
+      emailInput.style.borderColor = '#e2e8f0';
+      emailInput.style.boxShadow = 'none';
+      pwdInput.style.borderColor = '#e2e8f0';
+      pwdInput.style.boxShadow = 'none';
+    }, 600);
+
+    window.showToast(`Autofilled ${cred.label} login credentials.`, 'info');
+  }
 };
 
 window.switchDemo = function(role) {
