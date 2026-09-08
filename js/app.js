@@ -48,7 +48,7 @@ window.renderBrandLogo = function(theme = 'dark', size = 'normal', showTagline =
 // Navigation entry point
 window.navigateTo = function(route, params = {}) {
   // If attempting to access protected routes without authentication, redirect to login
-  if (route !== 'landing' && route !== 'login' && route !== 'register' && !window.neuroAuth.isAuthenticated()) {
+  if (route !== 'landing' && route !== 'login' && route !== 'register' && route !== 'forgot-password' && !window.neuroAuth.isAuthenticated()) {
     window.currentRoute = 'login';
     window.routeParams = {};
   } else {
@@ -71,12 +71,14 @@ window.renderApp = function() {
   const currentRole = auth.getRole();
 
   // If public / auth routes
-  if (!isAuth || window.currentRoute === 'landing' || window.currentRoute === 'login' || window.currentRoute === 'register') {
+  if (!isAuth || window.currentRoute === 'landing' || window.currentRoute === 'login' || window.currentRoute === 'register' || window.currentRoute === 'forgot-password') {
     let publicContent = '';
     if (window.currentRoute === 'login') {
       publicContent = window.renderLoginPage();
     } else if (window.currentRoute === 'register') {
       publicContent = window.renderRegisterPage();
+    } else if (window.currentRoute === 'forgot-password') {
+      publicContent = window.renderForgotPasswordPage();
     } else {
       publicContent = window.renderLandingPage();
     }
@@ -393,7 +395,7 @@ window.renderLoginPage = function() {
                 <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 0;">
                   Password <span style="color: #ef4444;">*</span>
                 </label>
-                <a href="#" style="font-size: 12px; font-weight: 600; color: #2563eb; text-decoration: none;" onclick="window.showToast('Click any demo button above to autofill password.', 'info'); return false;">Forgot Password?</a>
+                <a href="#" style="font-size: 12px; font-weight: 600; color: #2563eb; text-decoration: none;" onclick="window.openForgotPasswordModal(); return false;">Forgot Password?</a>
               </div>
               <div style="position: relative;">
                 <input type="password" id="login-password" class="form-control" placeholder="••••••••••••" required value="therapist123" style="width: 100%; padding: 11px 40px 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateLoginPassword(false)" onblur="window.validateLoginPassword(true)">
@@ -666,6 +668,252 @@ window.fillDemoCredentials = function(role) {
 
     window.showToast(`Autofilled ${cred.label} login credentials.`, 'info');
   }
+};
+
+// --- Working Password Reset Flow ---
+
+// Quick Email Account Match Checker
+window.checkResetEmailStatus = function(email) {
+  const matchEl = document.getElementById('reset-modal-email-match') || document.getElementById('reset-page-email-match');
+  if (!matchEl) return;
+  const cleanEmail = (email || '').trim().toLowerCase();
+  if (!cleanEmail) {
+    matchEl.innerHTML = '';
+    return;
+  }
+  const user = window.neuroDB ? window.neuroDB.getUserByEmail(cleanEmail) : null;
+  if (user) {
+    matchEl.innerHTML = `
+      <span style="color: #15803d; display: inline-flex; align-items: center; gap: 5px; font-weight: 600; font-size: 12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Account verified: ${user.full_name} (${user.role})
+      </span>
+    `;
+  } else {
+    matchEl.innerHTML = `
+      <span style="color: #b45309; display: inline-flex; align-items: center; gap: 5px; font-size: 12px;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        No registered account found with this email
+      </span>
+    `;
+  }
+};
+
+// Open Interactive Password Reset Modal
+window.openForgotPasswordModal = function(prefillEmail) {
+  const currentEmail = prefillEmail || (document.getElementById('login-email') ? document.getElementById('login-email').value : '') || 'therapist@neurospectra.org';
+
+  const bodyHtml = `
+    <div style="font-size: 13.5px; color: #64748b; margin-bottom: 16px; line-height: 1.5;">
+      Enter your registered account email and set a new password. Your credentials will update instantly.
+    </div>
+
+    <div id="reset-modal-alert" style="display: none; margin-bottom: 14px; padding: 10px 14px; border-radius: 8px; font-size: 13px;"></div>
+
+    <form id="reset-password-modal-form" onsubmit="window.handleResetPasswordSubmit(event)">
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          Account Email Address <span style="color: #ef4444;">*</span>
+        </label>
+        <input type="email" id="reset-modal-email" class="form-control" placeholder="therapist@neurospectra.org" required value="${currentEmail}" style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;" oninput="window.checkResetEmailStatus(this.value)">
+        <div id="reset-modal-email-match" style="margin-top: 6px;"></div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          New Password <span style="color: #ef4444;">*</span>
+        </label>
+        <div style="position: relative;">
+          <input type="password" id="reset-modal-password" class="form-control" placeholder="Minimum 8 characters" required minlength="8" style="width: 100%; padding: 10px 38px 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+          <button type="button" onclick="window.togglePasswordVisibility('reset-modal-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;" title="Show/Hide password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 8px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          Confirm New Password <span style="color: #ef4444;">*</span>
+        </label>
+        <div style="position: relative;">
+          <input type="password" id="reset-modal-confirm-password" class="form-control" placeholder="Re-enter new password" required minlength="8" style="width: 100%; padding: 10px 38px 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+          <button type="button" onclick="window.togglePasswordVisibility('reset-modal-confirm-password', this)" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;" title="Show/Hide password">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+      </div>
+    </form>
+  `;
+
+  const footerHtml = `
+    <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()" style="font-weight: 600;">Cancel</button>
+    <button type="button" class="btn btn-primary" onclick="window.handleResetPasswordSubmit(event)" style="font-weight: 700; background: #2563eb; color: #ffffff;">
+      Update Password
+    </button>
+  `;
+
+  window.openModal('Reset Account Password', bodyHtml, footerHtml, false);
+  setTimeout(() => {
+    const emailEl = document.getElementById('reset-modal-email');
+    if (emailEl) window.checkResetEmailStatus(emailEl.value);
+  }, 50);
+};
+
+// Handle Password Reset Submission
+window.handleResetPasswordSubmit = function(e) {
+  if (e) e.preventDefault();
+  const alertEl = document.getElementById('reset-modal-alert') || document.getElementById('reset-page-alert');
+  const email = (document.getElementById('reset-modal-email')?.value || document.getElementById('reset-page-email')?.value || '').trim();
+  const pwd = document.getElementById('reset-modal-password')?.value || document.getElementById('reset-page-password')?.value || '';
+  const confirmPwd = document.getElementById('reset-modal-confirm-password')?.value || document.getElementById('reset-page-confirm-password')?.value || '';
+
+  if (alertEl) {
+    alertEl.style.display = 'none';
+  }
+
+  try {
+    if (!email) throw new Error('Please enter your account email address.');
+    if (!pwd) throw new Error('Please enter a new password.');
+    if (pwd.length < 8) throw new Error('Password must be at least 8 characters long.');
+    if (pwd !== confirmPwd) throw new Error('New password and confirmation do not match.');
+
+    window.neuroAuth.resetPassword(email, pwd, confirmPwd);
+
+    if (alertEl) {
+      alertEl.style.display = 'block';
+      alertEl.style.background = '#f0fdf4';
+      alertEl.style.border = '1px solid #bbf7d0';
+      alertEl.style.color = '#15803d';
+      alertEl.innerHTML = `
+        <div style="font-weight: 700; margin-bottom: 2px;">✅ Password Updated Successfully!</div>
+        <div style="font-size: 12px;">Your password has been changed. Autofilling your login fields...</div>
+      `;
+    }
+
+    // Auto-update login fields if they exist
+    const loginEmail = document.getElementById('login-email');
+    const loginPwd = document.getElementById('login-password');
+    if (loginEmail) loginEmail.value = email;
+    if (loginPwd) loginPwd.value = pwd;
+
+    setTimeout(() => {
+      if (document.getElementById('modal-backdrop')?.classList.contains('active')) {
+        window.closeActiveModal();
+      } else {
+        window.navigateTo('login');
+      }
+      window.showToast('Password updated successfully! You can now sign in.', 'success');
+    }, 1000);
+
+  } catch (err) {
+    if (alertEl) {
+      alertEl.style.display = 'block';
+      alertEl.style.background = '#fef2f2';
+      alertEl.style.border = '1px solid #fecaca';
+      alertEl.style.color = '#b91c1c';
+      alertEl.textContent = err.message || 'Failed to reset password.';
+    }
+    if (window.showToast) {
+      window.showToast(err.message || 'Failed to reset password.', 'error');
+    }
+  }
+};
+
+// Full Page Reset Password View (for #forgot-password route)
+window.renderForgotPasswordPage = function() {
+  return `
+    <div style="min-height: 100vh; display: flex; background: #ffffff; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;">
+      
+      <!-- Left Column Photography Panel -->
+      <div style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/hero_bg.jpg'), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
+        
+        <div style="display: inline-flex; align-items: center;">
+          ${window.renderBrandLogo('dark', 'large', true)}
+        </div>
+
+        <div style="max-width: 540px; margin: 40px 0;">
+          <span style="display: inline-block; padding: 5px 12px; background: rgba(59, 130, 246, 0.2); border: 1px solid rgba(59, 130, 246, 0.35); border-radius: 20px; font-size: 12px; font-weight: 700; color: #93c5fd; margin-bottom: 16px;">
+            Secure Account Recovery
+          </span>
+          <h2 style="font-size: 40px; font-weight: 800; line-height: 1.22; color: #ffffff; letter-spacing: -0.8px; margin-bottom: 20px;">
+            Restore your clinical portal access
+          </h2>
+          <div style="width: 56px; height: 4.5px; background: #3b82f6; border-radius: 3px; margin-bottom: 24px;"></div>
+          <p style="font-size: 15.5px; color: #e2e8f0; line-height: 1.65; font-weight: 400; opacity: 0.95;">
+            Self-service credential recovery for therapists, teachers, reception staff, and caregivers across the NEUROSPECTRA platform.
+          </p>
+        </div>
+
+        <div style="font-size: 12.5px; color: rgba(255, 255, 255, 0.7); font-weight: 500;">
+          &copy; 2026 NEUROSPECTRA. Pediatric Autism Care Portal.
+        </div>
+      </div>
+
+      <!-- Right Column Reset Password Form -->
+      <div style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 40px 54px; background: #ffffff;">
+        <div style="width: 100%; max-width: 420px;">
+          
+          <div style="margin-bottom: 18px;">
+            ${window.renderBrandLogo('light', 'small', false)}
+          </div>
+
+          <h2 style="font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.6px; margin-bottom: 6px;">
+            Reset Password
+          </h2>
+          <p style="font-size: 13.5px; color: #64748b; margin-bottom: 22px;">
+            Enter your account email and specify a new password
+          </p>
+
+          <div id="reset-page-alert" style="display: none; margin-bottom: 16px; padding: 12px 14px; border-radius: 8px; font-size: 13px;"></div>
+
+          <form id="reset-password-page-form" onsubmit="window.handleResetPasswordSubmit(event)">
+            
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 7px; display: block;">
+                Account Email Address <span style="color: #ef4444;">*</span>
+              </label>
+              <input type="email" id="reset-page-email" class="form-control" placeholder="therapist@neurospectra.org" required value="therapist@neurospectra.org" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a;" oninput="window.checkResetEmailStatus(this.value)">
+              <div id="reset-page-email-match" style="margin-top: 6px;"></div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 16px;">
+              <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 7px; display: block;">
+                New Password <span style="color: #ef4444;">*</span>
+              </label>
+              <div style="position: relative;">
+                <input type="password" id="reset-page-password" class="form-control" placeholder="Minimum 8 characters" required minlength="8" style="width: 100%; padding: 11px 40px 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a;">
+                <button type="button" onclick="window.togglePasswordVisibility('reset-page-password', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;" title="Show/Hide password">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 22px;">
+              <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 7px; display: block;">
+                Confirm New Password <span style="color: #ef4444;">*</span>
+              </label>
+              <div style="position: relative;">
+                <input type="password" id="reset-page-confirm-password" class="form-control" placeholder="Re-enter new password" required minlength="8" style="width: 100%; padding: 11px 40px 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a;">
+                <button type="button" onclick="window.togglePasswordVisibility('reset-page-confirm-password', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px;" title="Show/Hide password">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-reset-page-submit" style="width: 100%; background: #2563eb; color: #ffffff; font-weight: 700; font-size: 14.5px; padding: 12px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28); transition: all 0.2s;" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+              Update Password & Return to Login
+            </button>
+          </form>
+
+          <div style="margin-top: 24px; text-align: center; font-size: 13.5px; color: #64748b;">
+            Remembered your password? <a href="#" style="font-weight: 700; color: #2563eb; text-decoration: none;" onclick="window.navigateTo('login'); return false;">Back to Login</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  `;
 };
 
 window.switchDemo = function(role) {

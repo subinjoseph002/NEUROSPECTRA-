@@ -226,6 +226,44 @@ class AuthService {
     return newUser;
   }
 
+  // Working Password Reset Flow
+  resetPassword(email, newPassword, confirmPassword) {
+    const cleanEmail = String(email || '').trim().toLowerCase();
+    const cleanPassword = String(newPassword || '');
+    const cleanConfirm = String(confirmPassword || '');
+
+    if (!cleanEmail) {
+      throw new Error('Email address is required.');
+    }
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(cleanEmail)) {
+      throw new Error('Please enter a valid email address.');
+    }
+
+    const user = window.neuroDB.getUserByEmail(cleanEmail);
+    if (!user) {
+      throw new Error('No registered account found with email: ' + cleanEmail);
+    }
+
+    if (!cleanPassword) {
+      throw new Error('New password is required.');
+    }
+    if (cleanPassword.length < 8) {
+      throw new Error('Password must be at least 8 characters.');
+    }
+    if (cleanConfirm && cleanPassword !== cleanConfirm) {
+      throw new Error('Passwords do not match.');
+    }
+
+    const updatedUser = window.neuroDB.updateUser(user.id, {
+      password_hash: cleanPassword,
+      raw_pwd_hash: cleanPassword,
+      updated_at: new Date().toISOString()
+    });
+
+    return updatedUser;
+  }
+
   logout() {
     this.clearSession();
   }
