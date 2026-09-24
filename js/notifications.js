@@ -100,7 +100,7 @@ window.renderMessagingView = function(selectedChildId, selectedReceiverId = null
     return `
       <div class="card" style="text-align: center; padding: 40px;">
         <h3 style="font-size: 16px; font-weight: 700; color: var(--slate-800); margin-bottom: 6px;">No Active Messages</h3>
-        <p style="font-size: 13px; color: var(--slate-500);">You do not currently have any linked child cases to message.</p>
+        <p style="font-size: 13px; color: var(--slate-500);">You do not currently have any linked children to message.</p>
       </div>
     `;
   }
@@ -136,8 +136,8 @@ window.renderMessagingView = function(selectedChildId, selectedReceiverId = null
   return `
     <div class="page-header">
       <div>
-        <h1 class="page-title">Multidisciplinary Collaboration Messages</h1>
-        <p class="page-subtitle">Direct, confidential messaging between clinical therapists, classroom teachers, and parents.</p>
+        <h1 class="page-title">Team Messages</h1>
+        <p class="page-subtitle">Chat directly with therapists, teachers, and parents involved in the child's care.</p>
       </div>
     </div>
 
@@ -145,7 +145,7 @@ window.renderMessagingView = function(selectedChildId, selectedReceiverId = null
       <!-- Left: Conversations List -->
       <div class="card" style="padding: 16px;">
         <div style="font-weight: 700; font-size: 13.5px; color: var(--slate-900); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--slate-100);">
-          Active Child Care Cases
+          Select Child
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px;">
           ${availableChildren.map(c => {
@@ -206,7 +206,7 @@ window.renderMessagingView = function(selectedChildId, selectedReceiverId = null
             `;
           }).join('') : `
             <div style="text-align: center; color: var(--slate-400); font-size: 13px; margin: auto; padding: 30px;">
-              No messages yet in this consultation thread between you and ${otherPerson ? otherPerson.full_name : 'the specialist'}. Start the conversation below.
+              No messages yet with ${otherPerson ? otherPerson.full_name : 'this person'}. Send a message below to get started.
             </div>
           `}
         </div>

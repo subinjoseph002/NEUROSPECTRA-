@@ -26,13 +26,13 @@ window.renderTherapistDashboard = function() {
         <div>
           <div style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-            Clinical Specialist Portal
+            Therapist Portal
           </div>
           <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px; line-height: 1.2;">
             Welcome, Dr. ${user?.full_name || 'Aisha Khan'}
           </h1>
           <p style="font-size: 14px; color: #64748b; margin: 0;">
-            Pediatric clinical evaluations, individualized therapy plan goals, and multidisciplinary teacher collaboration.
+            Conduct assessments, manage therapy goals, and review teacher notes.
           </p>
         </div>
 
@@ -58,14 +58,14 @@ window.renderTherapistDashboard = function() {
         <!-- Stat 1: Assigned Children -->
         <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('children')" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e8f0'">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">ACTIVE CASELOAD</span>
+            <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">MY CHILDREN</span>
             <div style="width: 28px; height: 28px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
             </div>
           </div>
           <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${myChildren.length}</div>
           <div style="font-size: 11.5px; font-weight: 600; color: #16a34a; display: flex; align-items: center; gap: 4px;">
-            <span>▲</span> ${myChildren.filter(c => c.status === 'Active').length} Active pediatric cases
+            <span>▲</span> ${myChildren.filter(c => c.status === 'Active').length} Active children
           </div>
         </div>
 
@@ -79,7 +79,7 @@ window.renderTherapistDashboard = function() {
           </div>
           <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${assessments.length}</div>
           <div style="font-size: 11.5px; font-weight: 600; color: #2563eb; display: flex; align-items: center; gap: 4px;">
-            <span>●</span> 5-point clinical batteries
+            <span>●</span> Completed screenings
           </div>
         </div>
 
@@ -127,8 +127,8 @@ window.renderTherapistDashboard = function() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
                 </div>
                 <div>
-                  <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Supporting Teacher Observations (Classroom Feed)</h3>
-                  <p style="font-size: 12.5px; color: #64748b; margin: 0;">Real-world classroom behaviors observed by school educators to inform therapy goals.</p>
+                  <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Teacher Observations from School</h3>
+                  <p style="font-size: 12.5px; color: #64748b; margin: 0;">Classroom notes from teachers showing how the child is doing in school.</p>
                 </div>
               </div>
               <span class="badge badge-info" style="font-size: 11.5px; padding: 4px 10px;">${teacherObservations.length} Logs Available</span>
@@ -188,8 +188,8 @@ window.renderTherapistDashboard = function() {
           <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
               <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Active Therapy Plans & Goals</h3>
-                <p style="font-size: 12.5px; color: #64748b; margin: 0;">Milestone goals with real-time percentage progression.</p>
+                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Active Therapy & Goal Plans</h3>
+                <p style="font-size: 12.5px; color: #64748b; margin: 0;">Track goal milestones and step-by-step progress.</p>
               </div>
               <button class="btn btn-primary btn-sm" onclick="window.showCreateTherapyPlanModal()" style="display: flex; align-items: center; gap: 4px;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -243,7 +243,7 @@ window.renderTherapistDashboard = function() {
 
                       <div style="display: flex; justify-content: flex-end; gap: 8px;">
                         <button class="btn btn-secondary btn-sm" onclick="window.showLogTherapySessionModal('${plan.id}')" style="font-size: 12px;">
-                          + Log Session for Plan
+                          + Log Session
                         </button>
                       </div>
                     </div>
@@ -257,8 +257,8 @@ window.renderTherapistDashboard = function() {
           <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
               <div>
-                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Today's Clinical Schedule</h3>
-                <p style="font-size: 12.5px; color: #64748b; margin: 0;">Consultations and behavioral therapy sessions.</p>
+                <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin: 0;">Today's Schedule</h3>
+                <p style="font-size: 12.5px; color: #64748b; margin: 0;">Consultations and therapy sessions.</p>
               </div>
               <button class="btn btn-outline btn-sm" onclick="window.showBookAppointmentModal()">+ New Appointment</button>
             </div>
@@ -319,16 +319,16 @@ window.renderTherapistDashboard = function() {
           
           <!-- Quick Clinical Actions Card -->
           <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-            <div style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Quick Clinical Actions</div>
+            <div style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Quick Actions</div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
               <button class="btn btn-primary" onclick="window.startNewAssessment()" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
-                Conduct 5-Point Assessment
+                Conduct Assessment
               </button>
               
               <button class="btn btn-outline" onclick="window.showCreateTherapyPlanModal()" style="width: 100%; justify-content: flex-start; padding: 11px 16px; border-color: #dbeafe; color: #2563eb; background: #eff6ff;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                Create Individualized Plan
+                Create Goal Plan
               </button>
 
               <button class="btn btn-outline" onclick="window.showLogTherapySessionModal()" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
@@ -338,7 +338,7 @@ window.renderTherapistDashboard = function() {
 
               <button class="btn btn-outline" onclick="window.navigateTo('reports')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                Diagnostic & Progress Reports
+                Progress & Assessment Reports
               </button>
             </div>
           </div>
@@ -347,13 +347,13 @@ window.renderTherapistDashboard = function() {
           <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #334155; background: #1e293b; color: #ffffff;">
             <div style="font-size: 15px; font-weight: 700; color: #ffffff; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              Multidisciplinary Consultation
+              Team Collaboration
             </div>
             <p style="font-size: 12.5px; color: #94a3b8; line-height: 1.55; margin-bottom: 16px;">
-              Instantly collaborate with classroom educators, developmental pediatricians, and clinical psychologists.
+              Message teachers, parents, and colleagues directly to share updates and discuss progress.
             </p>
             <button style="width: 100%; background: #2563eb; color: #ffffff; font-weight: 600; font-size: 13.5px; padding: 10px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); transition: all 0.2s;" onclick="window.navigateTo('messages')" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-              Launch Secure Messages
+              Open Messages
             </button>
           </div>
 

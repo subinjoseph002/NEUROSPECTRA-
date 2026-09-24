@@ -26,10 +26,10 @@ window.renderAdminDashboard = function() {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
         <div>
           <h1 style="font-size: 26px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
-            Clinical Administration & Overview
+            Admin Overview & Management
           </h1>
           <p style="font-size: 14px; color: #64748b; margin: 0;">
-            Real-time management of pediatric cases, clinical specialists, diagnostic assessments, and platform health.
+            Manage users, children, appointments, assessments, and system data.
           </p>
         </div>
         <div style="display: flex; gap: 10px;">

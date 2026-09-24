@@ -37,10 +37,10 @@ window.renderAssessmentConductView = function(childId) {
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
         <div>
           <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
-            Clinical Developmental Assessment Engine
+            Child Development Assessment
           </h1>
           <p style="font-size: 13.5px; color: #64748b; margin: 0;">
-            Standardized pediatric evaluations cross-referenced with teacher classroom logs.
+            Guided developmental checks connected with classroom updates.
           </p>
         </div>
         <button class="btn btn-outline btn-sm" onclick="window.navigateTo('assessments')">
@@ -55,12 +55,12 @@ window.renderAssessmentConductView = function(childId) {
         <div class="card" style="padding: 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff;">
           <h3 style="font-size: 14px; font-weight: 700; color: #0f172a; text-transform: uppercase; margin-bottom: 14px; display: flex; align-items: center; gap: 8px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-            Assessment Configuration
+            Assessment Details
           </h3>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 12px;">
             <div>
-              <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Child Patient *</label>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Select Child *</label>
               <select class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px;" onchange="window.currentAssessmentState.childId = this.value; window.renderCurrentView();">
                 ${children.map(c => `
                   <option value="${c.id}" ${c.id === window.currentAssessmentState.childId ? 'selected' : ''}>
@@ -71,11 +71,11 @@ window.renderAssessmentConductView = function(childId) {
             </div>
 
             <div>
-              <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Instrument Battery *</label>
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Assessment Type *</label>
               <select class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px;" onchange="window.currentAssessmentState.templateId = this.value; window.currentAssessmentState.responses = {}; window.renderCurrentView();">
                 ${templates.map(t => `
                   <option value="${t.id}" ${t.id === selectedTemplate.id ? 'selected' : ''}>
-                    ${t.title} (${t.total_questions} Items)
+                    ${t.title} (${t.total_questions} Questions)
                   </option>
                 `).join('')}
               </select>
@@ -92,13 +92,13 @@ window.renderAssessmentConductView = function(childId) {
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <h3 style="font-size: 13.5px; font-weight: 700; color: #3730a3; text-transform: uppercase; margin: 0; display: flex; align-items: center; gap: 6px;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2.2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-              Teacher Classroom Logs
+              Teacher Classroom Notes
             </h3>
-            <span class="badge badge-purple" style="font-size: 11px;">${teacherObservations.length} Logs</span>
+            <span class="badge badge-purple" style="font-size: 11px;">${teacherObservations.length} Notes</span>
           </div>
 
           ${teacherObservations.length === 0 ? `
-            <p style="font-size: 12.5px; color: #6b7280; font-style: italic; margin: 0;">No teacher classroom observations logged yet for this child.</p>
+            <p style="font-size: 12.5px; color: #6b7280; font-style: italic; margin: 0;">No teacher classroom notes have been added for this child yet.</p>
           ` : `
             <div style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto;">
               ${teacherObservations.slice(0, 2).map(obs => `
@@ -109,7 +109,7 @@ window.renderAssessmentConductView = function(childId) {
                   </div>
                   <p style="color: #475569; margin: 0 0 4px; font-style: italic;">"${obs.educator_notes || 'Observed behaviors recorded.'}"</p>
                   <button type="button" class="btn btn-outline btn-sm" onclick="window.teacherModule && window.teacherModule.openObservationModal('${obs.id}')" style="font-size: 10.5px; padding: 2px 6px;">
-                    View Ratings &rarr;
+                    View Details &rarr;
                   </button>
                 </div>
               `).join('')}
@@ -125,7 +125,7 @@ window.renderAssessmentConductView = function(childId) {
           <div>
             <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 2px;">${selectedTemplate.title}</h2>
             <div style="font-size: 12.5px; color: #64748b;">
-              Category: <strong>${selectedTemplate.category}</strong> • Scoring: <strong>${selectedTemplate.scoring_method === 'Rating_Scale_5' ? '5-Point Frequency Scale' : 'Standardized Diagnostic Index'}</strong>
+              Category: <strong>${selectedTemplate.category}</strong> • Scoring: <strong>${selectedTemplate.scoring_method === 'Rating_Scale_5' ? '1 to 5 Rating Scale' : 'Standard Screening Score'}</strong>
             </div>
           </div>
           <span class="badge badge-info" id="answered-counter" style="font-size: 12px; padding: 6px 12px;">
@@ -144,7 +144,7 @@ window.renderAssessmentConductView = function(childId) {
                 <div id="q-card-${q.id}" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 11.5px; font-weight: 700; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 6px; text-transform: uppercase;">
-                      Item ${idx + 1} • ${q.domain}
+                      Question ${idx + 1} • ${q.domain}
                     </span>
                     ${q.reverse_scored ? '<span class="badge badge-warning" style="font-size: 10.5px;">Reverse Scored</span>' : ''}
                   </div>
@@ -180,17 +180,17 @@ window.renderAssessmentConductView = function(childId) {
           <!-- Therapist Clinical Observations Synthesis -->
           <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
             <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">
-              Therapist Clinical Observations & Synthesis *
+              Therapist Notes & Observations *
             </label>
-            <textarea id="therapist-obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px;" placeholder="Synthesize direct clinical observation findings with supporting teacher classroom logs..." required>${window.currentAssessmentState.therapistNotes || ''}</textarea>
-            <p style="font-size: 12px; color: #64748b; margin: 6px 0 0;">Note sensory tolerance, attention span, vocal attempts, and consistency with educator report.</p>
+            <textarea id="therapist-obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px;" placeholder="Write notes on how the child engaged, what went well, and areas needing support..." required>${window.currentAssessmentState.therapistNotes || ''}</textarea>
+            <p style="font-size: 12px; color: #64748b; margin: 6px 0 0;">Note attention, comfort levels, communication, and how well this matches teacher notes.</p>
           </div>
 
           <!-- Action Buttons -->
           <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 18px; flex-wrap: wrap;">
             <button type="button" class="btn btn-outline" onclick="window.navigateTo('assessments')">Cancel</button>
-            <button type="button" class="btn btn-secondary" onclick="window.fillDemoAssessmentAnswers()">Auto-Fill Sample Responses</button>
-            <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 10px 20px;">Calculate & Submit Assessment</button>
+            <button type="button" class="btn btn-secondary" onclick="window.fillDemoAssessmentAnswers()">Fill Demo Answers</button>
+            <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 10px 20px;">Save Assessment</button>
           </div>
         </form>
       </div>
@@ -307,8 +307,8 @@ window.submitAssessment = function(e) {
   if (child && child.primary_parent_id) {
     window.neuroDB.createNotification({
       user_id: child.primary_parent_id,
-      title: 'New Clinical Assessment Completed',
-      message: `Assessment results for ${child.first_name} are ready for review.`,
+      title: 'New Assessment Completed',
+      message: `Assessment results for ${child.first_name} are ready to view.`,
       type: 'assessment',
       link: '#reports'
     });
@@ -316,7 +316,7 @@ window.submitAssessment = function(e) {
 
   window.showToast('Assessment completed and recorded successfully!', 'success');
   
-  if (confirm(`Assessment saved (Result: ${riskLevel}). Would you like to create an Individualized Therapy Plan for ${child ? child.first_name : 'this child'} now?`)) {
+  if (confirm(`Assessment saved (${riskLevel}). Would you like to create a Therapy Plan for ${child ? child.first_name : 'this child'} now?`)) {
     window.showCreateTherapyPlanModal(window.currentAssessmentState.childId);
   } else {
     window.openChildProfileTab(window.currentAssessmentState.childId, 'assessments');

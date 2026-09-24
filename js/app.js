@@ -126,7 +126,7 @@ window.renderApp = function() {
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" class="form-control" placeholder="Search patients, trials, sessions..." style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 9999px; padding: 9px 18px 9px 40px; font-size: 13px; width: 100%; color: #0f172a;" oninput="window.filterChildrenTable(this.value)">
+            <input type="text" class="form-control" placeholder="Search children, appointments, notes..." style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 9999px; padding: 9px 18px 9px 40px; font-size: 13px; width: 100%; color: #0f172a;" oninput="window.filterChildrenTable(this.value)">
           </div>
 
           <!-- Right Header Items -->
@@ -140,7 +140,7 @@ window.renderApp = function() {
             <!-- Notifications Popover -->
             <div class="notifications-popover" id="notifications-popover" style="right: 180px; top: 64px;">
               <div style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-weight: 700; font-size: 13px; color: #0f172a;">
-                Notifications & Clinical Reminders
+                Notifications & Reminders
               </div>
               <div style="max-height: 320px; overflow-y: auto;">
                 ${window.renderNotificationsList()}

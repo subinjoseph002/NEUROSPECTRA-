@@ -24,10 +24,10 @@ window.renderReportView = function(childId) {
   if (allowedChildren.length === 0) {
     return `
       <div class="page-header no-print">
-        <h1 class="page-title">Clinical Progress & Screening Report</h1>
+        <h1 class="page-title">Child Progress Report</h1>
       </div>
       <div class="card" style="padding: 32px; text-align: center; border-radius: 16px;">
-        <p style="color: #64748b; font-size: 14px;">No child linked to your caregiver account. Please contact the clinical reception.</p>
+        <p style="color: #64748b; font-size: 14px;">No child profile linked to your account yet. Please contact the reception desk.</p>
       </div>
     `;
   }
@@ -37,7 +37,7 @@ window.renderReportView = function(childId) {
   if (childId) {
     targetChild = allowedChildren.find(c => c.id === childId);
     if (!targetChild && currentUser && currentUser.role === 'Parent / Caregiver') {
-      window.showToast('Security Alert: You are only authorized to view clinical reports for your own child.', 'error');
+      window.showToast('Security Alert: You can only view reports for your own child.', 'error');
       targetChild = allowedChildren[0]; // fallback safely to parent's own child
     }
   }
@@ -59,8 +59,8 @@ window.renderReportView = function(childId) {
   return `
     <div class="page-header no-print">
       <div>
-        <h1 class="page-title">Clinical Progress & Diagnostic Report</h1>
-        <p class="page-subtitle">Official developmental evaluation, screening indicators, and therapy roadmap for <strong>${child.first_name} ${child.last_name}</strong>.</p>
+        <h1 class="page-title">Child Progress & Development Report</h1>
+        <p class="page-subtitle">Development summary, progress notes, and therapy roadmap for <strong>${child.first_name} ${child.last_name}</strong>.</p>
       </div>
       <div style="display: flex; gap: 10px;">
         <button class="btn btn-outline" onclick="window.navigateTo('reports')">
@@ -68,7 +68,7 @@ window.renderReportView = function(childId) {
         </button>
         <button class="btn btn-primary" onclick="window.print()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Print / Download PDF Report
+          Print / Save PDF Report
         </button>
       </div>
     </div>
@@ -81,8 +81,8 @@ window.renderReportView = function(childId) {
         <div style="display: flex; align-items: center; gap: 16px;">
           ${window.renderBrandLogo ? window.renderBrandLogo('light', 'large', false) : `<img src="assets/logo.png" alt="NEUROSPECTRA" style="height: 42px;">`}
           <div style="border-left: 1.5px solid #cbd5e1; padding-left: 14px;">
-            <div style="font-size: 16px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">CLINICAL ASSESSMENT REPORT</div>
-            <div style="font-size: 11px; color: #2563eb; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Developmental Screening & Intervention Documentation</div>
+            <div style="font-size: 16px; font-weight: 800; color: #0f172a; letter-spacing: -0.3px;">DEVELOPMENT & PROGRESS REPORT</div>
+            <div style="font-size: 11px; color: #2563eb; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px;">Assessment Summary & Therapy Support Details</div>
           </div>
         </div>
         <div style="text-align: right; font-size: 12px; color: #64748b;">
@@ -93,18 +93,18 @@ window.renderReportView = function(childId) {
 
       <!-- Patient & Clinical Meta Table -->
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; background: #f8fafc; padding: 16px 20px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 24px; font-size: 13px;">
-        <div><strong style="color: #64748b;">Patient Name:</strong> <div style="font-weight: 800; color: #0f172a; font-size: 14px;">${child.first_name} ${child.last_name}</div></div>
-        <div><strong style="color: #64748b;">Clinical File ID:</strong> <div style="font-weight: 700; color: #2563eb; font-family: monospace;">${child.child_code}</div></div>
+        <div><strong style="color: #64748b;">Child's Name:</strong> <div style="font-weight: 800; color: #0f172a; font-size: 14px;">${child.first_name} ${child.last_name}</div></div>
+        <div><strong style="color: #64748b;">Child ID:</strong> <div style="font-weight: 700; color: #2563eb; font-family: monospace;">${child.child_code}</div></div>
         <div><strong style="color: #64748b;">Date of Birth:</strong> <div>${child.dob} (${child.age_months} Months)</div></div>
         <div><strong style="color: #64748b;">Gender / Blood:</strong> <div>${child.gender} &bull; ${child.blood_group || 'O+'}</div></div>
-        <div><strong style="color: #64748b;">Primary Caregiver:</strong> <div>${parent ? parent.full_name : 'N/A'}</div></div>
-        <div><strong style="color: #64748b;">Assigned Specialist:</strong> <div style="font-weight: 700; color: #0f172a;">${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}</div></div>
+        <div><strong style="color: #64748b;">Parent / Caregiver:</strong> <div>${parent ? parent.full_name : 'N/A'}</div></div>
+        <div><strong style="color: #64748b;">Assigned Therapist:</strong> <div style="font-weight: 700; color: #0f172a;">${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}</div></div>
       </div>
 
       <!-- Section 1: Standardized Screening Assessment Summary -->
       <div style="margin-bottom: 24px;">
         <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 12px; border-left: 4px solid #2563eb; padding-left: 10px;">
-          1. Standardized M-CHAT-R/F Screening Assessment
+          1. Developmental Screening Summary
         </h3>
         ${latestAsmt ? `
           <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 16px;">
@@ -133,13 +133,13 @@ window.renderReportView = function(childId) {
       <!-- Section 2: Supporting Classroom Observations (Educator Log) -->
       <div style="margin-bottom: 24px;">
         <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 12px; border-left: 4px solid #6366f1; padding-left: 10px; display: flex; align-items: center; justify-content: space-between;">
-          <span>2. Supporting Classroom Observations (Teacher / Educator Log)</span>
-          <span style="font-size: 11px; font-weight: 700; color: #4338ca; background: #e0e7ff; padding: 2px 10px; border-radius: 9999px;">Non-Clinical Behavioral Context</span>
+          <span>2. Teacher Classroom Notes</span>
+          <span style="font-size: 11px; font-weight: 700; color: #4338ca; background: #e0e7ff; padding: 2px 10px; border-radius: 9999px;">Classroom Notes</span>
         </h3>
         ${(() => {
           const teacherObs = (window.neuroDB.getTeacherObservations ? window.neuroDB.getTeacherObservations({ child_id: child.id }) : []);
           if (teacherObs.length === 0) {
-            return `<p style="font-size: 13px; color: #64748b;">No classroom educator observations recorded for this reporting period.</p>`;
+            return `<p style="font-size: 13px; color: #64748b;">No teacher notes recorded for this period.</p>`;
           }
           return `
             <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -150,9 +150,9 @@ window.renderReportView = function(childId) {
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
                       <div>
                         <strong style="font-size: 13px; color: #0f172a;">${obs.activity_context}</strong>
-                        <span style="font-size: 11.5px; color: #64748b; margin-left: 8px;">Date: ${obs.observation_date} &bull; Educator: ${teacher ? teacher.full_name : 'Classroom Teacher'}</span>
+                        <span style="font-size: 11.5px; color: #64748b; margin-left: 8px;">Date: ${obs.observation_date} &bull; Teacher: ${teacher ? teacher.full_name : 'Classroom Teacher'}</span>
                       </div>
-                      <span style="font-size: 11px; font-weight: 700; color: #059669; background: #d1fae5; padding: 2px 8px; border-radius: 4px;">5 Domains Recorded</span>
+                      <span style="font-size: 11px; font-weight: 700; color: #059669; background: #d1fae5; padding: 2px 8px; border-radius: 4px;">5 Skill Areas</span>
                     </div>
                     <p style="font-size: 12px; color: #334155; line-height: 1.5; margin: 0; font-style: italic;">
                       "${obs.teacher_note || 'Observation recorded across 5 domains.'}"
@@ -168,21 +168,21 @@ window.renderReportView = function(childId) {
       <!-- Section 3: Individualized Therapy Plan -->
       <div style="margin-bottom: 24px;">
         <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 12px; border-left: 4px solid #10b981; padding-left: 10px;">
-          3. Active Therapy Goals (IEP Roadmap)
+          3. Active Therapy Goals
         </h3>
         ${activePlan ? `
           <div style="margin-bottom: 12px;">
             <div style="font-weight: 700; font-size: 14px; color: #0f172a;">${activePlan.title}</div>
             <div style="font-size: 12px; color: #64748b; margin-top: 2px;">
-              <strong>Frequency:</strong> ${activePlan.frequency || '2 Sessions / Week'} &bull; <strong>Target Completion:</strong> ${activePlan.target_date || 'August 2026'}
+              <strong>Schedule:</strong> ${activePlan.frequency || '2 Sessions / Week'} &bull; <strong>Target Date:</strong> ${activePlan.target_date || 'August 2026'}
             </div>
           </div>
 
           <table class="table" style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
             <thead>
               <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #64748b; text-align: left;">
-                <th style="padding: 10px 12px;">Milestone Domain</th>
-                <th style="padding: 10px 12px;">Target Objective</th>
+                <th style="padding: 10px 12px;">Skill Area</th>
+                <th style="padding: 10px 12px;">Goal Target</th>
                 <th style="padding: 10px 12px; text-align: right;">Progress</th>
               </tr>
             </thead>
@@ -209,7 +209,7 @@ window.renderReportView = function(childId) {
       <!-- Section 4: Recent Therapy Sessions & Observations -->
       <div style="margin-bottom: 24px;">
         <h3 style="font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 12px; border-left: 4px solid #f59e0b; padding-left: 10px;">
-          4. Recent Therapy Session Logs & Outcomes
+          4. Recent Therapy Sessions & Notes
         </h3>
         ${sessions.length > 0 ? `
           <table class="table" style="width: 100%; border-collapse: collapse; font-size: 12.5px;">
@@ -217,7 +217,7 @@ window.renderReportView = function(childId) {
               <tr style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; color: #64748b; text-align: left;">
                 <th style="padding: 10px 12px;">Date</th>
                 <th style="padding: 10px 12px;">Focus</th>
-                <th style="padding: 10px 12px;">Observations & Home Guidance</th>
+                <th style="padding: 10px 12px;">Observations & Home Activities</th>
                 <th style="padding: 10px 12px; text-align: right;">Rating</th>
               </tr>
             </thead>
@@ -236,7 +236,7 @@ window.renderReportView = function(childId) {
             </tbody>
           </table>
         ` : `
-          <p style="font-size: 13px; color: #64748b;">No clinical sessions recorded yet.</p>
+          <p style="font-size: 13px; color: #64748b;">No therapy sessions recorded yet.</p>
         `}
       </div>
 
@@ -244,15 +244,15 @@ window.renderReportView = function(childId) {
       <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
         <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 8px;">
           <div style="font-weight: 700; font-size: 13px; color: #0f172a;">${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}</div>
-          <div style="font-size: 11px; color: #64748b;">Lead Clinical Therapist (BCBA-D)</div>
+          <div style="font-size: 11px; color: #64748b;">Lead Therapist</div>
         </div>
         <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 8px;">
-          <div style="font-weight: 700; font-size: 13px; color: #0f172a;">Classroom Educator</div>
-          <div style="font-size: 11px; color: #64748b;">Early Readiness Learning Teacher</div>
+          <div style="font-weight: 700; font-size: 13px; color: #0f172a;">Classroom Teacher</div>
+          <div style="font-size: 11px; color: #64748b;">Early Learning Educator</div>
         </div>
         <div style="text-align: center; border-top: 1px solid #94a3b8; padding-top: 8px;">
-          <div style="font-weight: 700; font-size: 13px; color: #0f172a;">Clinical Director Signature</div>
-          <div style="font-size: 11px; color: #64748b;">NEUROSPECTRA Pediatric Board</div>
+          <div style="font-weight: 700; font-size: 13px; color: #0f172a;">Care Team Lead</div>
+          <div style="font-size: 11px; color: #64748b;">NEUROSPECTRA Care Team</div>
         </div>
       </div>
 
@@ -263,7 +263,7 @@ window.renderReportView = function(childId) {
 window.generateAndPrintChildReport = function(childId) {
   const currentUser = window.neuroAuth.getCurrentUser();
   if (currentUser && currentUser.role === 'Receptionist') {
-    window.showToast('Access Restricted: Clinical diagnostic reports are restricted to clinicians and caregivers. You have access to Administrative Reports.', 'warning');
+    window.showToast('Access Restricted: Detailed child reports are for therapists and parents. You can access Administrative Reports.', 'warning');
     window.navigateTo('reports');
     return;
   }

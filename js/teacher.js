@@ -50,7 +50,7 @@ class TeacherModule {
               Welcome, ${teacher?.full_name || 'Educator'}
             </h1>
             <p style="font-size: 14px; color: #64748b; margin: 0;">
-              Classroom behavioral tracking, 5-domain structured observations, and non-clinical pediatric developmental context.
+              Record student behavior, classroom observations, and daily learning milestones.
             </p>
           </div>
 
@@ -61,7 +61,7 @@ class TeacherModule {
             </button>
             <button class="btn btn-outline" onclick="window.navigateTo('observations')" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-              Observation History
+              View Past Observations
             </button>
           </div>
         </div>
@@ -72,7 +72,7 @@ class TeacherModule {
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
           </div>
           <div style="font-size: 13px; color: #92400e; line-height: 1.5;">
-            <strong>Observational Context Notice:</strong> Teacher observations document real-world classroom routines, peer interactions, and sensory responses. These records support multidisciplinary clinical reviews by licensed therapists and do not constitute clinical or medical diagnoses.
+            <strong>Classroom Note:</strong> Your observations capture how students participate in daily school routines, play with peers, and respond to sensory activities to help their therapists plan better support.
           </div>
         </div>
 
@@ -82,14 +82,14 @@ class TeacherModule {
           <!-- Stat 1: Assigned Students -->
           <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('my-children')" onmouseover="this.style.borderColor='#2563eb'" onmouseout="this.style.borderColor='#e2e8f0'">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-              <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">ASSIGNED STUDENTS</span>
+              <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">STUDENTS</span>
               <div style="width: 28px; height: 28px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
               </div>
             </div>
             <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${totalChildren}</div>
             <div style="font-size: 11.5px; font-weight: 600; color: #16a34a; display: flex; align-items: center; gap: 4px;">
-              <span>▲</span> ${activeChildren} active in classroom
+              <span>▲</span> ${activeChildren} active in class
             </div>
           </div>
 
@@ -103,7 +103,7 @@ class TeacherModule {
             </div>
             <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${totalObservations}</div>
             <div style="font-size: 11.5px; font-weight: 600; color: #8b5cf6; display: flex; align-items: center; gap: 4px;">
-              <span>●</span> 5 developmental domains
+              <span>●</span> 5 development areas
             </div>
           </div>
 
@@ -117,21 +117,21 @@ class TeacherModule {
             </div>
             <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${observationsThisMonth}</div>
             <div style="font-size: 11.5px; font-weight: 600; color: #10b981; display: flex; align-items: center; gap: 4px;">
-              <span>▲</span> Submitted educator logs
+              <span>▲</span> Logs this month
             </div>
           </div>
 
           <!-- Stat 4: Pending Clinical Review -->
           <div class="card" style="margin-bottom: 0; padding: 18px 20px; border-radius: 14px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03); cursor: pointer; transition: all 0.2s;" onclick="window.navigateTo('observations')" onmouseover="this.style.borderColor='#f59e0b'" onmouseout="this.style.borderColor='#e2e8f0'">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-              <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">CLINICAL REVIEWS</span>
+              <span style="font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.5px; text-transform: uppercase;">SHARED WITH THERAPISTS</span>
               <div style="width: 28px; height: 28px; border-radius: 50%; background: #fffbeb; color: #f59e0b; display: flex; align-items: center; justify-content: center;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
             </div>
             <div style="font-size: 28px; font-weight: 800; color: #0f172a; line-height: 1.1; margin-bottom: 6px;">${totalObservations > 0 ? Math.max(1, Math.floor(totalObservations / 2)) : 0}</div>
             <div style="font-size: 11.5px; font-weight: 600; color: #d97706; display: flex; align-items: center; gap: 4px;">
-              <span>●</span> Shared with therapists
+              <span>●</span> Shared with care team
             </div>
           </div>
 
@@ -249,31 +249,31 @@ class TeacherModule {
             
             <!-- Quick Actions Card -->
             <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-              <div style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Classroom Actions</div>
+              <div style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 16px;">Quick Actions</div>
               <div style="display: flex; flex-direction: column; gap: 10px;">
                 <button class="btn btn-primary" onclick="window.navigateTo('observation-create')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                  Log 5-Domain Observation
+                  Record Observation
                 </button>
                 
                 <button class="btn btn-outline" onclick="window.navigateTo('observations')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                  Observation Records Log
+                  All Observations
                 </button>
 
                 <button class="btn btn-outline" onclick="window.navigateTo('reports')" style="width: 100%; justify-content: flex-start; padding: 11px 16px; color: #2563eb; font-weight: 700;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
-                  Student Clinical & Progress Reports
+                  Student Progress Reports
                 </button>
 
                 <button class="btn btn-outline" onclick="window.navigateTo('appointments')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                  Educational & IEP Schedule
+                  Class Schedule & Visits
                 </button>
 
                 <button class="btn btn-outline" onclick="window.navigateTo('my-children')" style="width: 100%; justify-content: flex-start; padding: 11px 16px;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
-                  Assigned Students Roster
+                  Student Roster
                 </button>
               </div>
             </div>
@@ -282,17 +282,17 @@ class TeacherModule {
             <div class="card" style="margin-bottom: 0; padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
               <div style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-                5-Domain Observation Guide
+                Observation Guide
               </div>
               <p style="font-size: 12.5px; color: #64748b; line-height: 1.5; margin-bottom: 12px;">
-                Standardized framework for recording classroom behaviors:
+                Key areas to watch for in the classroom:
               </p>
               <div style="display: flex; flex-direction: column; gap: 8px; font-size: 12.5px;">
-                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #2563eb;">1. Social:</strong> Peer play & joint attention</div>
-                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #8b5cf6;">2. Communication:</strong> Verbal & non-verbal</div>
-                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #f59e0b;">3. Behaviour:</strong> Repetitive & transitions</div>
-                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #ec4899;">4. Sensory:</strong> Sounds, touch, light</div>
-                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #10b981;">5. Learning:</strong> Focus & following rules</div>
+                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #2563eb;">1. Social:</strong> Playing with peers & sharing</div>
+                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #8b5cf6;">2. Words & Talking:</strong> Expressing needs & gestures</div>
+                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #f59e0b;">3. Daily Habits:</strong> Changing activities & routines</div>
+                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #ec4899;">4. Sounds & Senses:</strong> Reaction to loud noises & touch</div>
+                <div style="display: flex; gap: 6px; align-items: center;"><strong style="color: #10b981;">5. Learning & Focus:</strong> Listening & following rules</div>
               </div>
             </div>
 
@@ -321,7 +321,7 @@ class TeacherModule {
               Log Classroom Observation
             </h1>
             <p style="font-size: 13.5px; color: #64748b; margin: 0;">
-              Record structured behavioral notes across the 5 developmental domains.
+              Record everyday behaviors and activities observed in class.
             </p>
           </div>
           <button class="btn btn-outline btn-sm" onclick="window.navigateTo('observations')">
@@ -331,7 +331,7 @@ class TeacherModule {
 
         <!-- Non-Clinical Banner -->
         <div style="background: #fffbeb; border: 1px solid #fef3c7; border-left: 4px solid #f59e0b; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; font-size: 12.5px; color: #92400e;">
-          <strong>Classroom Context:</strong> Please evaluate natural behaviors observed in classroom and playground settings.
+          <strong>Helpful Tip:</strong> Record natural interactions observed during playtime, circle time, or group activities.
         </div>
 
         <!-- Form Card -->
@@ -340,29 +340,29 @@ class TeacherModule {
             
             <!-- Section 1: Child & Context Metadata -->
             <div style="margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
-              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">1. Student & Environment Setup</h3>
+              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">1. Student & Classroom Details</h3>
               
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Child Student *</label>
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Select Student *</label>
                   <select id="obs-child-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" required>
                     ${children.map(c => `<option value="${c.id}" ${c.id === preselectedChildId ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
                   </select>
                 </div>
 
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Observation Date *</label>
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Date *</label>
                   <input type="date" id="obs-date" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" value="${today}" required>
                 </div>
 
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Activity Type</label>
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Activity</label>
                   <select id="obs-activity" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;">
                     <option value="Free Play">Free Play / Recess</option>
                     <option value="Group Circle Time" selected>Group Circle Time</option>
-                    <option value="Structured Desk Work">Structured Desk Work</option>
-                    <option value="Transition Period">Transition Period</option>
-                    <option value="Mealtime">Mealtime / Snack</option>
+                    <option value="Structured Desk Work">Desk Work / Table Activity</option>
+                    <option value="Transition Period">Room / Activity Transition</option>
+                    <option value="Mealtime">Snack & Lunch Time</option>
                   </select>
                 </div>
               </div>
@@ -371,19 +371,19 @@ class TeacherModule {
                 <div>
                   <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Classroom Noise Level</label>
                   <select id="obs-noise" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;">
-                    <option value="Quiet">Quiet (Individually focused)</option>
-                    <option value="Moderate" selected>Moderate (Normal classroom volume)</option>
-                    <option value="Loud">Loud (Active group/playground)</option>
+                    <option value="Quiet">Quiet (Reading / Quiet activity)</option>
+                    <option value="Moderate" selected>Normal (Regular classroom noise)</option>
+                    <option value="Loud">Loud (Playground / Group games)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Peer Setting</label>
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Group Setting</label>
                   <select id="obs-peers" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;">
                     <option value="1-on-1 with Teacher">1-on-1 with Teacher</option>
                     <option value="Small Group (2-4 peers)" selected>Small Group (2-4 peers)</option>
                     <option value="Whole Class (10+ peers)">Whole Class (10+ peers)</option>
-                    <option value="Independent">Independent</option>
+                    <option value="Independent">Working Alone</option>
                   </select>
                 </div>
               </div>
@@ -391,43 +391,43 @@ class TeacherModule {
 
             <!-- Section 2: 5 Developmental Domains Evaluation -->
             <div style="margin-bottom: 24px;">
-              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">2. 5-Domain Standardized Evaluation</h3>
+              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">2. Behavior & Development Check</h3>
               
               <div style="display: flex; flex-direction: column; gap: 16px;">
-                ${this.renderDomainInput('social', '1. Social Interaction & Peer Play', 'Initiates peer interactions, participates in turn-taking, responds to name call, and shares toys.')}
-                ${this.renderDomainInput('communication', '2. Communication & Language Expression', 'Uses words or gestures to request help, expresses needs clearly, understands multi-step verbal cues.')}
-                ${this.renderDomainInput('behavioural', '3. Behavioural Patterns & Transitions', 'Adapts smoothly to classroom routine changes, switches tasks without distress, repetitive movements.')}
-                ${this.renderDomainInput('sensory', '4. Sensory Responses & Sensitivities', 'Covers ears during loud bells, tolerates finger painting / textured materials, sensitivity to bright lights.')}
-                ${this.renderDomainInput('learning', '5. Classroom Learning & Focus', 'Maintains attention on teacher instructions, completes age-appropriate tabletop tasks, follows classroom rules.')}
+                ${this.renderDomainInput('social', '1. Playing & Interacting with Others', 'Plays with peers, takes turns, responds when called, and shares toys.')}
+                ${this.renderDomainInput('communication', '2. Talking & Expressing Needs', 'Uses words or gestures to ask for help, expresses thoughts, and follows spoken instructions.')}
+                ${this.renderDomainInput('behavioural', '3. Routine Changes & Habits', 'Handles activity transitions calmly and adapts comfortably to routine changes.')}
+                ${this.renderDomainInput('sensory', '4. Reactions to Sounds & Touch', 'Comfortable with classroom sounds, art materials, textures, and lighting.')}
+                ${this.renderDomainInput('learning', '5. Focus & Classroom Learning', 'Listens to instructions, stays engaged in activities, and follows class guidelines.')}
               </div>
             </div>
 
             <!-- Section 3: Triggers & Educator Remarks -->
             <div style="margin-bottom: 24px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
-              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">3. Educator Observations & Triggers</h3>
+              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">3. Helpful Notes & Triggers</h3>
 
               <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Positive Triggers & What Worked</label>
-                  <textarea id="obs-positive-triggers" class="form-control" rows="2" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Visual schedule card, praise, quiet sensory corner..."></textarea>
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">What Worked Well</label>
+                  <textarea id="obs-positive-triggers" class="form-control" rows="2" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Picture cards, gentle praise, quiet corner..."></textarea>
                 </div>
 
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Challenging Triggers Observed</label>
-                  <textarea id="obs-challenging-triggers" class="form-control" rows="2" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Sudden loud school bell, abrupt transition from recess..."></textarea>
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Any Triggers or Difficulties</label>
+                  <textarea id="obs-challenging-triggers" class="form-control" rows="2" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="e.g. Loud bell, sudden activity change..."></textarea>
                 </div>
               </div>
 
               <div>
-                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Educator Notes & Narrative Summary *</label>
-                <textarea id="obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Detailed classroom notes regarding behavior, interactions, and focus..." required></textarea>
+                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Teacher Notes & Summary *</label>
+                <textarea id="obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Write a brief note about the student's day, interactions, and focus..." required></textarea>
               </div>
             </div>
 
             <!-- Form Actions -->
             <div style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #e2e8f0; padding-top: 18px;">
               <button type="button" class="btn btn-outline" onclick="window.navigateTo('observations')">Cancel</button>
-              <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 10px 24px;">Submit Classroom Observation</button>
+              <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 10px 24px;">Save Observation</button>
             </div>
 
           </form>

@@ -1,8 +1,6 @@
 /**
- * NEUROSPECTRA - Parent & Caregiver Dashboard
- * Strict Role Isolation:
- * - Parents can ONLY view their own child's schedule, therapy progress, and reports.
- * - Parents CANNOT edit, modify, or deactivate therapists or staff members.
+ * NEUROSPECTRA - Parent & Family Portal
+ * Simple, warm, and easy-to-understand progress tracking for parents and caregivers.
  */
 
 window.parentActiveChildId = window.parentActiveChildId || null;
@@ -15,7 +13,7 @@ window.selectParentActiveChild = function(childId) {
 window.renderParentDashboard = function() {
   const currentParent = window.neuroAuth.getCurrentUser();
   if (!currentParent) {
-    return `<div class="card" style="padding: 32px; text-align: center;">Please sign in to access your caregiver portal.</div>`;
+    return `<div class="card" style="padding: 32px; text-align: center;">Please sign in to access your parent account.</div>`;
   }
 
   // Strict Data Isolation: Only retrieve children where primary_parent_id matches this parent's ID
@@ -37,7 +35,7 @@ window.renderParentDashboard = function() {
     return `
       <div class="page-header">
         <div>
-          <h1 class="page-title">Caregiver & Parent Portal</h1>
+          <h1 class="page-title">Parent & Family Portal</h1>
           <p class="page-subtitle">Welcome, ${currentParent.full_name}.</p>
         </div>
       </div>
@@ -45,9 +43,9 @@ window.renderParentDashboard = function() {
         <div style="width: 56px; height: 56px; border-radius: 50%; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
           <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
         </div>
-        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">No Child Profile Linked</h3>
+        <h3 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">No Child Linked Yet</h3>
         <p style="font-size: 13.5px; color: #64748b; max-width: 440px; margin: 0 auto 20px;">
-          Your parent account is verified. Please contact the clinical reception to link your child's registry code to your account.
+          Your account is active. Please contact the front desk to link your child to your account.
         </p>
       </div>
     `;
@@ -82,7 +80,7 @@ window.renderParentDashboard = function() {
             Welcome, ${currentParent.full_name.split(' ')[0]}
           </h1>
           <p style="font-size: 14px; color: #64748b; margin: 0;">
-            Monitoring developmental milestones, therapy schedule, and clinical records for <strong>${activeChild.first_name} ${activeChild.last_name}</strong>.
+            Track developmental milestones, appointments, and progress for <strong>${activeChild.first_name} ${activeChild.last_name}</strong>.
           </p>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
@@ -97,7 +95,7 @@ window.renderParentDashboard = function() {
           ` : ''}
           <button class="btn btn-primary" onclick="window.generateAndPrintChildReport('${activeChild.id}')" style="display: flex; align-items: center; gap: 8px; font-weight: 700;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-            Download Child Clinical Report
+            Download Progress Report
           </button>
         </div>
       </div>
@@ -119,14 +117,14 @@ window.renderParentDashboard = function() {
                 </span>
               </div>
               <div style="font-size: 13px; color: #94a3b8; margin-top: 5px;">
-                Clinical Code: <span style="font-family: monospace; font-weight: 700; color: #38bdf8;">${activeChild.child_code}</span> &bull; Age: ${activeChild.age_months} Months &bull; DOB: ${activeChild.dob}
+                Child ID: <span style="font-family: monospace; font-weight: 700; color: #38bdf8;">${activeChild.child_code}</span> &bull; Age: ${activeChild.age_months} Months &bull; Date of Birth: ${activeChild.dob}
               </div>
             </div>
           </div>
 
-          <!-- Assigned Specialist Read-Only Card (No Edit / Deactivate Controls) -->
+          <!-- Assigned Specialist Read-Only Card -->
           <div style="background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.12); padding: 12px 18px; border-radius: 12px; text-align: right;">
-            <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.5px;">Assigned Clinical Specialist (Read-Only)</div>
+            <div style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 700; letter-spacing: 0.5px;">Assigned Therapist</div>
             <div style="font-size: 15px; font-weight: 800; color: #38bdf8; margin-top: 2px;">
               ${therapist ? therapist.full_name : 'Dr. Aisha Khan, Ph.D.'}
             </div>
@@ -148,23 +146,23 @@ window.renderParentDashboard = function() {
               <div style="width: 32px; height: 32px; border-radius: 8px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
               </div>
-              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Child's Active Therapy Milestones</h3>
+              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Current Learning & Development Goals</h3>
             </div>
             <span style="font-size: 12px; font-weight: 700; color: #16a34a; background: #dcfce7; padding: 3px 8px; border-radius: 6px;">Active Plan</span>
           </div>
 
           ${activePlan ? `
             <div style="margin-bottom: 16px; padding: 12px 14px; background: #f8fafc; border-radius: 10px; border: 1px solid #e2e8f0;">
-              <div style="font-weight: 700; font-size: 14px; color: #0f172a;">${activePlan.title || 'Individualized Sensory & Speech IEP Plan'}</div>
-              <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Frequency: 2 Sessions / Week &bull; Review Date: August 2026</div>
+              <div style="font-weight: 700; font-size: 14px; color: #0f172a;">${activePlan.title || 'Sensory & Communication Support Plan'}</div>
+              <div style="font-size: 12px; color: #64748b; margin-top: 2px;">Frequency: 2 Sessions / Week &bull; Next Review: August 2026</div>
             </div>
 
             <div style="display: flex; flex-direction: column; gap: 14px;">
               ${(activePlan.goals || [
-                { title: 'Social & Eye Contact Orientation', progress_pct: 82, target: 'Maintain joint attention during structured sensory play.' },
-                { title: 'Verbal & Non-Verbal Requesting', progress_pct: 75, target: 'Use 2-word vocal requests with visual prompt cards.' },
-                { title: 'Auditory Sensory Regulation', progress_pct: 68, target: 'Tolerate classroom acoustic transitions with headphones.' },
-                { title: 'Fine Motor Coordination', progress_pct: 90, target: 'Grasp objects and complete pegboard tasks.' }
+                { title: 'Social & Eye Contact', progress_pct: 82, target: 'Maintain focus during interactive playtime.' },
+                { title: 'Communication & Words', progress_pct: 75, target: 'Use 2-word phrases with picture cards.' },
+                { title: 'Sound & Noise Comfort', progress_pct: 68, target: 'Stay comfortable during room changes using headphones.' },
+                { title: 'Hands & Motor Skills', progress_pct: 90, target: 'Hold objects and finish peg puzzle activities.' }
               ]).map(g => `
                 <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 10px; padding: 12px 14px;">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
@@ -179,11 +177,11 @@ window.renderParentDashboard = function() {
               `).join('')}
             </div>
           ` : `
-            <p style="color: #64748b; font-size: 13px;">Therapy plan under clinical formulation.</p>
+            <p style="color: #64748b; font-size: 13px;">Therapy plan is being prepared by your specialist.</p>
           `}
         </div>
 
-        <!-- Right Column: Child's Clinical Schedule & Appointments -->
+        <!-- Right Column: Child's Schedule & Appointments -->
         <div style="display: flex; flex-direction: column; gap: 24px;">
           
           <!-- Child's Schedule Card -->
@@ -193,7 +191,7 @@ window.renderParentDashboard = function() {
                 <div style="width: 32px; height: 32px; border-radius: 8px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 </div>
-                <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Child's Clinical Schedule</h3>
+                <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Upcoming Appointments</h3>
               </div>
               <span style="font-size: 12px; color: #64748b; font-weight: 600;">${upcomingApts.length} Scheduled</span>
             </div>
@@ -209,7 +207,7 @@ window.renderParentDashboard = function() {
                       </div>
                       <div>
                         <div style="font-weight: 700; font-size: 13.5px; color: #0f172a;">${a.appointment_date}</div>
-                        <div style="font-size: 12px; color: #64748b;">${a.type} &bull; Clinical Room 2B</div>
+                        <div style="font-size: 12px; color: #64748b;">${a.type} &bull; Room 2B</div>
                       </div>
                     </div>
                     <span style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">
@@ -229,15 +227,15 @@ window.renderParentDashboard = function() {
               <div style="width: 32px; height: 32px; border-radius: 8px; background: #fef3c7; color: #f59e0b; display: flex; align-items: center; justify-content: center;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               </div>
-              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Clinical Session Observations</h3>
+              <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Recent Session Notes & Home Tips</h3>
             </div>
 
             <div style="font-size: 13px; color: #334155; line-height: 1.6;">
               <div style="margin-bottom: 8px;">
-                <strong>Latest Evaluation:</strong> Child responded positively to sensory swing activities and maintained joint attention for 8 consecutive minutes.
+                <strong>What happened in the last session:</strong> Child responded enthusiastically to play activities and stayed focused for 8 minutes straight.
               </div>
               <div style="padding: 12px 14px; background: #eff6ff; border-radius: 10px; border: 1px solid #bfdbfe; color: #1e40af; font-size: 12.5px;">
-                <strong>Therapist Guidance for Home:</strong> Continue 10 minutes of daily visual prompt card practice before evening dinner routines.
+                <strong>Helpful Tips to Try at Home:</strong> Practice 10 minutes of fun picture card games together before dinner.
               </div>
             </div>
           </div>

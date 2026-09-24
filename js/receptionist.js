@@ -32,13 +32,13 @@ window.renderReceptionistDashboard = function() {
   return `
     <div class="page-header">
       <div>
-        <h1 class="page-title">Reception & Intake Management</h1>
-        <p class="page-subtitle">Patient onboarding, clinical appointment scheduling, daily roster, and reminder dispatching.</p>
+        <h1 class="page-title">Reception Desk & Appointments</h1>
+        <p class="page-subtitle">Register children, schedule appointments, and manage daily visits.</p>
       </div>
       <div style="display: flex; gap: 10px; flex-wrap: wrap;">
         <button class="btn btn-primary" onclick="window.showRegisterChildModal()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/><line x1="19" y1="11" x2="19" y2="17"/><line x1="22" y1="14" x2="16" y2="14"/></svg>
-          Register New Child
+          Register Child
         </button>
         <button class="btn btn-accent" onclick="window.showBookAppointmentModal()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
@@ -53,7 +53,7 @@ window.renderReceptionistDashboard = function() {
         <div>
           <div class="stat-label">Today's Visits</div>
           <div class="stat-value">${todayApts.length}</div>
-          <div class="stat-subtext">Clinical consultations & therapy</div>
+          <div class="stat-subtext">Scheduled visits today</div>
         </div>
         <div class="stat-icon-wrapper">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
@@ -64,7 +64,7 @@ window.renderReceptionistDashboard = function() {
         <div>
           <div class="stat-label">Available Therapists</div>
           <div class="stat-value">${therapists.length}</div>
-          <div class="stat-subtext">Licensed practitioners on duty</div>
+          <div class="stat-subtext">Therapists available</div>
         </div>
         <div class="stat-icon-wrapper">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -75,7 +75,7 @@ window.renderReceptionistDashboard = function() {
         <div>
           <div class="stat-label">Registered Children</div>
           <div class="stat-value">${children.length}</div>
-          <div class="stat-subtext">Total active clinic files</div>
+          <div class="stat-subtext">Active child profiles</div>
         </div>
         <div class="stat-icon-wrapper">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>
@@ -86,7 +86,7 @@ window.renderReceptionistDashboard = function() {
         <div>
           <div class="stat-label">Total Bookings</div>
           <div class="stat-value">${appointments.length}</div>
-          <div class="stat-subtext">${appointments.filter(a => a.status === 'Confirmed').length} Confirmed in system</div>
+          <div class="stat-subtext">${appointments.filter(a => a.status === 'Confirmed').length} Confirmed appointments</div>
         </div>
         <div class="stat-icon-wrapper">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
@@ -99,7 +99,7 @@ window.renderReceptionistDashboard = function() {
       <div class="card-header">
         <div class="card-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Appointment Master Schedule
+          All Appointments
         </div>
         <div style="display: flex; gap: 8px;">
           <button class="btn btn-outline btn-sm" onclick="window.sendBatchReminders()">
