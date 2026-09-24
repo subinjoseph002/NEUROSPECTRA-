@@ -16,6 +16,8 @@ const INITIAL_DB_DATA = {
       phone: '+91 98201 45672',
       avatar_url: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: 1,
+      status: 'Active',
       created_at: '2026-01-10T08:00:00Z',
       updated_at: '2026-01-10T08:00:00Z'
     },
@@ -28,6 +30,8 @@ const INITIAL_DB_DATA = {
       phone: '+91 98451 89234',
       avatar_url: 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: 1,
+      status: 'Active',
       created_at: '2026-01-12T09:30:00Z',
       updated_at: '2026-01-12T09:30:00Z'
     },
@@ -40,6 +44,8 @@ const INITIAL_DB_DATA = {
       phone: '+91 97114 62890',
       avatar_url: 'https://images.unsplash.com/photo-1622253692010-333f2da6031d?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: 1,
+      status: 'Active',
       created_at: '2026-01-15T10:00:00Z',
       updated_at: '2026-01-15T10:00:00Z'
     },
@@ -52,6 +58,8 @@ const INITIAL_DB_DATA = {
       phone: '+91 98230 41589',
       avatar_url: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: 1,
+      status: 'Active',
       created_at: '2026-01-14T08:30:00Z',
       updated_at: '2026-01-14T08:30:00Z'
     },
@@ -64,6 +72,8 @@ const INITIAL_DB_DATA = {
       phone: '+91 94471 63820',
       avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: 1,
+      status: 'Active',
       created_at: '2026-01-16T11:00:00Z',
       updated_at: '2026-01-16T11:00:00Z'
     },
@@ -76,6 +86,8 @@ const INITIAL_DB_DATA = {
       phone: '+91 99802 75419',
       avatar_url: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: 1,
+      status: 'Active',
       created_at: '2026-01-18T14:00:00Z',
       updated_at: '2026-01-18T14:00:00Z'
     },
@@ -88,6 +100,8 @@ const INITIAL_DB_DATA = {
       phone: '+91 98190 38472',
       avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: 1,
+      status: 'Active',
       created_at: '2026-01-20T10:00:00Z',
       updated_at: '2026-01-20T10:00:00Z'
     },
@@ -100,6 +114,8 @@ const INITIAL_DB_DATA = {
       phone: '+91 98300 94165',
       avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: 1,
+      status: 'Active',
       created_at: '2026-01-18T11:00:00Z',
       updated_at: '2026-01-18T11:00:00Z'
     }
@@ -857,6 +873,22 @@ class NeurospectraDB {
     const cleanRole = this.sanitize(userData.role || 'Parent / Caregiver');
     const pwdHash = this.hashPassword(userData.password || 'password123');
 
+    let isApproved = 1;
+    let status = 'Active';
+    if (userData.is_approved !== undefined) {
+      isApproved = userData.is_approved ? 1 : 0;
+      status = isApproved ? 'Active' : 'Pending';
+    } else if (cleanRole === 'Therapist' || cleanRole === 'Teacher') {
+      const currentUser = window.neuroAuth && window.neuroAuth.getCurrentUser();
+      if (currentUser && currentUser.role === 'Administrator') {
+        isApproved = 1;
+        status = 'Active';
+      } else {
+        isApproved = 0;
+        status = 'Pending';
+      }
+    }
+
     const newUser = {
       id: 'usr_' + Date.now().toString(36) + Math.random().toString(36).substr(2, 4),
       full_name: cleanName,
@@ -867,6 +899,8 @@ class NeurospectraDB {
       phone: cleanPhone ? '+91 ' + cleanPhone : '',
       avatar_url: userData.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=256',
       is_active: 1,
+      is_approved: isApproved,
+      status: status,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };

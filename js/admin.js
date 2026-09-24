@@ -162,7 +162,11 @@ window.renderAdminDashboard = function() {
               </tr>
             </thead>
             <tbody>
-              ${therapistList.concat(teacherList).map(u => `
+              ${therapistList.concat(teacherList).map(u => {
+                const isPending = u.status === 'Pending' || u.is_approved === 0 || u.is_approved === false;
+                const isActive = u.is_active && !isPending;
+
+                return `
                 <tr style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                   <td style="padding: 14px 16px; font-weight: 700; color: #0f172a;">
                     <div style="display: flex; align-items: center; gap: 10px;">
@@ -181,12 +185,24 @@ window.renderAdminDashboard = function() {
                   <td style="padding: 14px 16px; color: #475569;">${u.email}</td>
                   <td style="padding: 14px 16px; color: #64748b;">${u.phone || '+91 98201 45672'}</td>
                   <td style="padding: 14px 16px;">
-                    <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: ${u.is_active ? '#15803d' : '#94a3b8'}; background: ${u.is_active ? '#dcfce7' : '#f1f5f9'}; padding: 3px 9px; border-radius: 9999px;">
-                      <span style="width: 6px; height: 6px; border-radius: 50%; background: ${u.is_active ? '#16a34a' : '#94a3b8'};"></span>
-                      ${u.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                    ${isPending ? `
+                      <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px; font-weight: 700; color: #b45309; background: #fef3c7; border: 1px solid #fde68a; padding: 3px 9px; border-radius: 9999px;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #f59e0b;"></span>
+                        Pending Approval
+                      </span>
+                    ` : `
+                      <span style="display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: ${isActive ? '#15803d' : '#94a3b8'}; background: ${isActive ? '#dcfce7' : '#f1f5f9'}; padding: 3px 9px; border-radius: 9999px;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: ${isActive ? '#16a34a' : '#94a3b8'};"></span>
+                        ${isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    `}
                   </td>
                   <td style="padding: 14px 16px; text-align: right;">
+                    ${isPending ? `
+                      <button class="btn btn-sm btn-primary" onclick="window.approveUser('${u.id}')" style="margin-right: 6px; font-size: 12px; padding: 4px 10px; background: #16a34a; border-color: #16a34a;" title="Approve registration">
+                        ✓ Approve
+                      </button>
+                    ` : ''}
                     <button class="btn btn-sm btn-outline" onclick="window.openEditUserModal('${u.id}')" style="margin-right: 6px;" title="Edit details">
                       ✏️ Edit
                     </button>
@@ -195,7 +211,8 @@ window.renderAdminDashboard = function() {
                     </button>
                   </td>
                 </tr>
-              `).join('')}
+              `;
+              }).join('')}
             </tbody>
           </table>
         </div>
@@ -430,7 +447,11 @@ window.renderAdminUsers = function() {
                     <div style="font-size: 13px; margin-top: 4px;">Try selecting another role filter or adding a new user.</div>
                   </td>
                 </tr>
-              ` : filteredUsers.map(u => `
+              ` : filteredUsers.map(u => {
+                const isPending = u.status === 'Pending' || u.is_approved === 0 || u.is_approved === false;
+                const isActive = u.is_active && !isPending;
+
+                return `
                 <tr class="user-row" data-name="${(u.full_name || '').toLowerCase()}" data-email="${(u.email || '').toLowerCase()}" data-phone="${(u.phone || '').toLowerCase()}" style="border-bottom: 1px solid #f1f5f9; transition: background 0.15s;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='transparent'">
                   
                   <td style="padding: 14px 18px; font-weight: 700; color: #0f172a;">
@@ -458,14 +479,26 @@ window.renderAdminUsers = function() {
                   </td>
 
                   <td style="padding: 14px 18px;">
-                    <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: ${u.is_active ? '#15803d' : '#94a3b8'}; background: ${u.is_active ? '#dcfce7' : '#f1f5f9'}; padding: 3px 10px; border-radius: 9999px;">
-                      <span style="width: 6px; height: 6px; border-radius: 50%; background: ${u.is_active ? '#16a34a' : '#94a3b8'};"></span>
-                      ${u.is_active ? 'Active' : 'Inactive'}
-                    </span>
+                    ${isPending ? `
+                      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; font-weight: 700; color: #b45309; background: #fef3c7; border: 1px solid #fde68a; padding: 3px 10px; border-radius: 9999px;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: #f59e0b;"></span>
+                        Pending Approval
+                      </span>
+                    ` : `
+                      <span style="display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: ${isActive ? '#15803d' : '#94a3b8'}; background: ${isActive ? '#dcfce7' : '#f1f5f9'}; padding: 3px 10px; border-radius: 9999px;">
+                        <span style="width: 6px; height: 6px; border-radius: 50%; background: ${isActive ? '#16a34a' : '#94a3b8'};"></span>
+                        ${isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    `}
                   </td>
 
                   <td style="padding: 14px 18px; text-align: right;">
-                    <div style="display: flex; gap: 6px; justify-content: flex-end;">
+                    <div style="display: flex; gap: 6px; justify-content: flex-end; align-items: center;">
+                      ${isPending ? `
+                        <button class="btn btn-sm btn-primary" onclick="window.approveUser('${u.id}')" title="Approve registration" style="padding: 5px 10px; font-size: 12px; background: #16a34a; border-color: #16a34a;">
+                          ✓ Approve
+                        </button>
+                      ` : ''}
                       <button class="btn btn-sm btn-outline" onclick="window.openEditUserModal('${u.id}')" title="Edit user details" style="padding: 5px 10px; font-size: 12px;">
                         ✏️ Edit
                       </button>
@@ -479,7 +512,8 @@ window.renderAdminUsers = function() {
                   </td>
 
                 </tr>
-              `).join('')}
+              `;
+              }).join('')}
             </tbody>
           </table>
         </div>
@@ -509,6 +543,30 @@ window.searchAdminUsersTable = function() {
       r.style.display = 'none';
     }
   });
+};
+
+// Approve Pending User Registration (Admin Only)
+window.approveUser = function(userId) {
+  const currentUser = window.neuroAuth.getCurrentUser();
+  if (!currentUser || currentUser.role !== 'Administrator') {
+    window.showToast('Security Alert: Only Administrators can approve user registrations.', 'error');
+    return;
+  }
+
+  const user = window.neuroDB.getUserById(userId);
+  if (!user) {
+    window.showToast('User account not found.', 'error');
+    return;
+  }
+
+  window.neuroDB.updateUser(userId, {
+    is_approved: 1,
+    status: 'Active',
+    is_active: 1
+  });
+
+  window.showToast(`Account for ${user.full_name} (${user.role}) has been approved! They can now log in.`, 'success');
+  window.renderApp();
 };
 
 // Toggle User Active Status (Admin Only)
@@ -735,10 +793,11 @@ window.openEditUserModal = function(userId) {
           </div>
 
           <div class="form-group" style="margin-bottom: 22px;">
-            <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">Account Status</label>
+            <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">Account Status / Approval</label>
             <select id="edit-user-status" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none; background: #ffffff;">
-              <option value="1" ${user.is_active ? 'selected' : ''}>🟢 Active Account</option>
-              <option value="0" ${!user.is_active ? 'selected' : ''}>⚪ Inactive / Suspended</option>
+              <option value="active" ${user.is_active && (user.is_approved !== 0 && user.status !== 'Pending') ? 'selected' : ''}>🟢 Active & Approved</option>
+              <option value="pending" ${user.status === 'Pending' || user.is_approved === 0 || user.is_approved === false ? 'selected' : ''}>🟡 Pending Admin Approval</option>
+              <option value="inactive" ${!user.is_active ? 'selected' : ''}>⚪ Inactive / Suspended</option>
             </select>
           </div>
 
@@ -759,7 +818,7 @@ window.handleAdminUpdateUser = function(e, userId) {
   const email = (document.getElementById('edit-user-email')?.value || '').trim().toLowerCase();
   const role = document.getElementById('edit-user-role')?.value || 'Therapist';
   const phone = (document.getElementById('edit-user-phone')?.value || '').trim();
-  const isActive = parseInt(document.getElementById('edit-user-status')?.value, 10);
+  const statusVal = document.getElementById('edit-user-status')?.value || 'active';
 
   if (!name || name.length < 3) {
     window.showToast('Please enter a valid full name.', 'error');
@@ -770,12 +829,27 @@ window.handleAdminUpdateUser = function(e, userId) {
     return;
   }
 
+  let isActive = 1;
+  let isApproved = 1;
+  let status = 'Active';
+  if (statusVal === 'pending') {
+    isActive = 1;
+    isApproved = 0;
+    status = 'Pending';
+  } else if (statusVal === 'inactive') {
+    isActive = 0;
+    isApproved = 1;
+    status = 'Inactive';
+  }
+
   window.neuroDB.updateUser(userId, {
     full_name: name,
     email: email,
     role: role,
     phone: phone,
-    is_active: isActive
+    is_active: isActive,
+    is_approved: isApproved,
+    status: status
   });
 
   window.showToast(`User "${name}" updated successfully!`, 'success');

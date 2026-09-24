@@ -483,12 +483,15 @@ window.renderRegisterPage = function() {
             <div style="margin-bottom: 15px;">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                 <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 0; display: block;">Choose your profile role <span style="color: #ef4444;">*</span></label>
-                <span id="role-auth-badge" style="font-size: 11px; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px;">Self-Service</span>
+                <span id="role-auth-badge" style="font-size: 11px; font-weight: 600; color: #2563eb; background: #eff6ff; padding: 2px 8px; border-radius: 4px;">Instant Activation</span>
               </div>
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); background: #f1f5f9; padding: 4px; border-radius: 8px; gap: 4px;" id="reg-role-selector">
                 <button type="button" class="role-select-pill active" style="padding: 8px; font-size: 12.5px; font-weight: 700; border-radius: 6px; border: none; background: #ffffff; color: #2563eb; box-shadow: 0 1px 3px rgba(0,0,0,0.1); cursor: pointer; transition: all 0.2s;" onclick="window.selectRegRole('Parent / Caregiver', this)">Parent</button>
                 <button type="button" class="role-select-pill" style="padding: 8px; font-size: 12.5px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: #64748b; cursor: pointer; transition: all 0.2s;" onclick="window.selectRegRole('Teacher', this)">Teacher</button>
                 <button type="button" class="role-select-pill" style="padding: 8px; font-size: 12.5px; font-weight: 600; border-radius: 6px; border: none; background: transparent; color: #64748b; cursor: pointer; transition: all 0.2s;" onclick="window.selectRegRole('Therapist', this)">Therapist</button>
+              </div>
+              <div id="role-approval-notice" style="display: none; font-size: 11.5px; color: #b45309; background: #fef3c7; border: 1px solid #fde68a; padding: 6px 10px; border-radius: 6px; margin-top: 8px;">
+                Note: Teacher and Therapist accounts require verification and approval by the clinic Administrator before you can log in.
               </div>
             </div>
 
@@ -600,6 +603,7 @@ window.selectRegRole = function(role, btn) {
   window.selectedRegRole = role;
   const container = document.getElementById('reg-role-selector');
   const authBadge = document.getElementById('role-auth-badge');
+  const approvalNotice = document.getElementById('role-approval-notice');
   if (container) {
     container.querySelectorAll('.role-select-pill').forEach(b => {
       b.style.background = 'transparent';
@@ -613,14 +617,16 @@ window.selectRegRole = function(role, btn) {
     btn.style.fontWeight = '700';
   }
   if (authBadge) {
-    if (role === 'Therapist' || role === 'Administrator' || role === 'Receptionist') {
-      authBadge.textContent = 'Requires Auth';
-      authBadge.style.background = '#fef2f2';
-      authBadge.style.color = '#b91c1c';
+    if (role === 'Therapist' || role === 'Teacher') {
+      authBadge.textContent = 'Requires Admin Approval';
+      authBadge.style.background = '#fef3c7';
+      authBadge.style.color = '#b45309';
+      if (approvalNotice) approvalNotice.style.display = 'block';
     } else {
-      authBadge.textContent = 'Self-Service';
+      authBadge.textContent = 'Instant Activation';
       authBadge.style.background = '#eff6ff';
       authBadge.style.color = '#2563eb';
+      if (approvalNotice) approvalNotice.style.display = 'none';
     }
   }
 };
@@ -1595,7 +1601,11 @@ window.handleRegisterForm = function(e) {
       });
       
       // Step 6: Registration Success -> Show message -> Redirect to Login
-      window.showToast('Account created successfully! Please login with your credentials.', 'success');
+      if (role === 'Therapist' || role === 'Teacher') {
+        window.showToast('Registration submitted! Therapist and Teacher accounts require Administrator approval before logging in.', 'info');
+      } else {
+        window.showToast('Account created successfully! Please login with your credentials.', 'success');
+      }
       window.navigateTo('login');
     } catch (err) {
       if (submitBtn) {
@@ -3419,29 +3429,46 @@ window.showUserProfileModal = function() {
 
       ${extraDetailsHtml}
 
+      ${role !== 'Administrator' ? `
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: #1e40af; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Account details (name, email, phone) can only be edited by an Administrator. You can update your password below.</span>
+        </div>
+      ` : ''}
+
       <!-- Edit Profile Form -->
       <form id="edit-user-profile-form" onsubmit="window.handleUpdateProfileSubmit(event)">
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
           <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Full Name <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="edit-profile-name" class="form-control" value="${currentUser.full_name}" required style="padding: 8px 12px; font-size: 13px;">
+            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">
+              Full Name ${role === 'Administrator' ? '<span style="color: #ef4444;">*</span>' : '<span style="font-size: 11px; color: #94a3b8; font-weight: normal;">(Locked)</span>'}
+            </label>
+            <input type="text" id="edit-profile-name" class="form-control" value="${currentUser.full_name}" ${role === 'Administrator' ? 'required' : 'readonly'} style="padding: 8px 12px; font-size: 13px; ${role !== 'Administrator' ? 'background: #f8fafc; color: #64748b; cursor: not-allowed;' : ''}">
+            ${role !== 'Administrator' ? '<span style="font-size: 11px; color: #94a3b8; margin-top: 3px; display: block;">🔒 Managed by administrator</span>' : ''}
           </div>
           <div class="form-group" style="margin-bottom: 0;">
-            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Phone Number <span style="color: #ef4444;">*</span></label>
-            <input type="tel" id="edit-profile-phone" class="form-control" value="${currentUser.phone || ''}" placeholder="+91 98201 45672" required style="padding: 8px 12px; font-size: 13px;">
+            <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">
+              Phone Number ${role === 'Administrator' ? '<span style="color: #ef4444;">*</span>' : '<span style="font-size: 11px; color: #94a3b8; font-weight: normal;">(Locked)</span>'}
+            </label>
+            <input type="tel" id="edit-profile-phone" class="form-control" value="${currentUser.phone || ''}" placeholder="+91 98201 45672" ${role === 'Administrator' ? 'required' : 'readonly'} style="padding: 8px 12px; font-size: 13px; ${role !== 'Administrator' ? 'background: #f8fafc; color: #64748b; cursor: not-allowed;' : ''}">
+            ${role !== 'Administrator' ? '<span style="font-size: 11px; color: #94a3b8; margin-top: 3px; display: block;">🔒 Managed by administrator</span>' : ''}
           </div>
         </div>
 
         <!-- Email Section -->
         <div class="form-group" style="margin-bottom: 14px;">
-          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">Email Address <span style="color: #ef4444;">*</span></label>
-          <input type="email" id="edit-profile-email" class="form-control" value="${currentUser.email}" required placeholder="user@neurospectra.org" style="padding: 8px 12px; font-size: 13px;">
-          <div style="font-size: 11px; color: #64748b; margin-top: 3px;">Primary address for session reminders and clinical reports.</div>
+          <label class="form-label" style="font-size: 12.5px; font-weight: 600; color: #1e293b; margin-bottom: 4px; display: block;">
+            Email Address ${role === 'Administrator' ? '<span style="color: #ef4444;">*</span>' : '<span style="font-size: 11px; color: #94a3b8; font-weight: normal;">(Locked)</span>'}
+          </label>
+          <input type="email" id="edit-profile-email" class="form-control" value="${currentUser.email}" ${role === 'Administrator' ? 'required' : 'readonly'} placeholder="user@neurospectra.org" style="padding: 8px 12px; font-size: 13px; ${role !== 'Administrator' ? 'background: #f8fafc; color: #64748b; cursor: not-allowed;' : ''}">
+          ${role !== 'Administrator' ? '<span style="font-size: 11px; color: #94a3b8; margin-top: 3px; display: block;">🔒 Managed by administrator</span>' : '<div style="font-size: 11px; color: #64748b; margin-top: 3px;">Primary address for system notifications.</div>'}
         </div>
 
         <!-- Password update -->
         <div style="border-top: 1px solid #e2e8f0; padding-top: 12px; margin-bottom: 16px;">
-          <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px;">Change Password (Optional)</div>
+          <div style="font-size: 12px; font-weight: 700; color: #334155; margin-bottom: 8px;">
+            ${role === 'Administrator' ? 'Change Password (Optional)' : 'Change Your Password'}
+          </div>
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <input type="password" id="edit-profile-newpwd" class="form-control" placeholder="New password" style="padding: 7px 10px; font-size: 12.5px;">
             <input type="password" id="edit-profile-confirmpwd" class="form-control" placeholder="Confirm new password" style="padding: 7px 10px; font-size: 12.5px;">
@@ -3450,7 +3477,7 @@ window.showUserProfileModal = function() {
 
         <div style="display: flex; justify-content: flex-end; gap: 10px;">
           <button type="button" class="btn btn-secondary" onclick="window.closeActiveModal()">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Profile Changes</button>
+          <button type="submit" class="btn btn-primary">${role === 'Administrator' ? 'Save Profile Changes' : 'Update Password'}</button>
         </div>
       </form>
     </div>
@@ -3461,12 +3488,49 @@ window.showUserProfileModal = function() {
 
 window.handleUpdateProfileSubmit = function(e) {
   e.preventDefault();
+  const currentUser = window.neuroAuth.getCurrentUser();
+  if (!currentUser) return;
+  const isAdmin = currentUser.role === 'Administrator';
+
+  const newPwd = document.getElementById('edit-profile-newpwd')?.value;
+  const confirmPwd = document.getElementById('edit-profile-confirmpwd')?.value;
+
+  // Non-admin users are only allowed to update their password
+  if (!isAdmin) {
+    if (!newPwd || newPwd.trim().length === 0) {
+      window.showToast('Please enter a new password if you want to change your password.', 'info');
+      return;
+    }
+    if (newPwd.length < 8) {
+      window.showToast('New password must be at least 8 characters long.', 'error');
+      return;
+    }
+    if (newPwd !== confirmPwd) {
+      window.showToast('New passwords do not match.', 'error');
+      return;
+    }
+
+    const updatedUser = window.neuroDB.updateUser(currentUser.id, {
+      password_hash: window.neuroDB.hashPassword(newPwd),
+      raw_pwd_hash: newPwd,
+      password: newPwd
+    });
+
+    if (updatedUser) {
+      window.neuroAuth.setSession(updatedUser, window.neuroAuth.token);
+      window.closeActiveModal();
+      window.showToast('Password updated successfully!', 'success');
+    } else {
+      window.showToast('Failed to update password.', 'error');
+    }
+    return;
+  }
+
+  // Admin user has full access to edit details
   const name = document.getElementById('edit-profile-name').value.trim();
   const emailInput = document.getElementById('edit-profile-email');
   const email = emailInput ? emailInput.value.trim() : null;
   const phone = document.getElementById('edit-profile-phone').value.trim();
-  const newPwd = document.getElementById('edit-profile-newpwd')?.value;
-  const confirmPwd = document.getElementById('edit-profile-confirmpwd')?.value;
 
   if (name.length < 3) {
     window.showToast('Full name must be at least 3 characters.', 'error');
@@ -3491,9 +3555,6 @@ window.handleUpdateProfileSubmit = function(e) {
       return;
     }
   }
-
-  const currentUser = window.neuroAuth.getCurrentUser();
-  if (!currentUser) return;
 
   if (email && email.toLowerCase() !== (currentUser.email || '').toLowerCase()) {
     const allUsers = window.neuroDB.getUsers ? window.neuroDB.getUsers() : [];
@@ -3523,7 +3584,7 @@ window.handleUpdateProfileSubmit = function(e) {
   if (updatedUser) {
     window.neuroAuth.setSession(updatedUser, window.neuroAuth.token);
     window.closeActiveModal();
-    window.showToast('Profile & credentials updated in database successfully!', 'success');
+    window.showToast('Profile & credentials updated successfully!', 'success');
     window.renderApp();
   } else {
     window.showToast('Failed to update profile.', 'error');

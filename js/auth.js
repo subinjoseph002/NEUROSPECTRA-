@@ -101,8 +101,17 @@ class AuthService {
     const user = window.neuroDB.getUserByEmail(cleanEmail);
     
     // Security Rule: Do NOT reveal whether email or password was incorrect
-    if (!user || !user.is_active) {
+    if (!user) {
       throw new Error('Invalid email or password.');
+    }
+
+    // Approval status check: Teachers and Therapists require admin approval before login
+    if (user.is_approved === 0 || user.is_approved === false || user.status === 'Pending') {
+      throw new Error('Your account is pending Administrator approval. Please wait for an administrator to approve your registration.');
+    }
+
+    if (!user.is_active) {
+      throw new Error('This account has been deactivated. Please contact the administrator.');
     }
 
     const calculatedHash = window.neuroDB.hashPassword(cleanPassword);
@@ -197,14 +206,10 @@ class AuthService {
       throw new Error('Passwords do not match.');
     }
 
-    // 6. Security Rule: Backend Role Authorization Guard
-    const allowedPublicRoles = ['Parent / Caregiver', 'Teacher'];
-    if (!allowedPublicRoles.includes(role)) {
-      if (role === 'Administrator' && (!this.currentUser || this.currentUser.role !== 'Administrator')) {
-        throw new Error('Registration for this role requires authorization.');
-      }
-      if ((role === 'Therapist' || role === 'Receptionist') && (!this.currentUser || this.currentUser.role !== 'Administrator')) {
-        throw new Error('Registration for this role requires authorization.');
+    // 6. Security Rule: Receptionist & Administrator accounts can only be created by Admin
+    if (role === 'Receptionist' || role === 'Administrator') {
+      if (!this.currentUser || this.currentUser.role !== 'Administrator') {
+        throw new Error('Receptionist and Administrator accounts can only be added by a system Administrator.');
       }
     }
 
@@ -213,6 +218,11 @@ class AuthService {
       throw new Error('Please accept the Terms and Conditions.');
     }
 
+    // Set approval status based on role and creator
+    const isAdmin = this.currentUser && this.currentUser.role === 'Administrator';
+    const isApproved = (role === 'Parent / Caregiver' || isAdmin) ? 1 : 0;
+    const status = isApproved ? 'Active' : 'Pending';
+
     // Create user securely in database
     const newUser = window.neuroDB.createUser({
       full_name: cleanName,
@@ -220,6 +230,8 @@ class AuthService {
       password: cleanPassword,
       role: role,
       phone: digitsOnly,
+      is_approved: isApproved,
+      status: status,
       avatar_url: userData.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=256'
     });
 
