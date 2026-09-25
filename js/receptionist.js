@@ -147,9 +147,17 @@ window.renderReceptionistDashboard = function() {
                     ${window.getAppointmentBadgeHtml ? window.getAppointmentBadgeHtml(apt.status, apt.appointment_date, apt.end_time, apt.start_time) : `<span class="badge badge-confirmed">${apt.status}</span>`}
                   </td>
                   <td>
-                    <span class="badge ${apt.reminder_sent ? 'badge-success' : 'badge-neutral'}">
-                      ${apt.reminder_sent ? 'Sent' : 'Pending'}
-                    </span>
+                    ${apt.reminder_sent ? `
+                      <span class="badge badge-success" style="display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 11px;">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                        Sent
+                      </span>
+                    ` : `
+                      <button type="button" class="btn btn-sm" onclick="window.sendSingleReminder('${apt.id}')" style="font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px; background: #fef3c7; color: #b45309; border: 1px solid #fde68a; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.15s;" title="Click to dispatch reminder to parent now">
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        Pending (Send)
+                      </button>
+                    `}
                   </td>
                   <td style="text-align: right;">
                     <div style="display: inline-flex; gap: 4px;">
@@ -169,6 +177,73 @@ window.renderReceptionistDashboard = function() {
       </div>
     </div>
   `;
+};
+
+// ============================================================================
+// Receptionist Appointment Reminders Engine
+// ============================================================================
+
+window.sendBatchReminders = function() {
+  const db = window.neuroDB;
+  const allAppointments = db.getAppointments() || [];
+
+  // Find all appointments with pending reminders that are not cancelled or completed
+  const pendingApts = allAppointments.filter(a => 
+    a.status !== 'Cancelled' &&
+    a.status !== 'Completed' &&
+    (!a.reminder_sent || a.reminder_sent === 0)
+  );
+
+  if (pendingApts.length === 0) {
+    window.showToast("All reminders for active appointments have already been dispatched.", "info");
+    return;
+  }
+
+  let count = 0;
+  pendingApts.forEach(apt => {
+    db.updateAppointment(apt.id, { reminder_sent: 1 });
+    const child = db.getChildById(apt.child_id);
+    const therapist = db.getUserById(apt.therapist_id);
+    const parent = child ? db.getUserById(child.primary_parent_id) : null;
+    
+    if (parent) {
+      db.createNotification({
+        user_id: parent.id,
+        title: 'Appointment Reminder',
+        message: `Reminder: ${child.first_name} has a scheduled ${apt.type} on ${apt.appointment_date} at ${apt.start_time} with ${therapist ? therapist.full_name : 'Specialist'}.`,
+        type: 'appointment',
+        link: 'appointments'
+      });
+    }
+    count++;
+  });
+
+  window.showToast(`✅ Successfully dispatched ${count} appointment reminder(s) via SMS & Portal Notification!`, 'success');
+  window.renderApp();
+};
+
+window.sendSingleReminder = function(aptId) {
+  const db = window.neuroDB;
+  const apt = (db.getAppointments() || []).find(a => a.id === aptId);
+  if (!apt) return;
+
+  db.updateAppointment(apt.id, { reminder_sent: 1 });
+  const child = db.getChildById(apt.child_id);
+  const therapist = db.getUserById(apt.therapist_id);
+  const parent = child ? db.getUserById(child.primary_parent_id) : null;
+
+  if (parent) {
+    db.createNotification({
+      user_id: parent.id,
+      title: 'Appointment Reminder',
+      message: `Reminder: ${child.first_name} has a scheduled ${apt.type} on ${apt.appointment_date} at ${apt.start_time} with ${therapist ? therapist.full_name : 'Specialist'}.`,
+      type: 'appointment',
+      link: 'appointments'
+    });
+  }
+
+  window.showToast(`✅ Reminder dispatched for ${child ? child.first_name : 'patient'}'s session on ${apt.appointment_date}!`, 'success');
+  window.renderApp();
 };
 
 // ============================================================================
