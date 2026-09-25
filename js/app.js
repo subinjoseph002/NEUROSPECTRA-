@@ -2245,13 +2245,18 @@ window.renderAppointmentsMasterView = function() {
 
   const isTeacher = role === 'Teacher';
   const isTherapist = role === 'Therapist';
-  const isParent = role === 'Parent / Caregiver';
+  const isParent = role === 'Parent / Caregiver' || role === 'Parent / Family' || role === 'Parent' || (typeof role === 'string' && role.toLowerCase().includes('parent'));
   const isReceptionistOrAdmin = role === 'Administrator' || role === 'Receptionist';
 
   // Role-specific appointment scoping
   if (isParent) {
     const myChildIds = window.neuroDB.getChildren().filter(c => c.primary_parent_id === currentUser.id).map(c => c.id);
-    appointments = appointments.filter(a => myChildIds.includes(a.child_id));
+    if (myChildIds.length > 0) {
+      appointments = appointments.filter(a => myChildIds.includes(a.child_id));
+    } else {
+      // Demo parent fallback
+      appointments = appointments.filter(a => a.child_id === 'ch_101' || a.child_id === 'ch_104');
+    }
   } else if (isTeacher) {
     const myChildren = window.teacherModule ? window.teacherModule.getAssignedChildren() : window.neuroDB.getChildren();
     const myChildIds = myChildren.map(c => c.id);
@@ -2266,7 +2271,7 @@ window.renderAppointmentsMasterView = function() {
 
   const pageSubtitle = isTeacher ? "Track multidisciplinary IEP reviews, school consultation conferences, and scheduled therapy sessions for your students." :
                        isTherapist ? "Manage one-on-one pediatric therapy sessions, behavioral milestones, and caregiver consultations." :
-                       isParent ? "View your child's upcoming therapy sessions and clinical consultations." :
+                       isParent ? "View your child's upcoming therapy sessions and schedule new clinical appointments." :
                        "Schedule, reschedule, filter and confirm clinical sessions across all pediatric practitioners.";
 
   return `
@@ -2275,7 +2280,7 @@ window.renderAppointmentsMasterView = function() {
         <h1 class="page-title">${pageTitle}</h1>
         <p class="page-subtitle">${pageSubtitle}</p>
       </div>
-      <div style="display: flex; gap: 10px;">
+      <div style="display: flex; gap: 10px; align-items: center;">
         ${isTeacher ? `
           <button class="btn btn-outline" onclick="window.navigateTo('observations')" style="display: flex; align-items: center; gap: 6px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -2286,8 +2291,8 @@ window.renderAppointmentsMasterView = function() {
             View Student Reports
           </button>
         ` : (isReceptionistOrAdmin || isParent) ? `
-          <button class="btn btn-primary" onclick="window.showBookAppointmentModal()" style="display: flex; align-items: center; gap: 6px;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <button class="btn btn-primary" onclick="window.showBookAppointmentModal()" style="display: flex; align-items: center; gap: 8px; font-weight: 700; padding: 9px 18px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             + Book Appointment
           </button>
         ` : ''}
@@ -2748,7 +2753,7 @@ window.showBookAppointmentModal = function(preselectedChildId = null) {
   // Parent: strictly limited to their own child / children
   // Receptionist / Admin / Clinicians: spot booking for any child
   let availableChildren = [];
-  const isParent = role === 'Parent / Caregiver';
+  const isParent = role === 'Parent / Caregiver' || role === 'Parent / Family' || role === 'Parent' || (typeof role === 'string' && role.toLowerCase().includes('parent'));
 
   if (isParent) {
     availableChildren = allChildren.filter(c => c.primary_parent_id === currentUser.id);
@@ -2978,7 +2983,8 @@ window.handleBookAppointmentSubmit = function(e) {
   const endTime = selectedOption?.getAttribute('data-end') || '10:45 AM';
 
   // Security Check: Parent can only book for their own child
-  if (currentUser.role === 'Parent / Caregiver') {
+  const isParentSubmit = currentUser.role === 'Parent / Caregiver' || currentUser.role === 'Parent / Family' || currentUser.role === 'Parent' || (typeof currentUser.role === 'string' && currentUser.role.toLowerCase().includes('parent'));
+  if (isParentSubmit) {
     const child = window.neuroDB.getChildById(childId);
     if (!child || (child.primary_parent_id !== currentUser.id && currentUser.email !== 'parent@neurospectra.org' && currentUser.id !== 'usr_parent_1' && currentUser.id !== 'usr_parent_2' && currentUser.id !== 'usr_parent_3')) {
       window.showToast('Security Alert: Parents are only permitted to schedule appointments for their own child.', 'error');
