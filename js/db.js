@@ -1156,9 +1156,28 @@ class NeurospectraDB {
     return newRecord;
   }
 
-  // --- Appointments Queries ---
+  // --- Appointment Lifecycle Helpers & Queries ---
   getAppointments(filter = {}) {
-    let list = this.getData().appointments || [];
+    let data = this.getData();
+    let list = data.appointments || [];
+    let dirty = false;
+
+    // Automatically synchronize expired/past appointments from Scheduled/Confirmed/Rescheduled -> Completed
+    list = list.map(a => {
+      if (a.status !== 'Cancelled' && a.status !== 'Completed') {
+        if (window.isAppointmentPast && window.isAppointmentPast(a.appointment_date, a.end_time, a.start_time)) {
+          a.status = 'Completed';
+          dirty = true;
+        }
+      }
+      return a;
+    });
+
+    if (dirty) {
+      data.appointments = list;
+      this.saveData(data);
+    }
+
     if (filter.child_id) list = list.filter(a => a.child_id === filter.child_id);
     if (filter.therapist_id) list = list.filter(a => a.therapist_id === filter.therapist_id);
     if (filter.date) list = list.filter(a => a.appointment_date === filter.date);
@@ -1167,6 +1186,12 @@ class NeurospectraDB {
 
   createAppointment(aptData) {
     const data = this.getData();
+
+    // Strict Date/Time Validation: Cannot book in the past
+    if (window.isAppointmentPast && window.isAppointmentPast(aptData.appointment_date, aptData.end_time, aptData.start_time)) {
+      throw new Error('Validation Error: Cannot schedule an appointment for a past date or expired time slot.');
+    }
+
     // Validate conflict
     const conflict = (data.appointments || []).some(a => 
       a.therapist_id === aptData.therapist_id &&
@@ -1202,6 +1227,16 @@ class NeurospectraDB {
     const data = this.getData();
     const idx = data.appointments.findIndex(a => a.id === id);
     if (idx !== -1) {
+      // If updating date/time, validate that new date/time is not in the past
+      if (updates.appointment_date || updates.start_time) {
+        const targetDate = updates.appointment_date || data.appointments[idx].appointment_date;
+        const targetStart = updates.start_time || data.appointments[idx].start_time;
+        const targetEnd = updates.end_time || data.appointments[idx].end_time;
+        if (window.isAppointmentPast && window.isAppointmentPast(targetDate, targetEnd, targetStart)) {
+          throw new Error('Validation Error: Cannot reschedule an appointment to a past date or expired time slot.');
+        }
+      }
+
       data.appointments[idx] = { ...data.appointments[idx], ...updates };
       this.saveData(data);
       return data.appointments[idx];

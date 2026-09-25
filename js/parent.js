@@ -68,7 +68,11 @@ window.renderParentDashboard = function() {
   const childAssessments = (window.neuroDB.getAssessmentRecords ? window.neuroDB.getAssessmentRecords() : []).filter(r => r.child_id === activeChild.id);
   const latestAsmt = childAssessments[0];
 
-  const upcomingApts = childAppointments.filter(a => a.status !== 'Cancelled');
+  const upcomingApts = childAppointments.filter(a => 
+    (!window.isAppointmentPast || !window.isAppointmentPast(a.appointment_date, a.end_time, a.start_time)) && 
+    a.status !== 'Cancelled' && 
+    a.status !== 'Completed'
+  );
 
   return `
     <div class="parent-dashboard-view" style="font-family: 'Plus Jakarta Sans', sans-serif; color: #0f172a;">
@@ -216,9 +220,7 @@ window.renderParentDashboard = function() {
                         <div style="font-size: 12px; color: #64748b;">${a.type} &bull; Room 2B</div>
                       </div>
                     </div>
-                    <span style="background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 6px;">
-                      ● ${a.status}
-                    </span>
+                    ${window.getAppointmentBadgeHtml ? window.getAppointmentBadgeHtml(a.status, a.appointment_date, a.end_time, a.start_time) : `<span class="badge badge-confirmed">${a.status}</span>`}
                   </div>
                 `).join('')}
               </div>

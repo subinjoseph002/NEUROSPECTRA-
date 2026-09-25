@@ -144,9 +144,7 @@ window.renderReceptionistDashboard = function() {
                   </td>
                   <td style="font-size: 12.5px; color: var(--slate-600);">${apt.type}</td>
                   <td>
-                    <span class="badge ${apt.status === 'Confirmed' ? 'badge-confirmed' : apt.status === 'Scheduled' ? 'badge-scheduled' : apt.status === 'Completed' ? 'badge-completed' : 'badge-danger'}">
-                      ${apt.status}
-                    </span>
+                    ${window.getAppointmentBadgeHtml ? window.getAppointmentBadgeHtml(apt.status, apt.appointment_date, apt.end_time, apt.start_time) : `<span class="badge badge-confirmed">${apt.status}</span>`}
                   </td>
                   <td>
                     <span class="badge ${apt.reminder_sent ? 'badge-success' : 'badge-neutral'}">
@@ -155,8 +153,12 @@ window.renderReceptionistDashboard = function() {
                   </td>
                   <td style="text-align: right;">
                     <div style="display: inline-flex; gap: 4px;">
-                      <button class="btn btn-outline btn-sm" onclick="window.showRescheduleModal('${apt.id}')">Reschedule</button>
-                      <button class="btn btn-outline btn-sm" style="color: var(--danger-500);" onclick="window.cancelAppointment('${apt.id}')">Cancel</button>
+                      ${(window.isAppointmentPast && window.isAppointmentPast(apt.appointment_date, apt.end_time, apt.start_time)) || apt.status === 'Completed' || apt.status === 'Cancelled' ? `
+                        <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${apt.child_id}')" style="font-size: 11.5px; padding: 4px 8px;">View Report</button>
+                      ` : `
+                        <button class="btn btn-outline btn-sm" onclick="window.showRescheduleModal('${apt.id}')">Reschedule</button>
+                        <button class="btn btn-outline btn-sm" style="color: var(--danger-500);" onclick="window.cancelAppointment('${apt.id}')">Cancel</button>
+                      `}
                     </div>
                   </td>
                 </tr>

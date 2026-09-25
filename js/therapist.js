@@ -301,10 +301,10 @@ window.renderTherapistDashboard = function() {
                         </span>
                         <div>
                           <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">${child ? `${child.first_name} ${child.last_name}` : 'Child'}</div>
-                          <div style="font-size: 12px; color: #64748b;">${a.title || a.service_type || 'Therapy Session'}</div>
+                          <div style="font-size: 12px; color: #64748b;">${a.type || a.service_type || 'Therapy Session'}</div>
                         </div>
                       </div>
-                      <span class="badge badge-${a.status === 'Confirmed' ? 'success' : 'info'}">${a.status}</span>
+                      ${window.getAppointmentBadgeHtml ? window.getAppointmentBadgeHtml(a.status, a.appointment_date, a.end_time, a.start_time) : `<span class="badge badge-confirmed">${a.status}</span>`}
                     </div>
                   `;
                 }).join('')}

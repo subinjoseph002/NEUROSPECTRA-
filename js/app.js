@@ -1928,7 +1928,7 @@ window.renderChildProfile = function(childId) {
                   <tr>
                     <td style="font-weight: 700; font-size: 13px;">${a.appointment_date} (${a.start_time})</td>
                     <td style="font-size: 12.5px;">${a.type}</td>
-                    <td><span class="badge badge-${a.status === 'Confirmed' ? 'active' : 'scheduled'}">${a.status}</span></td>
+                    <td>${window.getAppointmentBadgeHtml ? window.getAppointmentBadgeHtml(a.status, a.appointment_date, a.end_time, a.start_time) : `<span class="badge badge-confirmed">${a.status}</span>`}</td>
                     <td style="font-size: 12.5px; color: var(--slate-600);">${a.notes || '—'}</td>
                   </tr>
                 `).join('')}
@@ -2293,7 +2293,7 @@ window.renderAppointmentsMasterView = function() {
         ` : (isReceptionistOrAdmin || isParent) ? `
           <button class="btn btn-primary" onclick="window.showBookAppointmentModal()" style="display: flex; align-items: center; gap: 8px; font-weight: 700; padding: 9px 18px; box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            + Book Appointment
+            Book Appointment
           </button>
         ` : ''}
       </div>
@@ -2324,7 +2324,7 @@ window.renderAppointmentsMasterView = function() {
               const child = window.neuroDB.getChildById(a.child_id);
               const therapist = window.neuroDB.getUserById(a.therapist_id);
               const parent = child ? window.neuroDB.getUserById(child.primary_parent_id) : null;
-              
+              const isPast = window.isAppointmentPast(a.appointment_date, a.end_time, a.start_time);
               const typeLabel = isTeacher && a.type === 'Therapy Session' ? 'Multidisciplinary Therapy Session' : a.type;
 
               return `
@@ -2349,7 +2349,7 @@ window.renderAppointmentsMasterView = function() {
                   <td>
                     <span style="font-size: 12.5px; font-weight: 600; color: #1e293b;">${typeLabel}</span>
                   </td>
-                  <td><span class="badge badge-${a.status === 'Confirmed' ? 'active' : a.status === 'Scheduled' ? 'scheduled' : 'neutral'}">${a.status}</span></td>
+                  <td>${window.getAppointmentBadgeHtml(a.status, a.appointment_date, a.end_time, a.start_time)}</td>
                   <td style="font-size: 12px; color: var(--slate-600); max-width: 240px;">${a.notes || '—'}</td>
                   <td style="text-align: right; white-space: nowrap;">
                     ${isTeacher ? `
@@ -2359,10 +2359,14 @@ window.renderAppointmentsMasterView = function() {
                       <button class="btn btn-primary btn-sm" onclick="window.navigateTo('observation-create', { childId: '${a.child_id}' })" style="font-size: 11.5px; padding: 4px 8px; margin-left: 4px;">
                         + Obs
                       </button>
-                    ` : isReceptionistOrAdmin || isTherapist ? `
-                      <button class="btn btn-outline btn-sm" onclick="window.showRescheduleModal('${a.id}')">Reschedule</button>
+                    ` : (isReceptionistOrAdmin || isTherapist) ? `
+                      ${isPast || a.status === 'Completed' || a.status === 'Cancelled' ? `
+                        <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${a.child_id}')" style="font-size: 11.5px; padding: 4px 8px;">View Report</button>
+                      ` : `
+                        <button class="btn btn-outline btn-sm" onclick="window.showRescheduleModal('${a.id}')" style="font-size: 11.5px; padding: 4px 8px;">Reschedule</button>
+                      `}
                     ` : `
-                      <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${a.child_id}')">View Report</button>
+                      <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${a.child_id}')" style="font-size: 11.5px; padding: 4px 8px;">View Report</button>
                     `}
                   </td>
                 </tr>
@@ -2733,6 +2737,54 @@ window.handleRegisterChildSubmit = function(e) {
 // Appointment Booking & Slot Availability Engine
 // ============================================================================
 
+window.parseSlotDateTime = function(dateStr, timeStr) {
+  if (!dateStr) return new Date();
+  const [year, month, day] = dateStr.split('-').map(Number);
+  let hours = 0;
+  let minutes = 0;
+  if (timeStr) {
+    const match = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    if (match) {
+      hours = parseInt(match[1], 10);
+      minutes = parseInt(match[2], 10);
+      const meridiem = match[3].toUpperCase();
+      if (meridiem === 'PM' && hours < 12) hours += 12;
+      if (meridiem === 'AM' && hours === 12) hours = 0;
+    }
+  }
+  return new Date(year, month - 1, day, hours, minutes, 0, 0);
+};
+
+window.isAppointmentPast = function(appointment_date, end_time, start_time) {
+  if (!appointment_date) return false;
+  const timeStr = end_time || start_time || '11:59 PM';
+  const aptTime = window.parseSlotDateTime(appointment_date, timeStr);
+  return aptTime.getTime() < Date.now();
+};
+
+window.isTimeSlotPastToday = function(dateStr, slotStartTime) {
+  if (!dateStr) return false;
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  if (dateStr < todayStr) return true;
+  if (dateStr > todayStr) return false;
+  // If date is today, check if start time is in the past
+  const slotTime = window.parseSlotDateTime(dateStr, slotStartTime);
+  return slotTime.getTime() < now.getTime();
+};
+
+window.getAppointmentBadgeHtml = function(status, appointment_date, end_time, start_time) {
+  const isPast = window.isAppointmentPast(appointment_date, end_time, start_time);
+  const effectiveStatus = (isPast && status !== 'Cancelled') ? 'Completed' : (status || 'Confirmed');
+  let badgeClass = 'badge-confirmed';
+  if (effectiveStatus === 'Completed') badgeClass = 'badge-completed';
+  else if (effectiveStatus === 'Scheduled') badgeClass = 'badge-scheduled';
+  else if (effectiveStatus === 'Rescheduled') badgeClass = 'badge-rescheduled';
+  else if (effectiveStatus === 'Cancelled') badgeClass = 'badge-cancelled';
+
+  return `<span class="badge ${badgeClass}" style="text-transform: uppercase; font-weight: 700; font-size: 11px; letter-spacing: 0.3px;">${effectiveStatus}</span>`;
+};
+
 window.STANDARD_CLINIC_SLOTS = [
   { start: '09:00 AM', end: '09:45 AM', label: '09:00 AM - 09:45 AM' },
   { start: '10:00 AM', end: '10:45 AM', label: '10:00 AM - 10:45 AM' },
@@ -2930,8 +2982,11 @@ window.updateAvailableAppointmentSlots = function() {
 
   const bookedStartTimes = new Set(existingApts.map(a => a.start_time));
 
-  // Exclude booked slots completely from DOM
-  const availableSlots = allSlots.filter(s => !bookedStartTimes.has(s.start));
+  // Exclude booked slots and expired time slots today completely from DOM
+  const availableSlots = allSlots.filter(s => 
+    !bookedStartTimes.has(s.start) &&
+    !window.isTimeSlotPastToday(selectedDate, s.start)
+  );
 
   if (availableSlots.length > 0) {
     timeSelect.innerHTML = availableSlots.map(s => `
@@ -2950,7 +3005,7 @@ window.updateAvailableAppointmentSlots = function() {
     if (badge) badge.style.display = 'none';
     if (notice) {
       notice.style.display = 'block';
-      notice.innerHTML = `⚠️ All clinic time slots for this practitioner are booked on <strong>${selectedDate}</strong>. Please select another date or practitioner.`;
+      notice.innerHTML = `⚠️ All clinic time slots for this practitioner are booked or passed on <strong>${selectedDate}</strong>. Please select another date or practitioner.`;
     }
     if (submitBtn) submitBtn.disabled = true;
   }
@@ -2981,6 +3036,12 @@ window.handleBookAppointmentSubmit = function(e) {
   // Calculate end time
   const selectedOption = timeSelect?.selectedOptions ? timeSelect.selectedOptions[0] : null;
   const endTime = selectedOption?.getAttribute('data-end') || '10:45 AM';
+
+  // Strict Date/Time Validation: Cannot book in past
+  if (window.isAppointmentPast(date, endTime, time)) {
+    window.showToast('Validation Error: Cannot schedule an appointment for a past date or expired time slot.', 'error');
+    return;
+  }
 
   // Security Check: Parent can only book for their own child
   const isParentSubmit = currentUser.role === 'Parent / Caregiver' || currentUser.role === 'Parent / Family' || currentUser.role === 'Parent' || (typeof currentUser.role === 'string' && currentUser.role.toLowerCase().includes('parent'));
@@ -3026,6 +3087,13 @@ window.handleBookAppointmentSubmit = function(e) {
 window.showRescheduleModal = function(aptId) {
   const apt = window.neuroDB.getAppointments().find(a => a.id === aptId);
   if (!apt) return;
+
+  // Block rescheduling of past / completed sessions
+  if (window.isAppointmentPast(apt.appointment_date, apt.end_time, apt.start_time) || apt.status === 'Completed') {
+    window.showToast('Past completed therapy sessions cannot be rescheduled.', 'warning');
+    return;
+  }
+
   const child = window.neuroDB.getChildById(apt.child_id);
   const therapist = window.neuroDB.getUserById(apt.therapist_id);
 
@@ -3044,7 +3112,7 @@ window.showRescheduleModal = function(aptId) {
         <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
           New Appointment Date <span style="color: #ef4444;">*</span>
         </label>
-        <input type="date" id="resched-date" class="form-control" value="${apt.appointment_date}" min="${todayStr}" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;" onchange="window.updateAvailableRescheduleSlots('${apt.id}')">
+        <input type="date" id="resched-date" class="form-control" value="${apt.appointment_date < todayStr ? todayStr : apt.appointment_date}" min="${todayStr}" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;" onchange="window.updateAvailableRescheduleSlots('${apt.id}')">
       </div>
 
       <div class="form-group" style="margin-bottom: 14px;">
@@ -3095,7 +3163,10 @@ window.updateAvailableRescheduleSlots = function(aptId) {
   );
 
   const bookedStartTimes = new Set(existingApts.map(a => a.start_time));
-  const availableSlots = allSlots.filter(s => !bookedStartTimes.has(s.start));
+  const availableSlots = allSlots.filter(s => 
+    !bookedStartTimes.has(s.start) &&
+    !window.isTimeSlotPastToday(selectedDate, s.start)
+  );
 
   if (availableSlots.length > 0) {
     timeSelect.innerHTML = availableSlots.map(s => `
@@ -3109,7 +3180,7 @@ window.updateAvailableRescheduleSlots = function(aptId) {
     timeSelect.disabled = true;
     if (notice) {
       notice.style.display = 'block';
-      notice.innerHTML = `⚠️ All slots are booked on ${selectedDate}. Please select another date.`;
+      notice.innerHTML = `⚠️ All slots are booked or passed on ${selectedDate}. Please select another date.`;
     }
     if (submitBtn) submitBtn.disabled = true;
   }
@@ -3128,16 +3199,26 @@ window.handleRescheduleSubmit = function(e, aptId) {
     return;
   }
 
-  window.neuroDB.updateAppointment(aptId, { 
-    appointment_date: date, 
-    start_time: time, 
-    end_time: endTime,
-    status: 'Rescheduled' 
-  });
+  // Strict Date/Time Validation: Cannot reschedule to past
+  if (window.isAppointmentPast(date, endTime, time)) {
+    window.showToast('Validation Error: Cannot reschedule an appointment to a past date or expired time slot.', 'error');
+    return;
+  }
 
-  window.closeActiveModal();
-  window.showToast('Appointment rescheduled successfully.', 'success');
-  window.renderApp();
+  try {
+    window.neuroDB.updateAppointment(aptId, { 
+      appointment_date: date, 
+      start_time: time, 
+      end_time: endTime,
+      status: 'Rescheduled' 
+    });
+
+    window.closeActiveModal();
+    window.showToast('Appointment rescheduled successfully.', 'success');
+    window.renderApp();
+  } catch (err) {
+    window.showToast(err.message, 'error');
+  }
 };
 
 window.cancelAppointment = function(aptId) {
