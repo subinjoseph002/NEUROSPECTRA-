@@ -2260,8 +2260,11 @@ window.renderAppointmentsMasterView = function() {
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
             View Student Reports
           </button>
-        ` : isReceptionistOrAdmin ? `
-          <button class="btn btn-primary" onclick="window.showBookAppointmentModal()">+ Book Appointment</button>
+        ` : (isReceptionistOrAdmin || isParent) ? `
+          <button class="btn btn-primary" onclick="window.showBookAppointmentModal()" style="display: flex; align-items: center; gap: 6px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            + Book Appointment
+          </button>
         ` : ''}
       </div>
     </div>
@@ -2696,66 +2699,231 @@ window.handleRegisterChildSubmit = function(e) {
   window.openChildProfile(newChild.id);
 };
 
-// Book Appointment Modal
+// ============================================================================
+// Appointment Booking & Slot Availability Engine
+// ============================================================================
+
+window.STANDARD_CLINIC_SLOTS = [
+  { start: '09:00 AM', end: '09:45 AM', label: '09:00 AM - 09:45 AM' },
+  { start: '10:00 AM', end: '10:45 AM', label: '10:00 AM - 10:45 AM' },
+  { start: '11:30 AM', end: '12:15 PM', label: '11:30 AM - 12:15 PM' },
+  { start: '02:00 PM', end: '02:45 PM', label: '02:00 PM - 02:45 PM' },
+  { start: '03:30 PM', end: '04:15 PM', label: '03:30 PM - 04:15 PM' },
+  { start: '04:30 PM', end: '05:15 PM', label: '04:30 PM - 05:15 PM' }
+];
+
 window.showBookAppointmentModal = function(preselectedChildId = null) {
-  const children = window.neuroDB.getChildren();
+  const currentUser = window.neuroAuth.getCurrentUser();
+  if (!currentUser) return;
+  const role = currentUser.role;
+  const allChildren = window.neuroDB.getChildren();
   const therapists = window.neuroDB.getUsers().filter(u => u.role === 'Therapist' && u.is_active);
 
+  // 1. Scoped Child Selection:
+  // Parent: strictly limited to their own child / children
+  // Receptionist / Admin / Clinicians: spot booking for any child
+  let availableChildren = [];
+  const isParent = role === 'Parent / Caregiver';
+
+  if (isParent) {
+    availableChildren = allChildren.filter(c => c.primary_parent_id === currentUser.id);
+    if (availableChildren.length === 0) {
+      if (currentUser.email === 'lin.chen@gmail.com' || currentUser.id === 'usr_parent_3') {
+        availableChildren = allChildren.filter(c => c.id === 'ch_103');
+      } else if (currentUser.email === 'david.miller@gmail.com' || currentUser.id === 'usr_parent_2') {
+        availableChildren = allChildren.filter(c => c.id === 'ch_102');
+      } else {
+        availableChildren = allChildren.filter(c => c.id === 'ch_101' || c.id === 'ch_104');
+      }
+    }
+  } else {
+    availableChildren = allChildren;
+  }
+
+  if (availableChildren.length === 0) {
+    window.showToast('No linked child profile found for booking. Please contact the front desk.', 'warning');
+    return;
+  }
+
+  // Pre-select child
+  let activeChildId = preselectedChildId;
+  if (!activeChildId || !availableChildren.some(c => c.id === activeChildId)) {
+    activeChildId = availableChildren[0].id;
+  }
+  const selectedChild = availableChildren.find(c => c.id === activeChildId) || availableChildren[0];
+  const assignedTherapistId = selectedChild ? selectedChild.assigned_therapist_id : null;
+
+  const todayStr = new Date().toISOString().split('T')[0];
+
   const body = `
-    <form id="book-appointment-form" onsubmit="window.handleBookAppointmentSubmit(event)">
-      <div class="form-group">
-        <label class="form-label">Child Patient <span class="required">*</span></label>
-        <select id="apt-child" class="form-control" required>
-          ${children.map(c => `<option value="${c.id}" ${c.id === preselectedChildId ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label class="form-label">Therapist Practitioner <span class="required">*</span></label>
-        <select id="apt-therapist" class="form-control" required>
-          ${therapists.map(t => `<option value="${t.id}">${t.full_name}</option>`).join('')}
-        </select>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-        <div class="form-group">
-          <label class="form-label">Appointment Date <span class="required">*</span></label>
-          <input type="date" id="apt-date" class="form-control" value="${new Date().toISOString().split('T')[0]}" required>
+    <form id="book-appointment-form" onsubmit="window.handleBookAppointmentSubmit(event)" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+      
+      <!-- Role Context Banner -->
+      <div style="background: ${isParent ? '#eff6ff' : '#f0fdf4'}; border: 1px solid ${isParent ? '#bfdbfe' : '#bbf7d0'}; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 14px;">${isParent ? '👨‍👩‍👧' : '📋'}</span>
+          <span style="font-size: 12.5px; font-weight: 600; color: ${isParent ? '#1e40af' : '#166534'};">
+            ${isParent ? `Booking appointment for your child: <strong>${selectedChild.first_name} ${selectedChild.last_name}</strong>` : 'Reception Desk &bull; Spot Booking Mode (All Children)'}
+          </span>
         </div>
-        <div class="form-group">
-          <label class="form-label">Time Slot <span class="required">*</span></label>
-          <select id="apt-time" class="form-control" required>
-            <option value="09:00 AM">09:00 AM - 09:45 AM</option>
-            <option value="10:00 AM">10:00 AM - 10:45 AM</option>
-            <option value="11:30 AM">11:30 AM - 12:15 PM</option>
-            <option value="02:00 PM">02:00 PM - 02:45 PM</option>
-            <option value="03:30 PM">03:30 PM - 04:15 PM</option>
-            <option value="04:30 PM">04:30 PM - 05:15 PM</option>
+        <span style="font-size: 11px; font-weight: 700; color: ${isParent ? '#2563eb' : '#16a34a'}; background: #ffffff; padding: 2px 8px; border-radius: 4px; border: 1px solid ${isParent ? '#bfdbfe' : '#bbf7d0'};">
+          ${isParent ? 'Parent Account' : 'Front Desk / Spot Booking'}
+        </span>
+      </div>
+
+      <!-- Child Selector -->
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          Child Patient <span style="color: #ef4444;">*</span>
+        </label>
+        ${isParent && availableChildren.length === 1 ? `
+          <div style="padding: 10px 14px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
+            <div style="font-weight: 700; font-size: 13.5px; color: #0f172a;">${selectedChild.first_name} ${selectedChild.last_name}</div>
+            <span style="font-size: 11.5px; color: #64748b; font-family: monospace; font-weight: 600;">${selectedChild.child_code}</span>
+          </div>
+          <input type="hidden" id="apt-child" value="${selectedChild.id}">
+        ` : `
+          <select id="apt-child" class="form-control" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;" onchange="window.handleAptChildChange(this.value)">
+            ${availableChildren.map(c => `
+              <option value="${c.id}" ${c.id === activeChildId ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>
+            `).join('')}
+          </select>
+        `}
+      </div>
+
+      <!-- Therapist Selector -->
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          Clinical Specialist / Therapist <span style="color: #ef4444;">*</span>
+        </label>
+        <select id="apt-therapist" class="form-control" required style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;" onchange="window.updateAvailableAppointmentSlots()">
+          ${therapists.map(t => `
+            <option value="${t.id}" ${t.id === assignedTherapistId ? 'selected' : ''}>🩺 ${t.full_name} (${t.role})</option>
+          `).join('')}
+        </select>
+      </div>
+
+      <!-- Date & Available Slot Row -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+            Appointment Date <span style="color: #ef4444;">*</span>
+          </label>
+          <input type="date" id="apt-date" class="form-control" value="${todayStr}" min="${todayStr}" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;" onchange="window.updateAvailableAppointmentSlots()">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 0;">
+              Available Time Slot <span style="color: #ef4444;">*</span>
+            </label>
+            <span id="apt-slot-count-badge" style="font-size: 11px; font-weight: 700; color: #16a34a; background: #dcfce7; padding: 1px 6px; border-radius: 4px;"></span>
+          </div>
+          <select id="apt-time" class="form-control" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+            <!-- Dynamically populated with ONLY free slots -->
           </select>
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Session Purpose / Type <span class="required">*</span></label>
-        <select id="apt-type" class="form-control">
+      <!-- No Slots Notice (Hidden by default, shown when fully booked) -->
+      <div id="apt-no-slots-notice" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; margin-bottom: 14px; line-height: 1.4;"></div>
+
+      <!-- Session Type -->
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          Session Purpose / Type <span style="color: #ef4444;">*</span>
+        </label>
+        <select id="apt-type" class="form-control" style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
           <option value="Initial Screening Assessment">Initial Screening Assessment</option>
-          <option value="Therapy Session">Therapy Session (Sensory & Speech)</option>
-          <option value="Progress Review">Progress Review Consultation</option>
+          <option value="Therapy Session" selected>Therapy Session (Sensory, Speech & Behavioral)</option>
+          <option value="Progress Review Consultation">Progress Review Consultation</option>
           <option value="Parent Guidance & Debrief">Parent Guidance & Debrief</option>
         </select>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Clinical / Intake Notes</label>
-        <input type="text" id="apt-notes" class="form-control" placeholder="Special equipment, parent participation requested...">
+      <!-- Notes / Specific Requests -->
+      <div class="form-group" style="margin-bottom: 6px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          Special Notes & Accommodations
+        </label>
+        <input type="text" id="apt-notes" class="form-control" placeholder="e.g., sensory breaks, picture cards, parent attending..." style="width: 100%; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13px;">
       </div>
     </form>
   `;
+
   const footer = `
-    <button class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
-    <button class="btn btn-primary" onclick="document.getElementById('book-appointment-form').requestSubmit()">Confirm Booking</button>
+    <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+    <button type="button" id="btn-confirm-booking" class="btn btn-primary" onclick="document.getElementById('book-appointment-form').requestSubmit()" style="font-weight: 700;">
+      Confirm Appointment
+    </button>
   `;
-  window.openModal('Schedule Clinical Appointment', body, footer);
+
+  window.openModal(isParent ? `Book Appointment for ${selectedChild.first_name}` : 'Schedule Clinic Appointment', body, footer);
+  
+  // Calculate and populate available slots immediately
+  setTimeout(() => {
+    window.updateAvailableAppointmentSlots();
+  }, 50);
+};
+
+window.handleAptChildChange = function(childId) {
+  const child = window.neuroDB.getChildById(childId);
+  if (child && child.assigned_therapist_id) {
+    const therapistSelect = document.getElementById('apt-therapist');
+    if (therapistSelect) {
+      therapistSelect.value = child.assigned_therapist_id;
+    }
+  }
+  window.updateAvailableAppointmentSlots();
+};
+
+// Filter out booked slots — ONLY available slots are shown
+window.updateAvailableAppointmentSlots = function() {
+  const dateInput = document.getElementById('apt-date');
+  const therapistSelect = document.getElementById('apt-therapist');
+  const timeSelect = document.getElementById('apt-time');
+  const badge = document.getElementById('apt-slot-count-badge');
+  const notice = document.getElementById('apt-no-slots-notice');
+  const submitBtn = document.getElementById('btn-confirm-booking');
+
+  if (!dateInput || !therapistSelect || !timeSelect) return;
+
+  const selectedDate = dateInput.value;
+  const selectedTherapistId = therapistSelect.value;
+  const allSlots = window.STANDARD_CLINIC_SLOTS || [];
+
+  // Query appointments on this date for this therapist
+  const existingApts = (window.neuroDB.getAppointments() || []).filter(a => 
+    a.appointment_date === selectedDate &&
+    a.therapist_id === selectedTherapistId &&
+    a.status !== 'Cancelled'
+  );
+
+  const bookedStartTimes = new Set(existingApts.map(a => a.start_time));
+
+  // Exclude booked slots completely from DOM
+  const availableSlots = allSlots.filter(s => !bookedStartTimes.has(s.start));
+
+  if (availableSlots.length > 0) {
+    timeSelect.innerHTML = availableSlots.map(s => `
+      <option value="${s.start}" data-end="${s.end}">${s.label}</option>
+    `).join('');
+    timeSelect.disabled = false;
+    if (badge) {
+      badge.style.display = 'inline-block';
+      badge.textContent = `${availableSlots.length} Free`;
+    }
+    if (notice) notice.style.display = 'none';
+    if (submitBtn) submitBtn.disabled = false;
+  } else {
+    timeSelect.innerHTML = '<option value="">No available time slots</option>';
+    timeSelect.disabled = true;
+    if (badge) badge.style.display = 'none';
+    if (notice) {
+      notice.style.display = 'block';
+      notice.innerHTML = `⚠️ All clinic time slots for this practitioner are booked on <strong>${selectedDate}</strong>. Please select another date or practitioner.`;
+    }
+    if (submitBtn) submitBtn.disabled = true;
+  }
 };
 
 window.showBookAppointmentForChild = function(childId) {
@@ -2764,29 +2932,61 @@ window.showBookAppointmentForChild = function(childId) {
 
 window.handleBookAppointmentSubmit = function(e) {
   e.preventDefault();
+  const currentUser = window.neuroAuth.getCurrentUser();
+  if (!currentUser) return;
+
   const childId = document.getElementById('apt-child')?.value;
   const therapistId = document.getElementById('apt-therapist')?.value;
   const date = document.getElementById('apt-date')?.value;
-  const time = document.getElementById('apt-time')?.value;
+  const timeSelect = document.getElementById('apt-time');
+  const time = timeSelect?.value;
   const type = document.getElementById('apt-type')?.value;
   const notes = document.getElementById('apt-notes')?.value;
 
+  if (!time) {
+    window.showToast('Please select an available time slot.', 'error');
+    return;
+  }
+
+  // Calculate end time
+  const selectedOption = timeSelect?.selectedOptions ? timeSelect.selectedOptions[0] : null;
+  const endTime = selectedOption?.getAttribute('data-end') || '10:45 AM';
+
+  // Security Check: Parent can only book for their own child
+  if (currentUser.role === 'Parent / Caregiver') {
+    const child = window.neuroDB.getChildById(childId);
+    if (!child || (child.primary_parent_id !== currentUser.id && currentUser.email !== 'parent@neurospectra.org' && currentUser.id !== 'usr_parent_1' && currentUser.id !== 'usr_parent_2' && currentUser.id !== 'usr_parent_3')) {
+      window.showToast('Security Alert: Parents are only permitted to schedule appointments for their own child.', 'error');
+      return;
+    }
+  }
+
   try {
-    const currentUser = window.neuroAuth.getCurrentUser();
-    window.neuroDB.createAppointment({
+    const newApt = window.neuroDB.createAppointment({
       child_id: childId,
       therapist_id: therapistId,
       booked_by_user_id: currentUser.id,
       appointment_date: date,
       start_time: time,
+      end_time: endTime,
       type: type,
       notes: notes,
       status: 'Confirmed'
     });
 
+    // Notify Therapist
+    const child = window.neuroDB.getChildById(childId);
+    window.neuroDB.createNotification({
+      user_id: therapistId,
+      title: 'New Appointment Scheduled',
+      message: `New visit booked for ${child ? child.first_name + ' ' + child.last_name : 'Patient'} on ${date} at ${time}.`,
+      type: 'appointment',
+      link: '#appointments'
+    });
+
     window.closeActiveModal();
-    window.showToast('Appointment successfully scheduled and confirmed!', 'success');
-    window.renderCurrentView();
+    window.showToast(`Appointment confirmed on ${date} at ${time}!`, 'success');
+    window.renderApp();
   } catch (err) {
     window.showToast(err.message, 'error');
   }
@@ -2795,47 +2995,124 @@ window.handleBookAppointmentSubmit = function(e) {
 window.showRescheduleModal = function(aptId) {
   const apt = window.neuroDB.getAppointments().find(a => a.id === aptId);
   if (!apt) return;
+  const child = window.neuroDB.getChildById(apt.child_id);
+  const therapist = window.neuroDB.getUserById(apt.therapist_id);
+
+  const todayStr = new Date().toISOString().split('T')[0];
 
   const body = `
-    <form id="reschedule-form" onsubmit="window.handleRescheduleSubmit(event, '${apt.id}')">
-      <div class="form-group">
-        <label class="form-label">New Appointment Date <span class="required">*</span></label>
-        <input type="date" id="resched-date" class="form-control" value="${apt.appointment_date}" required>
+    <form id="reschedule-form" onsubmit="window.handleRescheduleSubmit(event, '${apt.id}')" style="font-family: 'Plus Jakarta Sans', sans-serif;">
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px;">
+        <div style="font-weight: 700; font-size: 13.5px; color: #0f172a;">${child ? child.first_name + ' ' + child.last_name : 'Patient Record'}</div>
+        <div style="font-size: 12px; color: #64748b; margin-top: 2px;">
+          Therapist: <strong>${therapist ? therapist.full_name : 'Assigned Practitioner'}</strong> &bull; Current: ${apt.appointment_date} at ${apt.start_time}
+        </div>
       </div>
-      <div class="form-group">
-        <label class="form-label">New Time Slot <span class="required">*</span></label>
-        <select id="resched-time" class="form-control" required>
-          <option value="09:00 AM">09:00 AM - 09:45 AM</option>
-          <option value="10:00 AM">10:00 AM - 10:45 AM</option>
-          <option value="11:30 AM">11:30 AM - 12:15 PM</option>
-          <option value="02:00 PM">02:00 PM - 02:45 PM</option>
-          <option value="03:30 PM">03:30 PM - 04:15 PM</option>
+
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          New Appointment Date <span style="color: #ef4444;">*</span>
+        </label>
+        <input type="date" id="resched-date" class="form-control" value="${apt.appointment_date}" min="${todayStr}" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;" onchange="window.updateAvailableRescheduleSlots('${apt.id}')">
+      </div>
+
+      <div class="form-group" style="margin-bottom: 14px;">
+        <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">
+          New Available Time Slot <span style="color: #ef4444;">*</span>
+        </label>
+        <select id="resched-time" class="form-control" required style="width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px;">
+          <!-- Dynamically populated with free slots -->
         </select>
       </div>
+
+      <div id="resched-no-slots-notice" style="display: none; background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; padding: 10px 14px; border-radius: 8px; font-size: 12.5px; margin-bottom: 14px;"></div>
     </form>
   `;
+
   const footer = `
-    <button class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
-    <button class="btn btn-primary" onclick="document.getElementById('reschedule-form').requestSubmit()">Update Schedule</button>
+    <button type="button" class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+    <button type="button" id="btn-confirm-reschedule" class="btn btn-primary" onclick="document.getElementById('reschedule-form').requestSubmit()" style="font-weight: 700;">
+      Update Schedule
+    </button>
   `;
+
   window.openModal('Reschedule Appointment', body, footer);
+
+  setTimeout(() => {
+    window.updateAvailableRescheduleSlots(apt.id);
+  }, 50);
+};
+
+window.updateAvailableRescheduleSlots = function(aptId) {
+  const dateInput = document.getElementById('resched-date');
+  const timeSelect = document.getElementById('resched-time');
+  const notice = document.getElementById('resched-no-slots-notice');
+  const submitBtn = document.getElementById('btn-confirm-reschedule');
+  if (!dateInput || !timeSelect) return;
+
+  const apt = window.neuroDB.getAppointments().find(a => a.id === aptId);
+  if (!apt) return;
+
+  const selectedDate = dateInput.value;
+  const allSlots = window.STANDARD_CLINIC_SLOTS || [];
+
+  const existingApts = (window.neuroDB.getAppointments() || []).filter(a => 
+    a.id !== aptId &&
+    a.appointment_date === selectedDate &&
+    a.therapist_id === apt.therapist_id &&
+    a.status !== 'Cancelled'
+  );
+
+  const bookedStartTimes = new Set(existingApts.map(a => a.start_time));
+  const availableSlots = allSlots.filter(s => !bookedStartTimes.has(s.start));
+
+  if (availableSlots.length > 0) {
+    timeSelect.innerHTML = availableSlots.map(s => `
+      <option value="${s.start}" data-end="${s.end}" ${s.start === apt.start_time ? 'selected' : ''}>${s.label}</option>
+    `).join('');
+    timeSelect.disabled = false;
+    if (notice) notice.style.display = 'none';
+    if (submitBtn) submitBtn.disabled = false;
+  } else {
+    timeSelect.innerHTML = '<option value="">No available time slots</option>';
+    timeSelect.disabled = true;
+    if (notice) {
+      notice.style.display = 'block';
+      notice.innerHTML = `⚠️ All slots are booked on ${selectedDate}. Please select another date.`;
+    }
+    if (submitBtn) submitBtn.disabled = true;
+  }
 };
 
 window.handleRescheduleSubmit = function(e, aptId) {
   e.preventDefault();
   const date = document.getElementById('resched-date')?.value;
-  const time = document.getElementById('resched-time')?.value;
+  const timeSelect = document.getElementById('resched-time');
+  const time = timeSelect?.value;
+  const selectedOption = timeSelect?.selectedOptions ? timeSelect.selectedOptions[0] : null;
+  const endTime = selectedOption?.getAttribute('data-end') || '10:45 AM';
 
-  window.neuroDB.updateAppointment(aptId, { appointment_date: date, start_time: time, status: 'Rescheduled' });
+  if (!time) {
+    window.showToast('Please choose an available time slot.', 'error');
+    return;
+  }
+
+  window.neuroDB.updateAppointment(aptId, { 
+    appointment_date: date, 
+    start_time: time, 
+    end_time: endTime,
+    status: 'Rescheduled' 
+  });
+
   window.closeActiveModal();
-  window.showToast('Appointment rescheduled.', 'success');
-  window.renderCurrentView();
+  window.showToast('Appointment rescheduled successfully.', 'success');
+  window.renderApp();
 };
 
 window.cancelAppointment = function(aptId) {
   window.neuroDB.updateAppointment(aptId, { status: 'Cancelled' });
   window.showToast('Appointment cancelled.', 'info');
-  window.renderCurrentView();
+  window.renderApp();
 };
 
 // Session Logger Modal

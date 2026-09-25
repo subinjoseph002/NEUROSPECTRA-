@@ -193,7 +193,13 @@ window.renderParentDashboard = function() {
                 </div>
                 <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0;">Upcoming Appointments</h3>
               </div>
-              <span style="font-size: 12px; color: #64748b; font-weight: 600;">${upcomingApts.length} Scheduled</span>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 12px; color: #64748b; font-weight: 600;">${upcomingApts.length} Scheduled</span>
+                <button class="btn btn-primary btn-sm" onclick="window.showBookAppointmentModal('${activeChild.id}')" style="display: flex; align-items: center; gap: 4px; font-weight: 700; padding: 5px 10px; font-size: 12px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Book Appointment
+                </button>
+              </div>
             </div>
 
             ${upcomingApts.length > 0 ? `
@@ -217,7 +223,10 @@ window.renderParentDashboard = function() {
                 `).join('')}
               </div>
             ` : `
-              <p style="color: #64748b; font-size: 13px;">No visits scheduled this week.</p>
+              <div style="text-align: center; padding: 20px 10px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px;">
+                <p style="color: #64748b; font-size: 13px; margin-bottom: 10px;">No upcoming visits scheduled for ${activeChild.first_name}.</p>
+                <button class="btn btn-primary btn-sm" onclick="window.showBookAppointmentModal('${activeChild.id}')">+ Book a Session</button>
+              </div>
             `}
           </div>
 

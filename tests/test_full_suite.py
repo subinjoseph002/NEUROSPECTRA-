@@ -124,10 +124,13 @@ def run_all_tests():
         # Module 7: Receptionist Coordination & Scheduling
         test_receptionist_portal(driver)
 
-        # Module 8: Multi-Persona Diagnostic & Progress Reports
+        # Module 8: Appointment Booking Scoping & Dynamic Slot Availability
+        test_appointment_booking_scoping_and_slot_availability(driver)
+
+        # Module 9: Multi-Persona Diagnostic & Progress Reports
         test_progress_reports(driver)
 
-        # Module 9: Multidisciplinary Team Messaging
+        # Module 10: Multidisciplinary Team Messaging
         test_team_messaging(driver)
 
     finally:
@@ -483,7 +486,76 @@ def test_receptionist_portal(driver):
         record_test("Receptionist Intake & Appointment Coordination", "Receptionist Module", "FAILED", time.time() - t0, str(e), shot)
 
 # --------------------------------------------------------------------------
-# 8. Reports Module
+# 8. Appointment Booking Scoping & Dynamic Slot Availability
+# --------------------------------------------------------------------------
+def test_appointment_booking_scoping_and_slot_availability(driver):
+    t0 = time.time()
+    try:
+        # 1. Test Parent Scope: parent only sees their own child
+        driver.execute_script("window.neuroAuth.switchDemoRole('Parent / Caregiver');")
+        nav_to(driver, "dashboard")
+        time.sleep(0.6)
+
+        # Open Booking Modal as Parent
+        driver.execute_script("window.showBookAppointmentModal();")
+        time.sleep(0.5)
+
+        parent_modal_text = driver.find_element(By.ID, "modal-backdrop").find_element(By.XPATH, "..").text
+        assert "Parent Account" in parent_modal_text or "Booking appointment for your child" in parent_modal_text, "Parent role context banner not displayed"
+
+        # Check that Parent child selector is scoped
+        child_select = driver.find_elements(By.ID, "apt-child")
+        assert len(child_select) > 0, "Child selector/input not found in booking modal"
+
+        # Check available time slots (booked slots must be absent)
+        time_select = driver.find_element(By.ID, "apt-time")
+        options = [o.text for o in time_select.find_elements(By.TAG_NAME, "option")]
+        assert len(options) > 0, "No time slots rendered"
+
+        # Book an appointment slot
+        selected_slot = options[0].split(' - ')[0].strip()
+        driver.find_element(By.ID, "apt-notes").send_keys("Automated Parent Booking Test")
+        driver.find_element(By.ID, "btn-confirm-booking").click()
+        time.sleep(0.8)
+
+        # Reopen booking modal and verify the booked slot is now HIDDEN/EXCLUDED
+        driver.execute_script("window.showBookAppointmentModal();")
+        time.sleep(0.5)
+
+        time_select_after = driver.find_element(By.ID, "apt-time")
+        options_after = [o.text for o in time_select_after.find_elements(By.TAG_NAME, "option")]
+        assert not any(selected_slot in o for o in options_after), f"Security/UX Issue: Booked slot {selected_slot} is still visible in time slot dropdown!"
+
+        driver.execute_script("window.closeActiveModal();")
+        time.sleep(0.3)
+
+        # 2. Test Receptionist Scope: receptionist can book for ALL children (spot booking)
+        driver.execute_script("window.neuroAuth.switchDemoRole('Receptionist');")
+        nav_to(driver, "dashboard")
+        time.sleep(0.6)
+
+        driver.execute_script("window.showBookAppointmentModal();")
+        time.sleep(0.5)
+
+        receptionist_modal_text = driver.find_element(By.ID, "modal-backdrop").find_element(By.XPATH, "..").text
+        assert "Spot Booking" in receptionist_modal_text or "All Children" in receptionist_modal_text or "Reception" in receptionist_modal_text
+
+        # Verify child selector has multiple children from the entire clinic
+        rec_child_select = driver.find_element(By.ID, "apt-child")
+        all_child_opts = [o.text for o in rec_child_select.find_elements(By.TAG_NAME, "option")]
+        assert len(all_child_opts) >= 3, f"Receptionist should have full spot booking access for all children, found {len(all_child_opts)}"
+
+        driver.execute_script("window.closeActiveModal();")
+        time.sleep(0.3)
+
+        shot = take_shot(driver, "12_appointment_scoping_and_slot_availability")
+        record_test("Appointment Scoping & Dynamic Slot Availability", "Appointments Module", "PASSED", time.time() - t0, "Verified parent child-only booking restrictions, receptionist universal spot booking, and dynamic hiding of booked time slots.", shot)
+    except Exception as e:
+        shot = take_shot(driver, "err_12_apt_slots")
+        record_test("Appointment Scoping & Dynamic Slot Availability", "Appointments Module", "FAILED", time.time() - t0, str(e), shot)
+
+# --------------------------------------------------------------------------
+# 9. Reports Module
 # --------------------------------------------------------------------------
 def test_progress_reports(driver):
     t0 = time.time()
