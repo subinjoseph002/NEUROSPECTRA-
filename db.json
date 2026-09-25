@@ -146,6 +146,15 @@
                       "is_active":  1,
                       "email":  "therapist_17903122616@neurospectra.org",
                       "role":  "Therapist"
+                  },
+                  {
+                      "id":  "usr_mughu7lx5utz",
+                      "full_name":  "Evelyn Ross Clinician",
+                      "phone":  "+91 9820145672",
+                      "avatar_url":  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format\u0026fit=crop\u0026q=80\u0026w=128",
+                      "is_active":  1,
+                      "email":  "therapist_17903124995@neurospectra.org",
+                      "role":  "Therapist"
                   }
               ],
     "children":  [
