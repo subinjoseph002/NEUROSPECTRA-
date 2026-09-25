@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NEUROSPECTRA - Selenium E2E Test Execution Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --dark-navy: #0b1329;
+      --slate-50: #f8fafc;
+      --slate-100: #f1f5f9;
+      --slate-200: #e2e8f0;
+      --slate-600: #475569;
+      --slate-900: #0f172a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f8fafc;
+      color: var(--slate-900);
+      padding: 36px;
+      line-height: 1.5;
+    }
+    .container { max-width: 1280px; margin: 0 auto; }
+    .header {
+      background: var(--dark-navy);
+      color: #ffffff;
+      padding: 32px 40px;
+      border-radius: 16px;
+      margin-bottom: 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+    }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 28px;
+    }
+    .metric-card {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .metric-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--slate-600); }
+    .metric-val { font-size: 32px; font-weight: 800; color: var(--slate-900); margin-top: 6px; }
+    .table-card {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+      margin-bottom: 28px;
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13.5px; text-align: left; }
+    th { background: var(--slate-50); padding: 14px 20px; border-bottom: 1px solid var(--slate-200); color: var(--slate-600); font-weight: 700; }
+    td { padding: 14px 20px; border-bottom: 1px solid var(--slate-100); vertical-align: middle; }
+    tr:hover td { background: #fafafa; }
+    .badge-pass { background: #dcfce7; color: #15803d; padding: 4px 12px; border-radius: 9999px; font-weight: 700; font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px; }
+    .badge-fail { background: #fee2e2; color: #b91c1c; padding: 4px 12px; border-radius: 9999px; font-weight: 700; font-size: 11.5px; display: inline-flex; align-items: center; gap: 4px; }
+    .screenshot-btn {
+      display: inline-block;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--primary);
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 6px;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .screenshot-btn:hover { background: #dbeafe; }
+    .feature-card {
+      background: #ffffff;
+      border: 1px solid var(--slate-200);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+    .feature-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 12px; color: var(--slate-900); }
+    .feature-list { list-style-position: inside; color: var(--slate-600); font-size: 13.5px; line-height: 1.8; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div>
+        <div style="font-size: 11px; font-weight: 700; color: #60a5fa; letter-spacing: 1px; text-transform: uppercase;">Quality Assurance & Verification</div>
+        <h1 style="font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-top: 2px;">NEUROSPECTRA</h1>
+        <p style="color: #94a3b8; font-size: 13.5px; margin-top: 4px;">Automated Selenium End-to-End System Test Execution Report</p>
+      </div>
+      <div style="text-align: right; font-size: 12.5px; color: #94a3b8; line-height: 1.6;">
+        <div><strong>Browser Engine:</strong> Google Chrome</div>
+        <div><strong>Executed:</strong> 2026-09-25 10:09:41</div>
+        <div><strong>Target:</strong> <a href="http://localhost:3000" target="_blank" style="color: #60a5fa; text-decoration: none;">http://localhost:3000</a></div>
+      </div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-title">Total Scenarios</div>
+        <div class="metric-val">13</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title" style="color: var(--success);">Passed Tests</div>
+        <div class="metric-val" style="color: var(--success);">13</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title" style="color: var(--success);">Failed Tests</div>
+        <div class="metric-val" style="color: var(--success);">0</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title" style="color: var(--primary);">Pass Rate / Duration</div>
+        <div class="metric-val" style="color: var(--primary);">100.0% <span style="font-size: 15px; color: var(--slate-600); font-weight: 500;">(40.51s)</span></div>
+      </div>
+    </div>
+
+    <div class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Test Scenario</th>
+            <th>Module</th>
+            <th>Status</th>
+            <th>Duration</th>
+            <th>Observation & Findings</th>
+            <th>Screenshot</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">1</td>
+            <td style="font-weight: 700; color: #0f172a;">Landing Page Rendering & Navigation</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Public Web</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">1.5s</td>
+            <td style="color: #475569; max-width: 440px;">Landing page loaded with full brand typography, hero section, trust ribbon, and feature matrix.</td>
+            <td><a href="screenshots/1790311139576_01_landing_page.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">2</td>
+            <td style="font-weight: 700; color: #0f172a;">Registration Role Gate & Client Validation</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Security & RBAC</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">2.34s</td>
+            <td style="color: #475569; max-width: 440px;">Confirmed exclusion of Receptionist/Admin from public signup; verified client validation for name, phone, password, and email.</td>
+            <td><a href="screenshots/1790311141629_02_registration_validation.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">3</td>
+            <td style="font-weight: 700; color: #0f172a;">Therapist / Teacher Approval Registration Flow</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">User Lifecycle</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">3.9s</td>
+            <td style="color: #475569; max-width: 440px;">Registered clinician (therapist_17903111421@neurospectra.org) successfully created with is_approved=0 (Pending Admin Approval).</td>
+            <td><a href="screenshots/1790311145512_03_pending_registration_success.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">4</td>
+            <td style="font-weight: 700; color: #0f172a;">Authentication Error Handling & Pending Gate</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Security</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">3.17s</td>
+            <td style="color: #475569; max-width: 440px;">Verified bad credentials rejection and security gate blocking pending accounts prior to administrator approval.</td>
+            <td><a href="screenshots/1790311148629_04_auth_security_checks.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">5</td>
+            <td style="font-weight: 700; color: #0f172a;">Admin Portal Login & Analytics Overview</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Admin Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">2.72s</td>
+            <td style="color: #475569; max-width: 440px;">Admin authenticated. Loaded system metrics, active children caseloads, and clinic overview.</td>
+            <td><a href="screenshots/1790311151791_05_admin_dashboard.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">6</td>
+            <td style="font-weight: 700; color: #0f172a;">Administrator Clinician Approval Action</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Admin Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">2.63s</td>
+            <td style="color: #475569; max-width: 440px;">Verified user directory table, pending status indicators, and 1-click administrative account approval.</td>
+            <td><a href="screenshots/1790311154435_06_admin_user_approval.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">7</td>
+            <td style="font-weight: 700; color: #0f172a;">Admin Staff Provisioning & Role Management</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Admin Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">2.48s</td>
+            <td style="color: #475569; max-width: 440px;">Verified Administrator exclusive provisioning modal allowing direct addition of Receptionists and Clinicians.</td>
+            <td><a href="screenshots/1790311156935_07_admin_staff_provisioning.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">8</td>
+            <td style="font-weight: 700; color: #0f172a;">Parent Portal & Profile Immutability Verification</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Parent Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">2.76s</td>
+            <td style="color: #475569; max-width: 440px;">Verified Parent Care Journey dashboard. Confirmed Name, Email, and Phone fields are strictly locked/read-only with password-only update privileges.</td>
+            <td><a href="screenshots/1790311159654_08_parent_profile_locks.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">9</td>
+            <td style="font-weight: 700; color: #0f172a;">Teacher Observations & 5-Domain Logging</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Teacher Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">8.89s</td>
+            <td style="color: #475569; max-width: 440px;">Verified teacher student roster and 5-domain structured developmental observation form.</td>
+            <td><a href="screenshots/1790311168598_09_teacher_observations.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">10</td>
+            <td style="font-weight: 700; color: #0f172a;">Therapist Workspace & Assessment Conduct Engine</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Therapist Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">3.16s</td>
+            <td style="color: #475569; max-width: 440px;">Therapist clinical workspace verified with live assessment forms, rating matrices, and IEP planning.</td>
+            <td><a href="screenshots/1790311171750_10_therapist_assessment_engine.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">11</td>
+            <td style="font-weight: 700; color: #0f172a;">Receptionist Intake & Appointment Coordination</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Receptionist Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">2.82s</td>
+            <td style="color: #475569; max-width: 440px;">Receptionist portal loaded daily appointment schedules, patient file roster, and reminder dispatches.</td>
+            <td><a href="screenshots/1790311174573_11_receptionist_appointments.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">12</td>
+            <td style="font-weight: 700; color: #0f172a;">Progress & Diagnostic Reports Synthesis</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Reports Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">1.58s</td>
+            <td style="color: #475569; max-width: 440px;">Verified clinical report generation with milestone trajectory graphs, assessment synthesis, and print layouts.</td>
+            <td><a href="screenshots/1790311176160_12_progress_reports.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+          <tr>
+            <td style="font-weight: 700; color: #64748b;">13</td>
+            <td style="font-weight: 700; color: #0f172a;">Multidisciplinary Team Messaging & Notifications</td>
+            <td><span style="background: #f1f5f9; padding: 3px 8px; border-radius: 6px; font-size: 11.5px; font-weight: 600; color: #334155;">Messaging Module</span></td>
+            <td><span class="badge-pass">✓ PASSED</span></td>
+            <td style="font-family: monospace; font-size: 13px;">2.56s</td>
+            <td style="color: #475569; max-width: 440px;">Verified real-time care team chat dispatch between Therapists, Teachers, and Parents.</td>
+            <td><a href="screenshots/1790311178710_13_team_messaging.png" target="_blank" class="screenshot-btn">View Screenshot</a></td>
+          </tr>
+        
+        </tbody>
+      </table>
+    </div>
+
+    <div class="feature-card">
+      <h3>Verified Security & Functional Rules</h3>
+      <ul class="feature-list">
+        <li><strong>Profile Field Locking:</strong> Parent, Therapist, Teacher, and Receptionist accounts cannot modify their Full Name, Email, or Phone Number once registered (fields strictly set to readonly). Password updates are permitted. Full profile editing is reserved exclusively for the Administrator.</li>
+        <li><strong>Receptionist Provisioning Security:</strong> Receptionist role is excluded from public self-registration and can only be created by an authenticated Administrator.</li>
+        <li><strong>Therapist & Teacher Approval Gate:</strong> Self-registered Therapists and Teachers are placed in a 'Pending Approval' state and are blocked from logging in until an Administrator approves their account.</li>
+        <li><strong>Multidisciplinary Care Modules:</strong> Full validation across Admin Analytics, Teacher 5-domain observations, Therapist assessment questionnaires, Receptionist appointment rosters, and multidisciplinary messaging.</li>
+      </ul>
+    </div>
+  </div>
+</body>
+</html>

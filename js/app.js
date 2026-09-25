@@ -1449,14 +1449,15 @@ window.handleLoginForm = function(e) {
     } catch (err) {
       if (submitBtn) {
         submitBtn.disabled = false;
-        submitBtn.innerHTML = 'Login to Platform';
+        submitBtn.innerHTML = 'Sign In';
       }
-      // Security Rule: Show generic message without revealing if email or password was wrong
-      const genericMsg = 'Invalid email or password.';
-      window.showFormAlert('login-alert-box', genericMsg);
-      window.showFieldError('login-password', 'login-password-error', genericMsg);
+      const displayMsg = (err.message && (err.message.includes('pending') || err.message.includes('approval') || err.message.includes('deactivated'))) 
+        ? err.message 
+        : 'Invalid email or password.';
+      window.showFormAlert('login-alert-box', displayMsg);
+      window.showFieldError('login-password', 'login-password-error', displayMsg);
       passwordInput?.focus();
-      window.showToast(genericMsg, 'error');
+      window.showToast(displayMsg, 'error');
     }
   }, 300);
 };
@@ -3720,7 +3721,28 @@ window.renderTeacherDashboard = function() {
   `;
 };
 
-// Initialize Application on DOM Ready
-document.addEventListener('DOMContentLoaded', () => {
+// Initialize Application on DOM Ready and support URL hash routing
+function handleHashRoute() {
+  const hash = window.location.hash.replace(/^#\/?/, '').trim();
+  if (hash) {
+    const parts = hash.split('?');
+    const route = parts[0];
+    if (route) {
+      window.navigateTo(route);
+      return;
+    }
+  }
   window.renderApp();
+}
+
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace(/^#\/?/, '').trim();
+  if (hash && hash !== window.currentRoute) {
+    handleHashRoute();
+  }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+  handleHashRoute();
+});
+
