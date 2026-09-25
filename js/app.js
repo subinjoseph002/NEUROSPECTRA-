@@ -1742,7 +1742,19 @@ window.renderChildProfile = function(childId) {
   const appointments = window.neuroDB.getAppointments({ child_id: child.id });
   const activePlan = therapyPlans.find(p => p.status === 'Active') || therapyPlans[0];
 
-  const currentTab = window.activeChildProfileTab || 'overview';
+  const currentUser = window.neuroAuth.getCurrentUser();
+  const role = window.neuroAuth.getRole();
+  const isReceptionist = role === 'Receptionist';
+  const isTeacher = role === 'Teacher';
+  const isParent = role === 'Parent / Caregiver' || role === 'Parent / Family' || (typeof role === 'string' && role.toLowerCase().includes('parent'));
+  const isTherapistOrAdmin = role === 'Therapist' || role === 'Administrator';
+
+  // For receptionist, restrict active tab to overview or appointments only
+  let currentTab = window.activeChildProfileTab || 'overview';
+  if (isReceptionist && currentTab !== 'overview' && currentTab !== 'appointments') {
+    currentTab = 'overview';
+    window.activeChildProfileTab = 'overview';
+  }
 
   return `
     <div class="page-header">
@@ -1756,24 +1768,38 @@ window.renderChildProfile = function(childId) {
       </div>
 
       <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-        <button class="btn btn-primary" onclick="window.startAssessmentForChild('${child.id}')">
-          Conduct Screening
-        </button>
-        <button class="btn btn-accent" onclick="window.generateAndPrintChildReport('${child.id}')">
-          Clinical Report
-        </button>
+        ${isReceptionist ? `
+          <button class="btn btn-primary" onclick="window.showBookAppointmentModal('${child.id}')" style="display: flex; align-items: center; gap: 6px; font-weight: 700;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="12" y1="14" x2="12" y2="18"/><line x1="10" y1="16" x2="14" y2="16"/></svg>
+            Book Appointment
+          </button>
+          <button class="btn btn-outline" onclick="window.navigateTo('children')" style="display: flex; align-items: center; gap: 6px;">
+            &larr; Children Directory
+          </button>
+        ` : `
+          <button class="btn btn-primary" onclick="window.startAssessmentForChild('${child.id}')">
+            Conduct Screening
+          </button>
+          <button class="btn btn-accent" onclick="window.generateAndPrintChildReport('${child.id}')">
+            Clinical Report
+          </button>
+        `}
       </div>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="tabs-nav">
-      <button class="tab-btn ${currentTab === 'overview' ? 'active' : ''}" onclick="window.activeChildProfileTab='overview'; window.renderCurrentView();">Overview & Bio</button>
-      <button class="tab-btn ${currentTab === 'assessments' ? 'active' : ''}" onclick="window.activeChildProfileTab='assessments'; window.renderCurrentView();">Screening Assessments (${assessments.length})</button>
-      <button class="tab-btn ${currentTab === 'therapy-plan' ? 'active' : ''}" onclick="window.activeChildProfileTab='therapy-plan'; window.renderCurrentView();">Therapy Plan</button>
-      <button class="tab-btn ${currentTab === 'sessions' ? 'active' : ''}" onclick="window.activeChildProfileTab='sessions'; window.renderCurrentView();">Session Logs (${sessions.length})</button>
+      <button class="tab-btn ${currentTab === 'overview' ? 'active' : ''}" onclick="window.activeChildProfileTab='overview'; window.renderCurrentView();">${isReceptionist ? 'Overview & Demographics' : 'Overview & Bio'}</button>
+      ${!isReceptionist ? `
+        <button class="tab-btn ${currentTab === 'assessments' ? 'active' : ''}" onclick="window.activeChildProfileTab='assessments'; window.renderCurrentView();">Screening Assessments (${assessments.length})</button>
+        <button class="tab-btn ${currentTab === 'therapy-plan' ? 'active' : ''}" onclick="window.activeChildProfileTab='therapy-plan'; window.renderCurrentView();">Therapy Plan</button>
+        <button class="tab-btn ${currentTab === 'sessions' ? 'active' : ''}" onclick="window.activeChildProfileTab='sessions'; window.renderCurrentView();">Session Logs (${sessions.length})</button>
+      ` : ''}
       <button class="tab-btn ${currentTab === 'appointments' ? 'active' : ''}" onclick="window.activeChildProfileTab='appointments'; window.renderCurrentView();">Appointments (${appointments.length})</button>
-      <button class="tab-btn ${currentTab === 'progress' ? 'active' : ''}" onclick="window.activeChildProfileTab='progress'; window.renderCurrentView();">Progress Tracker</button>
-      <button class="tab-btn ${currentTab === 'messages' ? 'active' : ''}" onclick="window.navigateTo('messages', { childId: '${child.id}' })">Therapist Chat</button>
+      ${!isReceptionist ? `
+        <button class="tab-btn ${currentTab === 'progress' ? 'active' : ''}" onclick="window.activeChildProfileTab='progress'; window.renderCurrentView();">Progress Tracker</button>
+        <button class="tab-btn ${currentTab === 'messages' ? 'active' : ''}" onclick="window.navigateTo('messages', { childId: '${child.id}' })">Therapist Chat</button>
+      ` : ''}
     </div>
 
     <!-- Tab Content -->
@@ -1791,14 +1817,26 @@ window.renderChildProfile = function(childId) {
         </div>
 
         <div class="card">
-          <div class="card-header"><div class="card-title">Clinical Notes & Assignment</div></div>
+          <div class="card-header"><div class="card-title">${isReceptionist ? 'Administrative & Care Coordination' : 'Clinical Notes & Assignment'}</div></div>
           <div style="display: flex; flex-direction: column; gap: 12px; font-size: 13px;">
             <div><strong>Assigned Therapist:</strong> ${therapist ? therapist.full_name : 'Unassigned'}</div>
             <div><strong>Registration Date:</strong> ${new Date(child.created_at).toLocaleDateString()}</div>
-            <div><strong>Clinical History & Presentation:</strong></div>
-            <div style="padding: 12px; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); font-size: 12.5px; color: var(--slate-700); line-height: 1.5;">
-              ${child.notes || 'No baseline notes recorded.'}
-            </div>
+            <div><strong>Intake Status:</strong> <span class="badge badge-active">${child.status}</span></div>
+            <div><strong>Scheduled Visits:</strong> ${appointments.filter(a => (!window.isAppointmentPast || !window.isAppointmentPast(a.appointment_date, a.end_time, a.start_time)) && a.status !== 'Cancelled').length} Upcoming</div>
+            ${isReceptionist ? `
+              <div style="margin-top: 8px; padding: 12px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; font-size: 12.5px; color: #166534; display: flex; align-items: center; justify-content: space-between;">
+                <div>
+                  <strong>Front Desk Scheduling Active</strong>
+                  <div style="font-size: 11.5px; color: #15803d; margin-top: 2px;">Spot booking and appointment coordination available.</div>
+                </div>
+                <button type="button" class="btn btn-accent btn-sm" onclick="window.showBookAppointmentModal('${child.id}')" style="font-weight: 700;">+ Spot Booking</button>
+              </div>
+            ` : `
+              <div><strong>Clinical History & Presentation:</strong></div>
+              <div style="padding: 12px; background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: var(--radius-md); font-size: 12.5px; color: var(--slate-700); line-height: 1.5;">
+                ${child.notes || 'No baseline notes recorded.'}
+              </div>
+            `}
           </div>
         </div>
       </div>
@@ -2361,7 +2399,11 @@ window.renderAppointmentsMasterView = function() {
                       </button>
                     ` : (isReceptionistOrAdmin || isTherapist) ? `
                       ${isPast || a.status === 'Completed' || a.status === 'Cancelled' ? `
-                        <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${a.child_id}')" style="font-size: 11.5px; padding: 4px 8px;">View Report</button>
+                        ${role === 'Receptionist' ? `
+                          <span style="font-size: 11.5px; color: #64748b; font-weight: 600; padding: 4px 8px; background: #f1f5f9; border-radius: 6px;">Completed</span>
+                        ` : `
+                          <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${a.child_id}')" style="font-size: 11.5px; padding: 4px 8px;">View Report</button>
+                        `}
                       ` : `
                         <button class="btn btn-outline btn-sm" onclick="window.showRescheduleModal('${a.id}')" style="font-size: 11.5px; padding: 4px 8px;">Reschedule</button>
                       `}

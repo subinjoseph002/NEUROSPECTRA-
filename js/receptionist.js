@@ -154,7 +154,7 @@ window.renderReceptionistDashboard = function() {
                   <td style="text-align: right;">
                     <div style="display: inline-flex; gap: 4px;">
                       ${(window.isAppointmentPast && window.isAppointmentPast(apt.appointment_date, apt.end_time, apt.start_time)) || apt.status === 'Completed' || apt.status === 'Cancelled' ? `
-                        <button class="btn btn-outline btn-sm" onclick="window.generateAndPrintChildReport('${apt.child_id}')" style="font-size: 11.5px; padding: 4px 8px;">View Report</button>
+                        <span style="font-size: 11.5px; color: #64748b; font-weight: 600; padding: 4px 8px; background: #f1f5f9; border-radius: 6px;">Completed</span>
                       ` : `
                         <button class="btn btn-outline btn-sm" onclick="window.showRescheduleModal('${apt.id}')">Reschedule</button>
                         <button class="btn btn-outline btn-sm" style="color: var(--danger-500);" onclick="window.cancelAppointment('${apt.id}')">Cancel</button>
