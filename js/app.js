@@ -1776,10 +1776,14 @@ window.renderChildProfile = function(childId) {
           <button class="btn btn-outline" onclick="window.navigateTo('children')" style="display: flex; align-items: center; gap: 6px;">
             &larr; Children Directory
           </button>
-        ` : `
+        ` : role === 'Therapist' ? `
           <button class="btn btn-primary" onclick="window.startAssessmentForChild('${child.id}')">
             Conduct Screening
           </button>
+          <button class="btn btn-accent" onclick="window.generateAndPrintChildReport('${child.id}')">
+            Clinical Report
+          </button>
+        ` : `
           <button class="btn btn-accent" onclick="window.generateAndPrintChildReport('${child.id}')">
             Clinical Report
           </button>
@@ -1846,7 +1850,9 @@ window.renderChildProfile = function(childId) {
       <div class="card">
         <div class="card-header">
           <div class="card-title">Screening Assessment History</div>
-          <button class="btn btn-primary btn-sm" onclick="window.startAssessmentForChild('${child.id}')">+ New Screening</button>
+          ${role === 'Therapist' ? `
+            <button class="btn btn-primary btn-sm" onclick="window.startAssessmentForChild('${child.id}')">+ New Screening</button>
+          ` : ''}
         </div>
         ${assessments.length > 0 ? `
           <div style="display: flex; flex-direction: column; gap: 16px;">
@@ -2082,15 +2088,18 @@ window.renderChildProgressDetails = function(childId) {
 // Additional Views: Assessments List, Therapy Plans, Session List, Appointments Master, Reports Master, Reminders
 window.renderAssessmentsListView = function() {
   const assessments = window.neuroDB.getAssessmentRecords();
+  const role = window.neuroAuth.getRole();
   return `
     <div class="page-header">
       <div>
         <h1 class="page-title">Screening & Assessment Repository</h1>
         <p class="page-subtitle">Standardized M-CHAT-R/F checklists and clinical behavioral observations.</p>
       </div>
-      <button class="btn btn-primary" onclick="window.startNewAssessment()">
-        + Conduct Screening
-      </button>
+      ${role === 'Therapist' ? `
+        <button class="btn btn-primary" onclick="window.startNewAssessment()">
+          + Conduct Screening
+        </button>
+      ` : ''}
     </div>
 
     <div class="card">
@@ -4025,10 +4034,20 @@ window.handleUpdateProfileSubmit = function(e) {
 
 // Interactive Actions
 window.startNewAssessment = function() {
+  const role = window.neuroAuth.getRole();
+  if (role !== 'Therapist') {
+    window.showToast('Access Restricted: Only Clinical Therapists are authorized to conduct diagnostic screening assessments.', 'warning');
+    return;
+  }
   window.navigateTo('assessment-conduct');
 };
 
 window.startAssessmentForChild = function(childId) {
+  const role = window.neuroAuth.getRole();
+  if (role !== 'Therapist') {
+    window.showToast('Access Restricted: Only Clinical Therapists are authorized to conduct diagnostic screening assessments.', 'warning');
+    return;
+  }
   window.navigateTo('assessment-conduct', { childId });
 };
 

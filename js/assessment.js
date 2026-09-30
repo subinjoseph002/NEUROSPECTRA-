@@ -14,6 +14,22 @@ window.currentAssessmentState = {
 };
 
 window.renderAssessmentConductView = function(childId) {
+  const role = window.neuroAuth.getRole();
+  if (role !== 'Therapist') {
+    return `
+      <div class="card" style="padding: 40px; text-align: center; border-radius: 16px; margin: 20px auto; max-width: 600px;">
+        <div style="width: 60px; height: 60px; border-radius: 16px; background: #fef2f2; color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 8px;">Access Restricted</h2>
+        <p style="font-size: 14px; color: #64748b; line-height: 1.5; margin-bottom: 24px;">
+          Diagnostic and standardized M-CHAT-R/F screening assessments can only be conducted by certified Clinical Therapists.
+        </p>
+        <button class="btn btn-primary" onclick="window.navigateTo('dashboard')">Return to Dashboard</button>
+      </div>
+    `;
+  }
+
   const children = window.neuroDB.getChildren();
   const templates = window.neuroDB.getAssessmentTemplates();
   
@@ -291,6 +307,11 @@ window.submitAssessment = function(e) {
   }
 
   const currentUser = window.neuroAuth.getCurrentUser();
+  const role = window.neuroAuth.getRole();
+  if (role !== 'Therapist') {
+    window.showToast('Unauthorized: Only certified Clinical Therapists are permitted to conduct and save screening assessments.', 'error');
+    return;
+  }
   const newRecord = window.neuroDB.saveAssessmentRecord({
     child_id: window.currentAssessmentState.childId,
     therapist_id: currentUser ? currentUser.id : 'usr_therapist_1',
