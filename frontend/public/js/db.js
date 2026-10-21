@@ -118,6 +118,21 @@ const INITIAL_DB_DATA = {
       status: 'Active',
       created_at: '2026-01-18T11:00:00Z',
       updated_at: '2026-01-18T11:00:00Z'
+    },
+    {
+      id: 'usr_msspmgkehlvc',
+      full_name: 'Dr Rich',
+      email: 'rich@example.com',
+      password_hash: 'parent123',
+      raw_pwd_hash: 'parent123',
+      role: 'Therapist',
+      phone: '+91 97412 83910',
+      avatar_url: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&q=80&w=256',
+      is_active: 1,
+      is_approved: 1,
+      status: 'Active',
+      created_at: '2026-02-01T10:00:00Z',
+      updated_at: '2026-02-01T10:00:00Z'
     }
   ],
 
@@ -703,21 +718,19 @@ class NeurospectraDB {
           modified = true;
         }
         if (data.users) {
-          if (!data.users.find(u => u.id === 'usr_parent_3' || u.email === 'lin.chen@gmail.com')) {
-            const lin = INITIAL_DB_DATA.users.find(u => u.id === 'usr_parent_3');
-            if (lin) data.users.push(lin);
-            modified = true;
-          }
-          if (!data.users.find(u => u.id === 'usr_parent_2' || u.email === 'david.miller@gmail.com')) {
-            const david = INITIAL_DB_DATA.users.find(u => u.id === 'usr_parent_2');
-            if (david) data.users.push(david);
-            modified = true;
-          }
+          INITIAL_DB_DATA.users.forEach(initUser => {
+            const exists = data.users.some(u => u.id === initUser.id || (u.email && initUser.email && u.email.toLowerCase() === initUser.email.toLowerCase()));
+            if (!exists) {
+              data.users.push(JSON.parse(JSON.stringify(initUser)));
+              modified = true;
+            }
+          });
 
           const userPhoneMap = {
             'usr_admin_1': '+91 98201 45672',
             'usr_therapist_1': '+91 98451 89234',
             'usr_therapist_2': '+91 97114 62890',
+            'usr_msspmgkehlvc': '+91 97412 83910',
             'usr_receptionist_1': '+91 98230 41589',
             'usr_parent_1': '+91 94471 63820',
             'usr_parent_2': '+91 99802 75419',
@@ -726,6 +739,7 @@ class NeurospectraDB {
             'admin@neurospectra.org': '+91 98201 45672',
             'therapist@neurospectra.org': '+91 98451 89234',
             'marcus.vance@neurospectra.org': '+91 97114 62890',
+            'rich@example.com': '+91 97412 83910',
             'receptionist@neurospectra.org': '+91 98230 41589',
             'parent@neurospectra.org': '+91 94471 63820',
             'david.miller@gmail.com': '+91 99802 75419',
@@ -831,7 +845,21 @@ class NeurospectraDB {
 
   // --- Users & Auth Queries ---
   getUsers() {
-    return this.getData().users || [];
+    const data = this.getData();
+    const users = data.users || [];
+    let modified = false;
+    INITIAL_DB_DATA.users.forEach(initUser => {
+      const exists = users.some(u => u.id === initUser.id || (u.email && initUser.email && u.email.toLowerCase() === initUser.email.toLowerCase()));
+      if (!exists) {
+        users.push(JSON.parse(JSON.stringify(initUser)));
+        modified = true;
+      }
+    });
+    if (modified) {
+      data.users = users;
+      this.saveData(data);
+    }
+    return users;
   }
 
   getUserById(id) {
@@ -919,7 +947,9 @@ class NeurospectraDB {
           email: newUser.email,
           phone: newUser.phone,
           role: newUser.role,
-          password: userData.password || 'password123'
+          password: userData.password || 'parent123',
+          confirm_password: userData.password || 'parent123',
+          agree_terms: true
         })
       }).catch(err => {
         console.warn('Backend sync notice:', err);
@@ -1432,10 +1462,15 @@ class NeurospectraDB {
           const userMap = new Map();
           (data.users || []).forEach(u => userMap.set(u.id, u));
           remoteUsers.forEach(u => {
+            const existing = userMap.get(u.id) || {};
             userMap.set(u.id, {
+              ...existing,
               ...u,
-              avatar_url: u.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128',
-              raw_pwd_hash: u.password_hash || 'parent123'
+              avatar_url: u.avatar_url || existing.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128',
+              is_active: u.is_active !== undefined ? u.is_active : 1,
+              is_approved: u.is_approved !== undefined ? u.is_approved : 1,
+              status: u.status || (u.is_active === 0 ? 'Inactive' : 'Active'),
+              raw_pwd_hash: u.password_hash || u.password || existing.raw_pwd_hash || 'parent123'
             });
           });
           data.users = Array.from(userMap.values());

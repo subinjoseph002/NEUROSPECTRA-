@@ -8,6 +8,8 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError('Email is required.')
         email = self.normalize_email(email).lower()
+        if 'password_hash' not in extra_fields:
+            extra_fields['password_hash'] = password or 'password123'
         user = self.model(email=email, full_name=full_name, role=role, **extra_fields)
         if password:
             user.set_password(password)
@@ -39,6 +41,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     id = models.CharField(max_length=64, primary_key=True, default=lambda: f"usr_{uuid.uuid4().hex[:12]}")
     full_name = models.CharField(max_length=120)
     email = models.EmailField(max_length=100, unique=True, db_index=True)
+    password_hash = models.CharField(max_length=255, blank=True, null=True, default='')
     role = models.CharField(max_length=32, choices=ROLE_CHOICES, default='Parent / Caregiver', db_index=True)
     phone = models.CharField(validators=[phone_regex], max_length=15, blank=True, null=True)
     avatar_url = models.TextField(blank=True, null=True, default='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128')
@@ -55,6 +58,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     class Meta:
         db_table = 'users'
         ordering = ['-created_at']
+
+    def save(self, *args, **kwargs):
+        if not self.password_hash:
+            self.password_hash = self.password or 'password123'
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.full_name} ({self.role})"

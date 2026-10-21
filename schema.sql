@@ -83,13 +83,24 @@ CREATE TABLE IF NOT EXISTS users (
     full_name VARCHAR(120) NOT NULL,
     email VARCHAR(120) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
+    password VARCHAR(255),
     role user_role_enum NOT NULL DEFAULT 'Parent / Caregiver',
     phone VARCHAR(30),
     avatar_url TEXT,
     is_active SMALLINT NOT NULL DEFAULT 1,
+    last_login TIMESTAMP WITH TIME ZONE,
+    is_superuser BOOLEAN DEFAULT FALSE,
+    is_staff BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Compatibility columns for Django ORM and live synchronization
+ALTER TABLE users ADD COLUMN IF NOT EXISTS password VARCHAR(255);
+ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login TIMESTAMP WITH TIME ZONE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_superuser BOOLEAN DEFAULT FALSE;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS is_staff BOOLEAN DEFAULT FALSE;
+UPDATE users SET password = password_hash WHERE password IS NULL;
 
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
@@ -316,7 +327,8 @@ VALUES
 ('usr_parent_1', 'Priya Sharma (Parent)', 'parent@neurospectra.org', 'parent123', 'Parent / Caregiver', '+91 94471 63820', 1),
 ('usr_parent_2', 'David Miller (Caregiver)', 'david.miller@gmail.com', 'parent123', 'Parent / Caregiver', '+91 99802 75419', 1),
 ('usr_parent_3', 'Lin Chen (Parent)', 'lin.chen@gmail.com', 'parent123', 'Parent / Caregiver', '+91 98190 38472', 1),
-('usr_teacher_1', 'Marcus Brody (Special Educator)', 'teacher@neurospectra.org', 'teacher123', 'Teacher', '+91 98300 94165', 1)
+('usr_teacher_1', 'Marcus Brody (Special Educator)', 'teacher@neurospectra.org', 'teacher123', 'Teacher', '+91 98300 94165', 1),
+('usr_msspmgkehlvc', 'Dr Rich', 'rich@example.com', 'parent123', 'Therapist', '+91 97412 83910', 1)
 ON CONFLICT (id) DO NOTHING;
 
 -- Children

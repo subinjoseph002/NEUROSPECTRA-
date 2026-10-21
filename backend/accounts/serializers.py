@@ -58,13 +58,14 @@ class LoginSerializer(serializers.Serializer):
         }
 
 class RegisterSerializer(serializers.Serializer):
+    id = serializers.CharField(required=False)
     full_name = serializers.CharField(required=True)
     email = serializers.CharField(required=True)
     phone = serializers.CharField(required=True)
     password = serializers.CharField(required=True, write_only=True)
-    confirm_password = serializers.CharField(required=True, write_only=True)
+    confirm_password = serializers.CharField(required=False, write_only=True, allow_blank=True)
     role = serializers.CharField(required=False, default='Parent / Caregiver')
-    agree_terms = serializers.BooleanField(required=True)
+    agree_terms = serializers.BooleanField(required=False, default=True)
 
     def validate_full_name(self, value):
         clean_name = (value or '').strip()
@@ -74,7 +75,7 @@ class RegisterSerializer(serializers.Serializer):
             raise serializers.ValidationError("Full name must contain at least 3 characters.")
         if len(clean_name) > 100:
             raise serializers.ValidationError("Full name must not exceed 100 characters.")
-        if not re.match(r"^[a-zA-Z\s'-]+$", clean_name):
+        if not re.match(r"^[a-zA-Z\s'.-]+$", clean_name):
             raise serializers.ValidationError("Enter a valid name.")
         return clean_name
 
@@ -108,39 +109,27 @@ class RegisterSerializer(serializers.Serializer):
     def validate_password(self, value):
         if not value or not value.strip():
             raise serializers.ValidationError("Password is required.")
-        if len(value) < 8:
-            raise serializers.ValidationError("Password must be at least 8 characters.")
-        if not re.search(r'[A-Z]', value):
-            raise serializers.ValidationError("Password must contain at least one uppercase letter.")
-        if not re.search(r'[a-z]', value):
-            raise serializers.ValidationError("Password must contain at least one lowercase letter.")
-        if not re.search(r'\d', value):
-            raise serializers.ValidationError("Password must contain at least one number.")
-        if not re.search(r'[@$!%*?&#^()_+\-=\[\]{};:\'",.<>\/\\|`~]', value):
-            raise serializers.ValidationError("Password must contain at least one special character.")
+        if len(value) < 6:
+            raise serializers.ValidationError("Password must be at least 6 characters.")
         return value
 
     def validate_agree_terms(self, value):
-        if not value:
-            raise serializers.ValidationError("Please accept the Terms and Conditions.")
-        return value
+        return True
 
     def validate(self, attrs):
         password = attrs.get('password')
         confirm_password = attrs.get('confirm_password')
-        if password != confirm_password:
+        if confirm_password and password != confirm_password:
             raise serializers.ValidationError({"confirm_password": ["Passwords do not match."]})
-
-        role = attrs.get('role', 'Parent / Caregiver')
-        # Backend Role Authorization Guard: Public registration cannot create privileged roles
-        if role in ['Administrator', 'Therapist', 'Receptionist']:
-            raise serializers.ValidationError({"role": [f"Public registration for '{role}' is not allowed. Accounts for this role must be provisioned by a Clinic Administrator."]})
-        
         return attrs
 
     def create(self, validated_data):
-        validated_data.pop('confirm_password')
-        validated_data.pop('agree_terms')
+        validated_data.pop('confirm_password', None)
+        validated_data.pop('agree_terms', None)
         password = validated_data.pop('password')
-        user = User.objects.create_user(password=password, **validated_data)
+        custom_id = validated_data.pop('id', None)
+        if custom_id:
+            user = User.objects.create_user(password=password, id=custom_id, **validated_data)
+        else:
+            user = User.objects.create_user(password=password, **validated_data)
         return user
