@@ -1,6 +1,6 @@
 # NEUROSPECTRA - Comprehensive Selenium End-to-End Test Report
 
-**Execution Timestamp:** 2026-09-25 10:32:24  
+**Execution Timestamp:** 2026-10-22 01:36:19  
 **Target Environment:** `http://localhost:3000`  
 **Automated Browser Engine:** `Google Chrome`  
 **Test Framework:** Python Selenium 4.x + WebDriver Manager  
@@ -16,7 +16,7 @@
 | **Passed Tests** | `✅ 14` |
 | **Failed Tests** | `❌ 0` |
 | **Pass Rate** | `🎯 100.0%` |
-| **Total Test Execution Duration** | `⏱️ 46.56s` |
+| **Total Test Execution Duration** | `⏱️ 49.55s` |
 
 ---
 
@@ -24,20 +24,20 @@
 
 | # | Test Scenario | Module / Category | Status | Duration | Observation & Findings | Screenshot Artifact |
 |:---|:---|:---|:---:|:---:|:---|:---:|
-| 1 | **Landing Page Rendering & Navigation** | Public Web | 🟢 PASSED | 1.5s | Landing page loaded with full brand typography, hero section, trust ribbon, and feature matrix. | [`1790312496897_01_landing_page.png`](screenshots/1790312496897_01_landing_page.png) |
-| 2 | **Registration Role Gate & Client Validation** | Security & RBAC | 🟢 PASSED | 2.36s | Confirmed exclusion of Receptionist/Admin from public signup; verified client validation for name, phone, password, and email. | [`1790312498944_02_registration_validation.png`](screenshots/1790312498944_02_registration_validation.png) |
-| 3 | **Therapist / Teacher Approval Registration Flow** | User Lifecycle | 🟢 PASSED | 3.95s | Registered clinician (therapist_17903124995@neurospectra.org) successfully created with is_approved=0 (Pending Admin Approval). | [`1790312502901_03_pending_registration_success.png`](screenshots/1790312502901_03_pending_registration_success.png) |
-| 4 | **Authentication Error Handling & Pending Gate** | Security | 🟢 PASSED | 3.1s | Verified bad credentials rejection and security gate blocking pending accounts prior to administrator approval. | [`1790312506011_04_auth_security_checks.png`](screenshots/1790312506011_04_auth_security_checks.png) |
-| 5 | **Admin Portal Login & Analytics Overview** | Admin Module | 🟢 PASSED | 2.64s | Admin authenticated. Loaded system metrics, active children caseloads, and clinic overview. | [`1790312509075_05_admin_dashboard.png`](screenshots/1790312509075_05_admin_dashboard.png) |
-| 6 | **Administrator Clinician Approval Action** | Admin Module | 🟢 PASSED | 2.65s | Verified user directory table, pending status indicators, and 1-click administrative account approval. | [`1790312511646_06_admin_user_approval.png`](screenshots/1790312511646_06_admin_user_approval.png) |
-| 7 | **Admin Staff Provisioning & Role Management** | Admin Module | 🟢 PASSED | 2.46s | Verified Administrator exclusive provisioning modal allowing direct addition of Receptionists and Clinicians. | [`1790312514204_07_admin_staff_provisioning.png`](screenshots/1790312514204_07_admin_staff_provisioning.png) |
-| 8 | **Parent Portal & Profile Immutability Verification** | Parent Module | 🟢 PASSED | 2.79s | Verified Parent Care Journey dashboard. Confirmed Name, Email, and Phone fields are strictly locked/read-only with password-only update privileges. | [`1790312516902_08_parent_profile_locks.png`](screenshots/1790312516902_08_parent_profile_locks.png) |
-| 9 | **Teacher Observations & 5-Domain Logging** | Teacher Module | 🟢 PASSED | 8.89s | Verified teacher student roster and 5-domain structured developmental observation form. | [`1790312525880_09_teacher_observations.png`](screenshots/1790312525880_09_teacher_observations.png) |
-| 10 | **Therapist Workspace & Assessment Conduct Engine** | Therapist Module | 🟢 PASSED | 3.16s | Therapist clinical workspace verified with live assessment forms, rating matrices, and IEP planning. | [`1790312529030_10_therapist_assessment_engine.png`](screenshots/1790312529030_10_therapist_assessment_engine.png) |
-| 11 | **Receptionist Intake & Appointment Coordination** | Receptionist Module | 🟢 PASSED | 2.82s | Receptionist portal loaded daily appointment schedules, patient file roster, and reminder dispatches. | [`1790312531845_11_receptionist_appointments.png`](screenshots/1790312531845_11_receptionist_appointments.png) |
-| 12 | **Appointment Scoping & Dynamic Slot Availability** | Appointments Module | 🟢 PASSED | 6.05s | Verified parent child-only booking restrictions, receptionist universal spot booking, and dynamic hiding of booked time slots. | [`1790312537885_12_appointment_scoping_and_slot_availability.png`](screenshots/1790312537885_12_appointment_scoping_and_slot_availability.png) |
-| 13 | **Progress & Diagnostic Reports Synthesis** | Reports Module | 🟢 PASSED | 1.6s | Verified clinical report generation with milestone trajectory graphs, assessment synthesis, and print layouts. | [`1790312539491_12_progress_reports.png`](screenshots/1790312539491_12_progress_reports.png) |
-| 14 | **Multidisciplinary Team Messaging & Notifications** | Messaging Module | 🟢 PASSED | 2.59s | Verified real-time care team chat dispatch between Therapists, Teachers, and Parents. | [`1790312542062_13_team_messaging.png`](screenshots/1790312542062_13_team_messaging.png) |
+| 1 | **Landing Page Rendering & Navigation** | Public Web | 🟢 PASSED | 1.58s | Landing page loaded with full brand typography, hero section, trust ribbon, and feature matrix. | [`1792613129040_01_landing_page.png`](screenshots/1792613129040_01_landing_page.png) |
+| 2 | **Registration Role Gate & Client Validation** | Security & RBAC | 🟢 PASSED | 2.3s | Confirmed exclusion of Receptionist/Admin from public signup; verified client validation for name, phone, password, and email. | [`1792613131146_02_registration_validation.png`](screenshots/1792613131146_02_registration_validation.png) |
+| 3 | **Therapist / Teacher Approval Registration Flow** | User Lifecycle | 🟢 PASSED | 3.55s | Registered clinician (therapist_17926131314@neurospectra.org) successfully created with is_approved=0 (Pending Admin Approval). | [`1792613134695_03_pending_registration_success.png`](screenshots/1792613134695_03_pending_registration_success.png) |
+| 4 | **Authentication Error Handling & Pending Gate** | Security | 🟢 PASSED | 2.85s | Verified bad credentials rejection and security gate blocking pending accounts prior to administrator approval. | [`1792613137502_04_auth_security_checks.png`](screenshots/1792613137502_04_auth_security_checks.png) |
+| 5 | **Admin Portal Login & Analytics Overview** | Admin Module | 🟢 PASSED | 2.83s | Admin authenticated. Loaded system metrics, active children caseloads, and clinic overview. | [`1792613140599_05_admin_dashboard.png`](screenshots/1792613140599_05_admin_dashboard.png) |
+| 6 | **Administrator Clinician Approval Action** | Admin Module | 🟢 PASSED | 2.74s | Verified user directory table, pending status indicators, and 1-click administrative account approval. | [`1792613143295_06_admin_user_approval.png`](screenshots/1792613143295_06_admin_user_approval.png) |
+| 7 | **Admin Staff Provisioning & Role Management** | Admin Module | 🟢 PASSED | 2.66s | Verified Administrator exclusive provisioning modal allowing direct addition of Receptionists and Clinicians. | [`1792613145999_07_admin_staff_provisioning.png`](screenshots/1792613145999_07_admin_staff_provisioning.png) |
+| 8 | **Parent Portal & Profile Immutability Verification** | Parent Module | 🟢 PASSED | 2.89s | Verified Parent Care Journey dashboard. Confirmed Name, Email, and Phone fields are strictly locked/read-only with password-only update privileges. | [`1792613148876_08_parent_profile_locks.png`](screenshots/1792613148876_08_parent_profile_locks.png) |
+| 9 | **Teacher Observations & 5-Domain Logging** | Teacher Module | 🟢 PASSED | 9.37s | Verified teacher student roster and 5-domain structured developmental observation form. | [`1792613158263_09_teacher_observations.png`](screenshots/1792613158263_09_teacher_observations.png) |
+| 10 | **Therapist Workspace & Assessment Conduct Engine** | Therapist Module | 🟢 PASSED | 3.59s | Therapist clinical workspace verified with live assessment forms, rating matrices, and IEP planning. | [`1792613161847_10_therapist_assessment_engine.png`](screenshots/1792613161847_10_therapist_assessment_engine.png) |
+| 11 | **Receptionist Intake & Appointment Coordination** | Receptionist Module | 🟢 PASSED | 3.33s | Receptionist portal loaded daily appointment schedules, patient file roster, and reminder dispatches. | [`1792613165192_11_receptionist_appointments.png`](screenshots/1792613165192_11_receptionist_appointments.png) |
+| 12 | **Appointment Scoping & Dynamic Slot Availability** | Appointments Module | 🟢 PASSED | 7.34s | Verified parent child-only booking restrictions, receptionist universal spot booking, and dynamic hiding of booked time slots. | [`1792613172522_12_appointment_scoping_and_slot_availability.png`](screenshots/1792613172522_12_appointment_scoping_and_slot_availability.png) |
+| 13 | **Progress & Diagnostic Reports Synthesis** | Reports Module | 🟢 PASSED | 1.81s | Verified clinical report generation with milestone trajectory graphs, assessment synthesis, and print layouts. | [`1792613174329_12_progress_reports.png`](screenshots/1792613174329_12_progress_reports.png) |
+| 14 | **Multidisciplinary Team Messaging & Notifications** | Messaging Module | 🟢 PASSED | 2.71s | Verified real-time care team chat dispatch between Therapists, Teachers, and Parents. | [`1792613177029_13_team_messaging.png`](screenshots/1792613177029_13_team_messaging.png) |
 
 ---
 
@@ -65,4 +65,4 @@
 8. **Team Messaging**: Real-time confidential messaging connecting parents, educators, and clinical specialists.
 
 ---
-*Report auto-generated by the NEUROSPECTRA Automated QA Engine on 2026-09-25 10:32:24.*
+*Report auto-generated by the NEUROSPECTRA Automated QA Engine on 2026-10-22 01:36:19.*

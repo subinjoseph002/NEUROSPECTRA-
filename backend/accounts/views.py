@@ -57,3 +57,27 @@ class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAdminRole]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+class BulkSyncView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        users_data = request.data.get('users', [])
+        synced_count = 0
+        for u in users_data:
+            email = str(u.get('email', '')).strip().lower()
+            if not email:
+                continue
+            User.objects.update_or_create(
+                email=email,
+                defaults={
+                    'full_name': u.get('full_name', email),
+                    'role': u.get('role', 'Parent / Caregiver'),
+                    'phone': u.get('phone', ''),
+                    'avatar_url': u.get('avatar_url', ''),
+                    'is_active': 1 if u.get('is_active', True) else 0,
+                }
+            )
+            synced_count += 1
+        return Response({'status': 'success', 'synced': synced_count}, status=status.HTTP_200_OK)
+

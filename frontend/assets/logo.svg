@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" fill="none">
+  <defs>
+    <linearGradient id="nsGrad" x1="10" y1="10" x2="110" y2="110" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+  <circle cx="60" cy="60" r="52" fill="#0F172A" stroke="url(#nsGrad)" stroke-width="4" />
+  <!-- Neural Nodes & Spectrum Connections -->
+  <path d="M36 65 C36 45, 50 35, 60 35 C70 35, 84 45, 84 65 C84 78, 72 86, 60 86 C48 86, 36 78, 36 65 Z" fill="none" stroke="url(#nsGrad)" stroke-width="3" stroke-dasharray="2 3" />
+  <circle cx="60" cy="35" r="5" fill="#06B6D4" />
+  <circle cx="84" cy="65" r="5" fill="#10B981" />
+  <circle cx="36" cy="65" r="5" fill="#4F46E5" />
+  <circle cx="60" cy="86" r="5" fill="#8B5CF6" />
+  <circle cx="60" cy="60" r="7" fill="#FFFFFF" filter="url(#glow)" />
+  <!-- Wave Spectrum Line -->
+  <path d="M26 60 Q 42 38, 60 60 T 94 60" fill="none" stroke="url(#nsGrad)" stroke-width="3.5" stroke-linecap="round" />
+</svg>

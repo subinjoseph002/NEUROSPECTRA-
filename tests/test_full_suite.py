@@ -3,7 +3,7 @@ import sys
 import time
 import json
 import traceback
-from datetime import datetime
+from datetime import datetime, timedelta
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -77,6 +77,11 @@ def take_shot(driver, name):
     return fpath
 
 def nav_to(driver, route, params=None):
+    try:
+        driver.execute_script("if (typeof window.closeActiveModal === 'function') window.closeActiveModal();")
+    except Exception:
+        pass
+    time.sleep(0.3)
     if params:
         param_json = json.dumps(params)
         driver.execute_script(f"window.navigateTo('{route}', {param_json});")
@@ -507,9 +512,20 @@ def test_appointment_booking_scoping_and_slot_availability(driver):
         child_select = driver.find_elements(By.ID, "apt-child")
         assert len(child_select) > 0, "Child selector/input not found in booking modal"
 
+        # Select tomorrow's date to guarantee fresh forward-looking slot availability
+        tomorrow_str = (datetime.now() + timedelta(days=1)).strftime("%Y-%m-%d")
+        driver.execute_script(f"""
+            const d = document.getElementById('apt-date');
+            if (d) {{
+                d.value = '{tomorrow_str}';
+                window.updateAvailableAppointmentSlots();
+            }}
+        """)
+        time.sleep(0.5)
+
         # Check available time slots (booked slots must be absent)
         time_select = driver.find_element(By.ID, "apt-time")
-        options = [o.text for o in time_select.find_elements(By.TAG_NAME, "option")]
+        options = [o.text for o in time_select.find_elements(By.TAG_NAME, "option") if o.text != "No available time slots"]
         assert len(options) > 0, "No time slots rendered"
 
         # Book an appointment slot
@@ -520,6 +536,14 @@ def test_appointment_booking_scoping_and_slot_availability(driver):
 
         # Reopen booking modal and verify the booked slot is now HIDDEN/EXCLUDED
         driver.execute_script("window.showBookAppointmentModal();")
+        time.sleep(0.5)
+        driver.execute_script(f"""
+            const d = document.getElementById('apt-date');
+            if (d) {{
+                d.value = '{tomorrow_str}';
+                window.updateAvailableAppointmentSlots();
+            }}
+        """)
         time.sleep(0.5)
 
         time_select_after = driver.find_element(By.ID, "apt-time")

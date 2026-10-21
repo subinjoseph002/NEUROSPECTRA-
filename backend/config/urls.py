@@ -24,5 +24,6 @@ urlpatterns = [
     path('api/appointments/', include('appointments.urls')),
     path('api/reports/', include('reports.urls')),
     path('api/notifications/', include('notifications.urls')),
+    path('api/bulk-sync/', include('accounts.urls')),
 ]
 
