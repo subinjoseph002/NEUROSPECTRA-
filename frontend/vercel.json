@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://neurospectra-backend.onrender.com/api/$1"
+      "destination": "https://neurospectra-backend-m2vl.onrender.com/api/$1"
     },
     {
       "source": "/((?!assets/|css/|js/|.*\\..*).*)$",
