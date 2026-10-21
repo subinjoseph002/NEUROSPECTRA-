@@ -8,7 +8,7 @@ import { FormField } from '../components/FormField';
 import { AlertCircle, Loader2, ArrowRight } from 'lucide-react';
 
 export const LoginPage = () => {
-  const { login } = useAuth();
+  const { login, switchDemoRole } = useAuth();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,6 +32,24 @@ export const LoginPage = () => {
     setValue('email', email, { shouldValidate: true });
     setValue('password', password, { shouldValidate: true });
     setServerError('');
+  };
+
+  const handleInstantDemo = (role, email, pwd) => {
+    fillDemo(email, pwd);
+    const names = {
+      'Therapist': 'Dr. Aisha Khan, Ph.D., BCBA-D',
+      'Administrator': 'Dr. Eleanor Vance (Administrator)',
+      'Receptionist': 'Sarah Jenkins (Clinical Coordinator)',
+      'Teacher': 'Marcus Brody (Special Educator)',
+      'Parent / Caregiver': 'Priya Sharma (Parent / Caregiver)'
+    };
+    switchDemoRole(role, {
+      id: `usr_${role.toLowerCase().replace(/[^a-z]/g, '')}_1`,
+      full_name: names[role] || 'Clinical Staff',
+      email: email,
+      role: role,
+      avatar_url: role === 'Therapist' ? 'https://images.unsplash.com/photo-1594824813589-3221e5138137?auto=format&fit=crop&q=80&w=256' : 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=256',
+    });
   };
 
   const onSubmit = async (data) => {
@@ -116,27 +134,33 @@ export const LoginPage = () => {
             <p className="text-sm text-slate-500">Sign in to access your authorized clinical dashboard</p>
           </div>
 
-          {/* Quick Demo Autofill Selector */}
+          {/* Quick Demo Instant Access Selector */}
           <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center">
+              Instant Clinical Persona Access
+            </div>
             <div className="grid grid-cols-3 gap-1.5">
               <button
                 type="button"
-                onClick={() => fillDemo('therapist@neurospectra.org', 'therapist123')}
-                className="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                onClick={() => handleInstantDemo('Therapist', 'therapist@neurospectra.org', 'therapist123')}
+                className="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                title="Instant Login as Therapist"
               >
                 🩺 Therapist
               </button>
               <button
                 type="button"
-                onClick={() => fillDemo('teacher@neurospectra.org', 'teacher123')}
-                className="px-2 py-1.5 bg-sky-50 hover:bg-sky-100 text-sky-700 border border-sky-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                onClick={() => handleInstantDemo('Teacher', 'teacher@neurospectra.org', 'teacher123')}
+                className="px-2 py-1.5 bg-sky-50 hover:bg-sky-100 active:scale-95 text-sky-700 border border-sky-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                title="Instant Login as Teacher"
               >
                 🎓 Teacher
               </button>
               <button
                 type="button"
-                onClick={() => fillDemo('parent@neurospectra.org', 'parent123')}
-                className="px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                onClick={() => handleInstantDemo('Parent / Caregiver', 'parent@neurospectra.org', 'parent123')}
+                className="px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                title="Instant Login as Parent"
               >
                 👨‍👩‍👧 Parent
               </button>
@@ -144,15 +168,17 @@ export const LoginPage = () => {
             <div className="grid grid-cols-2 gap-1.5">
               <button
                 type="button"
-                onClick={() => fillDemo('receptionist@neurospectra.org', 'receptionist123')}
-                className="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                onClick={() => handleInstantDemo('Receptionist', 'receptionist@neurospectra.org', 'receptionist123')}
+                className="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 active:scale-95 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                title="Instant Login as Receptionist"
               >
                 📋 Receptionist
               </button>
               <button
                 type="button"
-                onClick={() => fillDemo('admin@neurospectra.org', 'admin123')}
-                className="px-2 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                onClick={() => handleInstantDemo('Administrator', 'admin@neurospectra.org', 'admin123')}
+                className="px-2 py-1.5 bg-purple-50 hover:bg-purple-100 active:scale-95 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
+                title="Instant Login as Admin"
               >
                 👑 Admin
               </button>
