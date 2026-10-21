@@ -3420,6 +3420,113 @@ window.handleRecordSessionSubmit = function(e) {
   window.openChildProfileTab(childId, 'sessions');
 };
 
+// Add Progress Record Modal
+window.showAddProgressRecordModal = function(childId) {
+  const children = window.neuroDB.getChildren();
+  const selectedChild = children.find(c => c.id === childId) || children[0];
+  const records = window.neuroDB.getProgressRecords(selectedChild?.id);
+  const latest = records[records.length - 1] || { social_score: 55, communication_score: 50, sensory_score: 60, behavioural_score: 65 };
+
+  const body = `
+    <form id="add-progress-record-form" onsubmit="window.handleAddProgressRecordSubmit(event)">
+      <div class="form-group">
+        <label class="form-label">Child Patient <span class="required">*</span></label>
+        <select id="prog-child" class="form-control" required>
+          ${children.map(c => `<option value="${c.id}" ${c.id === selectedChild?.id ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Evaluation Date <span class="required">*</span></label>
+        <input type="date" id="prog-date" class="form-control" value="${new Date().toISOString().split('T')[0]}" required>
+      </div>
+
+      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+        <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px;">
+          Multi-Domain Competency Ratings (0–100%)
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <label style="font-size: 12.5px; font-weight: 600; color: #334155;">Social Orientation & Joint Attention</label>
+            <span id="prog-social-lbl" style="font-weight: 800; color: #2563eb; font-size: 13px;">${latest.social_score}%</span>
+          </div>
+          <input type="range" id="prog-social" min="0" max="100" step="1" value="${latest.social_score}" style="width: 100%; cursor: pointer;" oninput="document.getElementById('prog-social-lbl').innerText = this.value + '%'">
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <label style="font-size: 12.5px; font-weight: 600; color: #334155;">Functional Communication & Requesting</label>
+            <span id="prog-comm-lbl" style="font-weight: 800; color: #0d9488; font-size: 13px;">${latest.communication_score}%</span>
+          </div>
+          <input type="range" id="prog-comm" min="0" max="100" step="1" value="${latest.communication_score}" style="width: 100%; cursor: pointer;" oninput="document.getElementById('prog-comm-lbl').innerText = this.value + '%'">
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <label style="font-size: 12.5px; font-weight: 600; color: #334155;">Sensory Processing & Regulation</label>
+            <span id="prog-sensory-lbl" style="font-weight: 800; color: #7c3aed; font-size: 13px;">${latest.sensory_score}%</span>
+          </div>
+          <input type="range" id="prog-sensory" min="0" max="100" step="1" value="${latest.sensory_score}" style="width: 100%; cursor: pointer;" oninput="document.getElementById('prog-sensory-lbl').innerText = this.value + '%'">
+        </div>
+
+        <div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+            <label style="font-size: 12.5px; font-weight: 600; color: #334155;">Behavioural Flexibility & Transitions</label>
+            <span id="prog-behav-lbl" style="font-weight: 800; color: #10b981; font-size: 13px;">${latest.behavioural_score}%</span>
+          </div>
+          <input type="range" id="prog-behav" min="0" max="100" step="1" value="${latest.behavioural_score}" style="width: 100%; cursor: pointer;" oninput="document.getElementById('prog-behav-lbl').innerText = this.value + '%'">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Milestones Achieved <span class="required">*</span></label>
+        <textarea id="prog-milestones" class="form-control" rows="2" placeholder="e.g. Spontaneous pointing for desired toy, sustained joint attention for 15+ seconds" required></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Therapist Clinical Remarks</label>
+        <textarea id="prog-remarks" class="form-control" rows="2" placeholder="e.g. Promising trajectory in both social responsiveness and emotional self-regulation."></textarea>
+      </div>
+    </form>
+  `;
+
+  const footer = `
+    <button class="btn btn-outline" onclick="window.closeActiveModal()">Cancel</button>
+    <button class="btn btn-primary" onclick="document.getElementById('add-progress-record-form').requestSubmit()">Save Progress Record</button>
+  `;
+  window.openModal('Update Developmental Trajectory & Domain Scores', body, footer);
+};
+
+window.handleAddProgressRecordSubmit = function(e) {
+  e.preventDefault();
+  const childId = document.getElementById('prog-child')?.value;
+  const date = document.getElementById('prog-date')?.value;
+  const social = document.getElementById('prog-social')?.value;
+  const comm = document.getElementById('prog-comm')?.value;
+  const sensory = document.getElementById('prog-sensory')?.value;
+  const behav = document.getElementById('prog-behav')?.value;
+  const milestones = document.getElementById('prog-milestones')?.value;
+  const remarks = document.getElementById('prog-remarks')?.value;
+
+  const currentUser = window.neuroAuth.getCurrentUser();
+  window.neuroDB.createProgressRecord({
+    child_id: childId,
+    therapist_id: currentUser ? currentUser.id : 'usr_therapist_1',
+    record_date: date,
+    social_score: social,
+    communication_score: comm,
+    sensory_score: sensory,
+    behavioural_score: behav,
+    milestones_achieved: milestones,
+    therapist_remarks: remarks
+  });
+
+  window.closeActiveModal();
+  window.showToast('Developmental domain scores successfully updated!', 'success');
+  window.navigateTo('progress', { childId: childId });
+};
+
 // Create Therapy Plan Modal
 window.addTherapyPlanGoalField = function() {
   const container = document.getElementById('tp-goals-container');
