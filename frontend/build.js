@@ -31,7 +31,7 @@ if (fs.existsSync(indexSrc)) {
   console.log('✓ index.html copied to dist/');
 }
 
-// 2. Copy directories: css, js, assets
+// 2. Copy directories: css, js, assets, public
 ['css', 'js', 'assets'].forEach(folder => {
   const src = path.join(__dirname, folder);
   const dest = path.join(distDir, folder);
@@ -40,6 +40,12 @@ if (fs.existsSync(indexSrc)) {
     console.log(`✓ ${folder}/ copied to dist/`);
   }
 });
+
+const publicSrc = path.join(__dirname, 'public');
+if (fs.existsSync(publicSrc)) {
+  copyDirectory(publicSrc, distDir);
+  console.log('✓ public/ merged into dist/');
+}
 
 // 3. Copy vercel.json if present
 const vercelConfig = path.join(__dirname, 'vercel.json');
