@@ -11,6 +11,11 @@ __pycache__/
 db.sqlite3
 /staticfiles/
 /media/
+venv/
+.venv/
+env/
+backend/venv/
+backend/.venv/
 
 # Node / Frontend
 node_modules/

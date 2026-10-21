@@ -2152,6 +2152,10 @@ window.renderAssessmentsListView = function() {
 
 window.renderTherapyPlansView = function() {
   const plans = window.neuroDB.getTherapyPlans();
+  const allChildren = window.neuroDB.getChildren();
+  const plannedChildIds = plans.map(p => p.child_id);
+  const childrenAwaitingPlan = allChildren.filter(c => !plannedChildIds.includes(c.id));
+
   return `
     <div class="page-header">
       <div>
@@ -2161,7 +2165,8 @@ window.renderTherapyPlansView = function() {
       <button class="btn btn-primary" onclick="window.showCreateTherapyPlanModal()">+ New Therapy Plan</button>
     </div>
 
-    <div class="grid-2">
+    <!-- Active Therapy Plans Grid -->
+    <div class="grid-2" style="margin-bottom: 28px;">
       ${plans.map(p => {
         const child = window.neuroDB.getChildById(p.child_id);
         const therapist = window.neuroDB.getUserById(p.therapist_id);
@@ -2233,8 +2238,56 @@ window.renderTherapyPlansView = function() {
         `;
       }).join('')}
     </div>
+
+    <!-- Children Awaiting Therapy Plan Section -->
+    ${childrenAwaitingPlan.length > 0 ? `
+      <div class="card" style="padding: 24px; border-radius: 16px; border: 1px dashed #cbd5e1; background: #f8fafc;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+          <div>
+            <h3 style="font-size: 16px; font-weight: 800; color: #0f172a; margin: 0 0 4px; display: flex; align-items: center; gap: 8px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2.2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+              Enrolled Children Awaiting Therapy Plan Formulation
+            </h3>
+            <p style="font-size: 13px; color: #64748b; margin: 0;">
+              The following registered children do not have an active therapy plan formulated yet. Click to draft their goals.
+            </p>
+          </div>
+          <span class="badge badge-info" style="font-size: 11px; padding: 4px 10px;">${childrenAwaitingPlan.length} Children Pending Plans</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 14px;">
+          ${childrenAwaitingPlan.map(child => {
+            const ageStr = child.age_months ? `${Math.floor(child.age_months / 12)}y ${child.age_months % 12}m` : 'Pediatric';
+            const statusBadge = child.status === 'Under Assessment' ? 'badge-warning' : 'badge-success';
+            
+            return `
+              <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
+                <div>
+                  <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                    <strong style="font-size: 14.5px; color: #0f172a;">${child.first_name} ${child.last_name}</strong>
+                    <span class="badge ${statusBadge}" style="font-size: 10px; padding: 2px 6px;">${child.status}</span>
+                  </div>
+                  <div style="font-size: 12px; color: #64748b;">
+                    Code: <strong>${child.child_code}</strong> &bull; Age: ${ageStr}
+                  </div>
+                  <div style="font-size: 11.5px; color: #94a3b8; margin-top: 2px;">
+                    Classroom: ${child.classroom_group || 'General Nursery'}
+                  </div>
+                </div>
+
+                <button class="btn btn-primary btn-sm" onclick="window.showCreateTherapyPlanModal('${child.id}')" style="font-size: 12px; padding: 6px 12px; font-weight: 600; white-space: nowrap; display: flex; align-items: center; gap: 4px;">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  Formulate Plan
+                </button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    ` : ''}
   `;
 };
+
 
 window.renderSessionsListView = function() {
   const sessions = window.neuroDB.getTherapySessions();
@@ -3368,6 +3421,23 @@ window.handleRecordSessionSubmit = function(e) {
 };
 
 // Create Therapy Plan Modal
+window.addTherapyPlanGoalField = function() {
+  const container = document.getElementById('tp-goals-container');
+  if (!container) return;
+  const count = container.querySelectorAll('.tp-goal-item').length + 1;
+  const div = document.createElement('div');
+  div.className = 'form-group tp-goal-item';
+  div.style.marginBottom = '12px';
+  div.innerHTML = `
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+      <label class="form-label" style="margin-bottom: 0;">Goal ${count}</label>
+      <button type="button" class="btn btn-sm" onclick="this.closest('.tp-goal-item').remove()" style="padding: 2px 6px; font-size: 11px; color: #ef4444; background: none; border: none; cursor: pointer;">✕ Remove</button>
+    </div>
+    <input type="text" class="form-control tp-goal-input" placeholder="e.g. Specific milestone target for goal ${count}">
+  `;
+  container.appendChild(div);
+};
+
 window.showCreateTherapyPlanModal = function(preselectedChildId = null) {
   const children = window.neuroDB.getChildren();
   const body = `
@@ -3395,18 +3465,39 @@ window.showCreateTherapyPlanModal = function(preselectedChildId = null) {
             <option value="2 Sessions / Week">2 Sessions / Week</option>
             <option value="1 Session / Week">1 Session / Week</option>
             <option value="3 Sessions / Week">3 Sessions / Week</option>
+            <option value="Daily Intensive">Daily Intensive</option>
           </select>
         </div>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Primary Goal 1</label>
-        <input type="text" id="tp-goal-1" class="form-control" placeholder="e.g. Joint Attention & Eye Gaze for 3+ seconds in 8/10 trials" required>
-      </div>
+      <!-- Dynamic Goals Section -->
+      <div style="margin-top: 10px; margin-bottom: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <label class="form-label" style="margin-bottom: 0; font-weight: 700; color: #1e293b;">Milestone Goals</label>
+          <span style="font-size: 11.5px; color: #64748b;">Add 2 or more clinical goals</span>
+        </div>
+        
+        <div id="tp-goals-container">
+          <div class="form-group tp-goal-item" style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label class="form-label" style="margin-bottom: 0; font-size: 12.5px;">Goal 1 <span class="required">*</span></label>
+            </div>
+            <input type="text" class="form-control tp-goal-input" placeholder="e.g. Joint Attention & Eye Gaze for 3+ seconds in 8/10 trials" required>
+          </div>
 
-      <div class="form-group">
-        <label class="form-label">Primary Goal 2</label>
-        <input type="text" id="tp-goal-2" class="form-control" placeholder="e.g. Expressive 2-word requesting approximations">
+          <div class="form-group tp-goal-item" style="margin-bottom: 12px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label class="form-label" style="margin-bottom: 0; font-size: 12.5px;">Goal 2</label>
+              <button type="button" class="btn btn-sm" onclick="this.closest('.tp-goal-item').remove()" style="padding: 2px 6px; font-size: 11px; color: #ef4444; background: none; border: none; cursor: pointer;">✕ Remove</button>
+            </div>
+            <input type="text" class="form-control tp-goal-input" placeholder="e.g. Expressive 2-word requesting approximations">
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-outline btn-sm" onclick="window.addTherapyPlanGoalField()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #2563eb; border-color: #bfdbfe; background: #eff6ff; margin-bottom: 8px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          + Add Another Goal
+        </button>
       </div>
     </form>
   `;
@@ -3423,14 +3514,30 @@ window.handleCreateTherapyPlanSubmit = function(e) {
   const title = document.getElementById('tp-title')?.value;
   const targetDate = document.getElementById('tp-target-date')?.value;
   const freq = document.getElementById('tp-freq')?.value;
-  const goal1 = document.getElementById('tp-goal-1')?.value;
-  const goal2 = document.getElementById('tp-goal-2')?.value;
 
-  const goals = [
-    { id: 'g_' + Date.now(), title: goal1, target: goal1, progress_pct: 20, status: 'In Progress' }
-  ];
-  if (goal2) {
-    goals.push({ id: 'g_' + (Date.now() + 1), title: goal2, target: goal2, progress_pct: 15, status: 'In Progress' });
+  const goalInputs = document.querySelectorAll('.tp-goal-input');
+  const goals = [];
+  goalInputs.forEach((input, idx) => {
+    const val = input.value?.trim();
+    if (val) {
+      goals.push({
+        id: 'g_' + Date.now() + '_' + idx,
+        title: val,
+        target: val,
+        progress_pct: idx === 0 ? 20 : (idx === 1 ? 15 : 10),
+        status: 'In Progress'
+      });
+    }
+  });
+
+  if (goals.length === 0) {
+    goals.push({
+      id: 'g_' + Date.now(),
+      title: 'Baseline Milestone Development',
+      target: 'Baseline Milestone Development',
+      progress_pct: 10,
+      status: 'In Progress'
+    });
   }
 
   const currentUser = window.neuroAuth.getCurrentUser();
@@ -3445,8 +3552,13 @@ window.handleCreateTherapyPlanSubmit = function(e) {
 
   window.closeActiveModal();
   window.showToast('Therapy plan formulated successfully.', 'success');
-  window.openChildProfileTab(childId, 'therapy-plan');
+  if (window.currentRoute === 'therapy-plans' || window.location.hash === '#therapy-plans') {
+    window.renderApp();
+  } else {
+    window.openChildProfileTab(childId, 'therapy-plan');
+  }
 };
+
 
 // System Settings Modal & Reset
 window.showSettingsModal = function() {
