@@ -15,16 +15,36 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       const token = localStorage.getItem('neuro_access_token');
+      const savedUserStr = localStorage.getItem('neuro_user');
+      
       if (token && !user) {
-        try {
-          const profile = await authApi.getProfile();
-          setUser(profile);
-          localStorage.setItem('neuro_user', JSON.stringify(profile));
-        } catch (err) {
-          localStorage.removeItem('neuro_access_token');
-          localStorage.removeItem('neuro_refresh_token');
-          localStorage.removeItem('neuro_user');
-          setUser(null);
+        if (token.startsWith('demo_access_') && savedUserStr) {
+          try {
+            setUser(JSON.parse(savedUserStr));
+          } catch (e) {}
+        } else {
+          try {
+            const profile = await authApi.getProfile();
+            setUser(profile);
+            localStorage.setItem('neuro_user', JSON.stringify(profile));
+          } catch (err) {
+            // If offline or Render backend waking up, keep local saved user if available
+            if (savedUserStr) {
+              try {
+                setUser(JSON.parse(savedUserStr));
+              } catch (e) {
+                localStorage.removeItem('neuro_access_token');
+                localStorage.removeItem('neuro_refresh_token');
+                localStorage.removeItem('neuro_user');
+                setUser(null);
+              }
+            } else {
+              localStorage.removeItem('neuro_access_token');
+              localStorage.removeItem('neuro_refresh_token');
+              localStorage.removeItem('neuro_user');
+              setUser(null);
+            }
+          }
         }
       }
       setLoading(false);
@@ -141,7 +161,7 @@ export const AuthProvider = ({ children }) => {
   const switchDemoRole = (role, demoUser) => {
     // Quick Demo Persona Switcher helper for evaluation
     const demoPayload = {
-      id: demoUser.id || 'usr_demo',
+      id: demoUser.id || `usr_${role.toLowerCase().replace(/[^a-z]/g, '')}_1`,
       full_name: demoUser.full_name,
       email: demoUser.email,
       role: role,
@@ -149,6 +169,8 @@ export const AuthProvider = ({ children }) => {
       avatar_url: demoUser.avatar_url,
       is_active: 1,
     };
+    localStorage.setItem('neuro_access_token', `demo_access_${demoPayload.id}`);
+    localStorage.setItem('neuro_refresh_token', `demo_refresh_${demoPayload.id}`);
     localStorage.setItem('neuro_user', JSON.stringify(demoPayload));
     setUser(demoPayload);
     navigate(getDashboardPath(role));

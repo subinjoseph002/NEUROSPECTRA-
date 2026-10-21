@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { DemoSwitcher } from './components/DemoSwitcher';
 import { LandingPage } from './pages/LandingPage';
@@ -15,8 +16,9 @@ import { TeacherDashboard } from './pages/TeacherDashboard';
 export const App = () => {
   return (
     <Router>
-      <AuthProvider>
-        <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      <ErrorBoundary>
+        <AuthProvider>
+          <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
           {/* Route Outlet */}
           <div className="flex-1 flex flex-col">
             <Routes>
@@ -81,6 +83,7 @@ export const App = () => {
           </div>
         </div>
       </AuthProvider>
+      </ErrorBoundary>
     </Router>
   );
 };
