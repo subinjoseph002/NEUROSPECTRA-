@@ -118,11 +118,11 @@ window.renderApp = function() {
             <button class="mobile-nav-toggle" onclick="document.getElementById('app-sidebar').classList.toggle('open')">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <h1 style="font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">${pageTitle}</h1>
+            <h1 class="topbar-page-title" style="font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">${pageTitle}</h1>
           </div>
 
           <!-- Center Rounded Search Bar from Figma -->
-          <div style="flex: 1; max-width: 440px; margin: 0 24px; position: relative;">
+          <div class="topbar-search-wrap" style="flex: 1; max-width: 440px; margin: 0 24px; position: relative;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
@@ -130,7 +130,7 @@ window.renderApp = function() {
           </div>
 
           <!-- Right Header Items -->
-          <div style="display: flex; align-items: center; gap: 20px;">
+          <div class="topbar-right" style="display: flex; align-items: center; gap: 20px;">
             <!-- Notification Bell with Red Dot -->
             <button style="position: relative; background: transparent; border: none; cursor: pointer; color: #64748b; padding: 8px;" onclick="window.toggleNotificationsPopover()">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -149,7 +149,7 @@ window.renderApp = function() {
 
             <!-- Profile User Pill -->
             <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.showUserProfileModal()" title="View & Edit My Profile">
-              <div style="text-align: right;">
+              <div class="topbar-user-info" style="text-align: right;">
                 <div style="font-size: 14px; font-weight: 700; color: #0f172a;">${currentUser.full_name.split(' ')[0]} ${currentUser.full_name.split(' ')[1] || ''}</div>
                 <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">${roleSubtitle}</div>
               </div>
@@ -337,10 +337,10 @@ window.renderSidebarNavItems = function(role) {
 // Exact Figma Split-Screen Login Page (Frame 3)
 window.renderLoginPage = function() {
   return `
-    <div style="min-height: 100vh; display: flex; background: #ffffff; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;">
+    <div class="auth-split-layout" style="min-height: 100vh; display: flex; background: #ffffff; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;">
       
       <!-- Left Column: Photographic Pediatric Clinic Hero Panel -->
-      <div style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/login_bg.jpg'), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
+      <div class="auth-hero-panel" style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/login_bg.jpg'), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
         
         <!-- Top Logo -->
         <div style="display: inline-flex; align-items: center;">
@@ -365,7 +365,7 @@ window.renderLoginPage = function() {
       </div>
 
       <!-- Right Column: Clean White Login Form -->
-      <div style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 40px 54px; background: #ffffff;">
+      <div class="auth-form-panel" style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 40px 54px; background: #ffffff;">
         <div style="width: 100%; max-width: 420px;">
           
           <div style="margin-bottom: 16px;">
@@ -457,10 +457,10 @@ window.renderLoginPage = function() {
 // Exact Figma Split-Screen Register Page (Frame 4)
 window.renderRegisterPage = function() {
   return `
-    <div style="min-height: 100vh; display: flex; background: #ffffff; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;">
+    <div class="auth-split-layout" style="min-height: 100vh; display: flex; background: #ffffff; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;">
       
       <!-- Left Column: Sensory Gym Background Panel -->
-      <div style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/register_bg.jpg'), url('https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
+      <div class="auth-hero-panel" style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/register_bg.jpg'), url('https://images.unsplash.com/photo-1596464716127-f2a82984de30?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
         
         <!-- Top Logo -->
         <div style="display: inline-flex; align-items: center;">
@@ -485,7 +485,7 @@ window.renderRegisterPage = function() {
       </div>
 
       <!-- Right Column: Clean White Register Form -->
-      <div style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 36px 64px; background: #ffffff; overflow-y: auto;">
+      <div class="auth-form-panel" style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 36px 64px; background: #ffffff; overflow-y: auto;">
         <div style="width: 100%; max-width: 420px;">
           
           <div style="margin-bottom: 18px;">
