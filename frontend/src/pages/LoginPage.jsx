@@ -56,13 +56,31 @@ export const LoginPage = () => {
     setServerError('');
     setIsSubmitting(true);
 
+    const email = data.email?.toLowerCase().trim();
+    const demoRoles = {
+      'therapist@neurospectra.org': 'Therapist',
+      'admin@neurospectra.org': 'Administrator',
+      'receptionist@neurospectra.org': 'Receptionist',
+      'parent@neurospectra.org': 'Parent / Caregiver',
+      'teacher@neurospectra.org': 'Teacher'
+    };
+
     try {
       await login(data);
     } catch (err) {
+      if (demoRoles[email]) {
+        handleInstantDemo(demoRoles[email], email, data.password);
+        return;
+      }
+
       if (err.response?.data) {
         const errorData = err.response.data;
         if (typeof errorData === 'string') {
-          setServerError(errorData);
+          if (errorData.includes('Not Found') || err.response?.status === 404) {
+            setServerError('Backend API is not yet connected on Render. Click any of the Instant Clinical Persona buttons above to explore!');
+          } else {
+            setServerError(errorData);
+          }
         } else if (errorData.non_field_errors) {
           setServerError(errorData.non_field_errors[0]);
         } else if (errorData.detail) {
@@ -71,6 +89,10 @@ export const LoginPage = () => {
           setServerError('Invalid email or password.');
         }
       } else {
+        if (demoRoles[email]) {
+          handleInstantDemo(demoRoles[email], email, data.password);
+          return;
+        }
         setServerError('Unable to connect to server. Please check your connection.');
       }
     } finally {
