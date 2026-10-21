@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Exit on error
+set -o errexit
+
+pip install --upgrade pip
+pip install -r backend/requirements.txt
+python backend/manage.py collectstatic --no-input
