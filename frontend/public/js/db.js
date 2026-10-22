@@ -4,6 +4,9 @@
  */
 
 const DB_STORAGE_KEY = 'NEUROSPECTRA_DB_V1';
+const API_BASE_URL = (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'))
+  ? ''
+  : 'https://neurospectra-backend-m2vl.onrender.com';
 
 const INITIAL_DB_DATA = {
   users: [
@@ -938,7 +941,7 @@ class NeurospectraDB {
 
     // Synchronize newly created user with PostgreSQL backend server
     try {
-      fetch('/api/auth/register/', {
+      fetch(`${API_BASE_URL}/api/auth/register/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -951,6 +954,8 @@ class NeurospectraDB {
           confirm_password: userData.password || 'parent123',
           agree_terms: true
         })
+      }).then(r => r.json()).then(res => {
+        console.log('[NEUROSPECTRA] User registered in Supabase:', res);
       }).catch(err => {
         console.warn('Backend sync notice:', err);
       });
@@ -967,7 +972,7 @@ class NeurospectraDB {
       this.saveData(data);
 
       try {
-        fetch('/api/auth/users/update/', {
+        fetch(`${API_BASE_URL}/api/auth/users/update/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data.users[idx])
@@ -987,7 +992,7 @@ class NeurospectraDB {
       this.saveData(data);
       // Synchronize deletion with PostgreSQL database
       try {
-        fetch('/api/auth/users/delete/', {
+        fetch(`${API_BASE_URL}/api/auth/users/delete/`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: id })
@@ -1443,7 +1448,7 @@ class NeurospectraDB {
   syncToBackend() {
     try {
       const data = this.getData();
-      fetch('/api/bulk-sync/', {
+      fetch(`${API_BASE_URL}/api/bulk-sync/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ users: data.users || [] })
@@ -1453,7 +1458,7 @@ class NeurospectraDB {
 
   async syncFromBackend() {
     try {
-      const res = await fetch('/api/auth/users/');
+      const res = await fetch(`${API_BASE_URL}/api/auth/users/`);
       if (res.ok) {
         const remoteUsers = await res.json();
         if (Array.isArray(remoteUsers) && remoteUsers.length > 0) {
