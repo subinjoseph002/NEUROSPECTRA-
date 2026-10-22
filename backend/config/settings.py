@@ -86,10 +86,11 @@ if os.environ.get('USE_SQLITE', 'False') == 'True':
         }
     }
 elif DATABASE_URL:
+    is_pooled = 'pooler.supabase.com' in DATABASE_URL or ':6543' in DATABASE_URL
     DATABASES = {
         'default': dj_database_url.config(
             default=DATABASE_URL,
-            conn_max_age=600,
+            conn_max_age=0 if is_pooled else 60,
             ssl_require=True
         )
     }

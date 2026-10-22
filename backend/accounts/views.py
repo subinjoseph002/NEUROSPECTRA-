@@ -21,11 +21,17 @@ class RegisterView(APIView):
     def post(self, request):
         serializer = RegisterSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-            return Response({
-                'message': 'Registration successful. Please login with your credentials.',
-                'user': UserSerializer(user).data
-            }, status=status.HTTP_201_CREATED)
+            try:
+                user = serializer.save()
+                return Response({
+                    'message': 'Registration successful. Please login with your credentials.',
+                    'user': UserSerializer(user).data
+                }, status=status.HTTP_201_CREATED)
+            except Exception as e:
+                return Response({
+                    'error': 'Database user creation failed',
+                    'detail': str(e)
+                }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ProfileView(APIView):
@@ -52,6 +58,12 @@ class UserListCreateView(generics.ListCreateAPIView):
         if role and role != 'All':
             return User.objects.filter(role=role)
         return User.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        try:
+            return super().list(request, *args, **kwargs)
+        except Exception as e:
+            return Response({'error': 'Failed to query users from database', 'detail': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated, IsAdminRole]
