@@ -949,6 +949,12 @@ window.renderForgotPasswordPage = function() {
 
 window.switchDemo = function(role) {
   try {
+    const isAuth = window.neuroAuth && window.neuroAuth.isAuthenticated();
+    const currentUser = isAuth ? window.neuroAuth.getCurrentUser() : null;
+    if (currentUser && currentUser.role === role) {
+      window.navigateTo('dashboard');
+      return;
+    }
     window.neuroAuth.switchDemoRole(role);
     window.navigateTo('dashboard');
     window.showToast(`Switched active persona to ${role}`, 'success');

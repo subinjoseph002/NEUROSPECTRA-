@@ -10,7 +10,19 @@ window.toggleLandingMobileMenu = function() {
   }
 };
 
+window.handleExplorePlatform = function() {
+  if (window.neuroAuth && window.neuroAuth.isAuthenticated()) {
+    window.navigateTo('dashboard');
+  } else {
+    window.navigateTo('login');
+  }
+};
+
 window.renderLandingPage = function() {
+  const isAuth = window.neuroAuth && window.neuroAuth.isAuthenticated();
+  const currentRole = isAuth ? window.neuroAuth.getRole() : '';
+  const currentUser = isAuth ? window.neuroAuth.getCurrentUser() : null;
+
   return `
     <div class="landing-page-exact">
       
@@ -31,12 +43,21 @@ window.renderLandingPage = function() {
 
         <!-- Desktop Auth Actions -->
         <div class="landing-nav-actions">
-          <button style="background: transparent; border: none; font-weight: 600; font-size: 14.5px; color: #0f172a; cursor: pointer; padding: 8px 12px;" onclick="window.navigateTo('login')">
-            Login
-          </button>
-          <button style="background: #2563eb; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); transition: all 0.2s;" onclick="window.navigateTo('register')" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
-            Register
-          </button>
+          ${isAuth ? `
+            <button style="background: #2563eb; color: #ffffff; font-weight: 600; font-size: 14px; padding: 9px 18px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); transition: all 0.2s;" onclick="window.navigateTo('dashboard')" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+              Dashboard (${currentRole})
+            </button>
+            <button style="background: transparent; border: none; font-weight: 600; font-size: 14px; color: #64748b; cursor: pointer; padding: 8px 12px;" onclick="window.handleLogout()">
+              Sign Out
+            </button>
+          ` : `
+            <button style="background: transparent; border: none; font-weight: 600; font-size: 14.5px; color: #0f172a; cursor: pointer; padding: 8px 12px;" onclick="window.navigateTo('login')">
+              Login
+            </button>
+            <button style="background: #2563eb; color: #ffffff; font-weight: 600; font-size: 14px; padding: 10px 22px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); transition: all 0.2s;" onclick="window.navigateTo('register')" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+              Register
+            </button>
+          `}
         </div>
 
         <!-- Mobile Hamburger Button -->
@@ -54,10 +75,17 @@ window.renderLandingPage = function() {
         <a href="#about" onclick="window.toggleLandingMobileMenu(); document.getElementById('specialists-section').scrollIntoView({behavior:'smooth'}); return false;">About</a>
         <a href="#contact" onclick="window.toggleLandingMobileMenu(); document.getElementById('contact-section').scrollIntoView({behavior:'smooth'}); return false;">Contact</a>
         <div class="landing-mobile-menu-divider"></div>
-        <div style="display: flex; gap: 10px; width: 100%; margin-top: 6px;">
-          <button style="flex: 1; padding: 11px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer;" onclick="window.toggleLandingMobileMenu(); window.navigateTo('login')">Login</button>
-          <button style="flex: 1; padding: 11px; background: #2563eb; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25);" onclick="window.toggleLandingMobileMenu(); window.navigateTo('register')">Register</button>
-        </div>
+        ${isAuth ? `
+          <div style="display: flex; gap: 10px; width: 100%; margin-top: 6px;">
+            <button style="flex: 1; padding: 11px; background: #2563eb; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25);" onclick="window.toggleLandingMobileMenu(); window.navigateTo('dashboard')">Dashboard (${currentRole})</button>
+            <button style="flex: 1; padding: 11px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700; font-size: 14px; color: #64748b; cursor: pointer;" onclick="window.toggleLandingMobileMenu(); window.handleLogout()">Sign Out</button>
+          </div>
+        ` : `
+          <div style="display: flex; gap: 10px; width: 100%; margin-top: 6px;">
+            <button style="flex: 1; padding: 11px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer;" onclick="window.toggleLandingMobileMenu(); window.navigateTo('login')">Login</button>
+            <button style="flex: 1; padding: 11px; background: #2563eb; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25);" onclick="window.toggleLandingMobileMenu(); window.navigateTo('register')">Register</button>
+          </div>
+        `}
       </div>
 
       <!-- Hero Section -->
@@ -82,7 +110,7 @@ window.renderLandingPage = function() {
 
             <!-- Buttons -->
             <div class="landing-hero-ctas">
-              <button class="landing-btn-primary" style="background: #2563eb; color: #ffffff; font-weight: 600; font-size: 15px; padding: 13px 28px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); transition: all 0.2s;" onclick="window.neuroAuth.switchDemoRole('Therapist'); window.navigateTo('dashboard');" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
+              <button class="landing-btn-primary" id="landing-explore-btn" style="background: #2563eb; color: #ffffff; font-weight: 600; font-size: 15px; padding: 13px 28px; border-radius: 8px; border: none; cursor: pointer; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3); transition: all 0.2s;" onclick="window.handleExplorePlatform();" onmouseover="this.style.background='#1d4ed8'" onmouseout="this.style.background='#2563eb'">
                 Explore Platform
               </button>
               <button class="landing-btn-secondary" style="background: #ffffff; color: #2563eb; font-weight: 600; font-size: 15px; padding: 13px 26px; border-radius: 8px; border: 1.5px solid #2563eb; cursor: pointer; transition: all 0.2s;" onclick="document.getElementById('features-section').scrollIntoView({behavior:'smooth'});" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='#ffffff'">

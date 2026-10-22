@@ -1,8 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Activity, Users, FileText, CheckCircle, ArrowRight, Heart } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 export const LandingPage = () => {
+  const { user, isAuthenticated, logout } = useAuth();
+  const exploreTarget = isAuthenticated ? '/dashboard' : '/login';
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans">
       {/* Top Navbar */}
@@ -27,19 +31,38 @@ export const LandingPage = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="px-4 py-2 text-sm font-bold text-slate-700 hover:text-blue-600 transition-colors"
-            >
-              Sign In
-            </Link>
-            <Link
-              to="/register"
-              className="px-5 py-2.5 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-600/30 transition-all flex items-center gap-1.5"
-            >
-              <span>Get Started</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            {isAuthenticated ? (
+              <>
+                <Link
+                  to="/dashboard"
+                  className="px-4 py-2 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow transition-colors"
+                >
+                  Dashboard ({user?.role || 'Portal'})
+                </Link>
+                <button
+                  onClick={logout}
+                  className="px-3 py-2 text-sm font-semibold text-slate-600 hover:text-red-600 transition-colors"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="px-4 py-2 text-sm font-bold text-slate-700 hover:text-blue-600 transition-colors"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  to="/register"
+                  className="px-5 py-2.5 text-sm font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg shadow-blue-600/30 transition-all flex items-center gap-1.5"
+                >
+                  <span>Get Started</span>
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>
@@ -64,7 +87,7 @@ export const LandingPage = () => {
 
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
-                to="/register"
+                to={exploreTarget}
                 className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-base font-bold rounded-xl shadow-xl shadow-blue-600/30 transition-all flex items-center gap-2"
               >
                 <span>Explore Platform</span>
