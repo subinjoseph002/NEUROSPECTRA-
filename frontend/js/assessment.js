@@ -137,57 +137,73 @@ window.renderAssessmentConductView = function(childId) {
 
       <!-- Questionnaire Interactive Form Card -->
       <div class="card" style="padding: 24px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid #f1f5f9; padding-bottom: 14px; flex-wrap: wrap; gap: 10px;">
           <div>
             <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 2px;">${selectedTemplate.title}</h2>
             <div style="font-size: 12.5px; color: #64748b;">
               Category: <strong>${selectedTemplate.category}</strong> • Scoring: <strong>${selectedTemplate.scoring_method === 'Rating_Scale_5' ? '1 to 5 Rating Scale' : 'Standard Screening Score'}</strong>
             </div>
           </div>
-          <span class="badge badge-info" id="answered-counter" style="font-size: 12px; padding: 6px 12px;">
-            ${Object.keys(window.currentAssessmentState.responses).length} of ${questions.length} Answered
+          <span class="badge ${Object.keys(window.currentAssessmentState.responses).length === questions.length ? 'badge-success' : 'badge-info'}" id="answered-counter" style="font-size: 12px; padding: 6px 12px; font-weight: 700;">
+            ${Object.keys(window.currentAssessmentState.responses).length} of ${questions.length} Answered (${Math.round((Object.keys(window.currentAssessmentState.responses).length / questions.length) * 100)}%)
           </span>
         </div>
 
-        <form id="assessment-form" onsubmit="window.submitAssessment(event)">
+        <!-- Live Assessment Progress Bar -->
+        <div style="width: 100%; height: 7px; background: #e2e8f0; border-radius: 9999px; margin-bottom: 22px; overflow: hidden;">
+          <div id="assessment-progress-bar" style="height: 100%; width: ${Math.round((Object.keys(window.currentAssessmentState.responses).length / questions.length) * 100)}%; background: ${Object.keys(window.currentAssessmentState.responses).length === questions.length ? '#16a34a' : '#2563eb'}; transition: width 0.3s ease, background 0.3s ease;"></div>
+        </div>
+
+        <form id="assessment-form" novalidate onsubmit="window.submitAssessment(event)">
           <div style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px;">
             ${questions.map((q, idx) => {
               const currentVal = window.currentAssessmentState.responses[q.id];
               const is5Point = q.type === 'rating_5' || (q.options && q.options.length > 2);
               const options = q.options || ['Never', 'Sometimes', 'Often', 'Always', 'Not Observed'];
+              const isAnswered = currentVal !== undefined && currentVal !== null && currentVal !== '';
 
               return `
-                <div id="q-card-${q.id}" style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
+                <div id="q-card-${q.id}" class="question-card" style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid ${isAnswered ? '#16a34a' : '#cbd5e1'}; border-radius: 12px; padding: 16px; transition: all 0.2s;">
                   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                     <span style="font-size: 11.5px; font-weight: 700; color: #4338ca; background: #e0e7ff; padding: 2px 8px; border-radius: 6px; text-transform: uppercase;">
                       Question ${idx + 1} • ${q.domain}
                     </span>
-                    ${q.reverse_scored ? '<span class="badge badge-warning" style="font-size: 10.5px;">Reverse Scored</span>' : ''}
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                      ${q.reverse_scored ? '<span class="badge badge-warning" style="font-size: 10.5px;">Reverse Scored</span>' : ''}
+                      <span id="q-status-badge-${q.id}" style="font-size: 11px; font-weight: 700; color: ${isAnswered ? '#16a34a' : '#94a3b8'};">
+                        ${isAnswered ? '✓ Answered' : '○ Not answered'}
+                      </span>
+                    </div>
                   </div>
 
-                  <p style="font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 12px;">${q.text}</p>
+                  <p style="font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 12px; line-height: 1.45;">${q.text}</p>
 
                   ${is5Point ? `
                     <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                       ${options.map(opt => `
-                        <label style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid ${currentVal === opt ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 6px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: ${currentVal === opt ? '#2563eb' : '#334155'}; transition: all 0.2s;">
-                          <input type="radio" name="response_${q.id}" value="${opt}" ${currentVal === opt ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', '${opt}')" required style="cursor: pointer;">
+                        <label id="opt-label-${q.id}-${opt.replace(/\s+/g, '_')}" style="display: inline-flex; align-items: center; gap: 6px; background: ${currentVal === opt ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === opt ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: ${currentVal === opt ? '#1d4ed8' : '#334155'}; transition: all 0.15s;">
+                          <input type="radio" name="response_${q.id}" value="${opt}" ${currentVal === opt ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', '${opt}')" style="cursor: pointer;">
                           ${opt}
                         </label>
                       `).join('')}
                     </div>
                   ` : `
                     <div style="display: flex; gap: 12px;">
-                      <label style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid ${currentVal === 'yes' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: #334155;">
-                        <input type="radio" name="response_${q.id}" value="yes" ${currentVal === 'yes' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'yes')" required>
+                      <label id="opt-label-${q.id}-yes" style="display: inline-flex; align-items: center; gap: 6px; background: ${currentVal === 'yes' ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === 'yes' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 7px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: ${currentVal === 'yes' ? '#1d4ed8' : '#334155'}; transition: all 0.15s;">
+                        <input type="radio" name="response_${q.id}" value="yes" ${currentVal === 'yes' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'yes')" style="cursor: pointer;">
                         Yes
                       </label>
-                      <label style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid ${currentVal === 'no' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 6px 16px; font-size: 13px; font-weight: 600; cursor: pointer; color: #334155;">
-                        <input type="radio" name="response_${q.id}" value="no" ${currentVal === 'no' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'no')" required>
+                      <label id="opt-label-${q.id}-no" style="display: inline-flex; align-items: center; gap: 6px; background: ${currentVal === 'no' ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === 'no' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 7px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: ${currentVal === 'no' ? '#1d4ed8' : '#334155'}; transition: all 0.15s;">
+                        <input type="radio" name="response_${q.id}" value="no" ${currentVal === 'no' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'no')" style="cursor: pointer;">
                         No
                       </label>
                     </div>
                   `}
+
+                  <!-- Validation Error Container for this question -->
+                  <div id="q-error-${q.id}" style="display: none; color: #dc2626; font-size: 12px; font-weight: 700; margin-top: 10px; padding: 6px 10px; background: #fef2f2; border: 1px solid #fecaca; border-radius: 6px;">
+                    ⚠️ Please select an answer for Question ${idx + 1}.
+                  </div>
                 </div>
               `;
             }).join('')}
@@ -195,18 +211,27 @@ window.renderAssessmentConductView = function(childId) {
 
           <!-- Therapist Clinical Observations Synthesis -->
           <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 18px; margin-bottom: 20px;">
-            <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">
-              Therapist Notes & Observations *
-            </label>
-            <textarea id="therapist-obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px;" placeholder="Write notes on how the child engaged, what went well, and areas needing support..." required>${window.currentAssessmentState.therapistNotes || ''}</textarea>
-            <p style="font-size: 12px; color: #64748b; margin: 6px 0 0;">Note attention, comfort levels, communication, and how well this matches teacher notes.</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase;">
+                Therapist Clinical Notes & Observations <span style="color: #ef4444;">*</span>
+              </label>
+              <span id="notes-char-counter" style="font-size: 11.5px; font-weight: 600; color: #64748b;">
+                ${(window.currentAssessmentState.therapistNotes || '').trim().length} / 10 min chars
+              </span>
+            </div>
+            <textarea id="therapist-obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 13.5px; transition: border 0.2s;" placeholder="Write clinical notes on how the child engaged, eye contact, sensory responses, and recommendations..." oninput="window.validateTherapistNotes(this)">${window.currentAssessmentState.therapistNotes || ''}</textarea>
+            
+            <div id="therapist-notes-error" style="display: none; color: #dc2626; font-size: 12px; font-weight: 700; margin-top: 6px;">
+              ⚠️ Clinical observation notes are required (minimum 10 characters).
+            </div>
+            <p style="font-size: 12px; color: #64748b; margin: 6px 0 0;">Note attention, comfort levels, communication, and how well this matches teacher observations.</p>
           </div>
 
           <!-- Action Buttons -->
           <div style="display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding-top: 18px; flex-wrap: wrap;">
             <button type="button" class="btn btn-outline" onclick="window.navigateTo('assessments')">Cancel</button>
             <button type="button" class="btn btn-secondary" onclick="window.fillDemoAssessmentAnswers()">Fill Demo Answers</button>
-            <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 10px 20px;">Save Assessment</button>
+            <button type="submit" class="btn btn-primary" style="font-weight: 600; padding: 10px 24px;">Save Assessment</button>
           </div>
         </form>
       </div>
@@ -215,12 +240,60 @@ window.renderAssessmentConductView = function(childId) {
   `;
 };
 
+window.validateTherapistNotes = function(el) {
+  if (!el) return;
+  const val = el.value.trim();
+  window.currentAssessmentState.therapistNotes = el.value;
+  
+  const counter = document.getElementById('notes-char-counter');
+  if (counter) {
+    counter.innerText = `${val.length} / 10 min chars`;
+    counter.style.color = val.length >= 10 ? '#16a34a' : '#64748b';
+  }
+
+  const err = document.getElementById('therapist-notes-error');
+  if (val.length >= 10) {
+    el.style.border = '1px solid #cbd5e1';
+    el.style.background = '#ffffff';
+    if (err) err.style.display = 'none';
+  }
+};
+
 window.selectAnswer = function(questionId, value) {
   window.currentAssessmentState.responses[questionId] = value;
+  
+  // Clear error highlight on this question card
+  const card = document.getElementById(`q-card-${questionId}`);
+  if (card) {
+    card.style.border = '1px solid #e2e8f0';
+    card.style.borderLeft = '4px solid #16a34a';
+    card.style.background = '#f8fafc';
+  }
+  const err = document.getElementById(`q-error-${questionId}`);
+  if (err) err.style.display = 'none';
+
+  const badge = document.getElementById(`q-status-badge-${questionId}`);
+  if (badge) {
+    badge.innerText = '✓ Answered';
+    badge.style.color = '#16a34a';
+  }
+
+  // Update counter & progress bar
+  const questions = window.neuroDB.getQuestionsByTemplateId(window.currentAssessmentState.templateId);
+  const totalCount = questions.length;
+  const answeredCount = Object.keys(window.currentAssessmentState.responses).length;
+  const pct = Math.round((answeredCount / totalCount) * 100);
+
   const counter = document.getElementById('answered-counter');
   if (counter) {
-    const questions = window.neuroDB.getQuestionsByTemplateId(window.currentAssessmentState.templateId);
-    counter.innerText = `${Object.keys(window.currentAssessmentState.responses).length} of ${questions.length} Answered`;
+    counter.innerText = `${answeredCount} of ${totalCount} Answered (${pct}%)`;
+    counter.className = answeredCount === totalCount ? 'badge badge-success' : 'badge badge-info';
+  }
+
+  const bar = document.getElementById('assessment-progress-bar');
+  if (bar) {
+    bar.style.width = `${pct}%`;
+    bar.style.background = answeredCount === totalCount ? '#16a34a' : '#2563eb';
   }
 };
 
@@ -247,15 +320,83 @@ window.fillDemoAssessmentAnswers = function() {
 
 window.submitAssessment = function(e) {
   if (e) e.preventDefault();
-  const obsNotes = document.getElementById('therapist-obs-notes')?.value || '';
+  
+  // 1. Validate Child Selection
+  const childId = window.currentAssessmentState.childId;
+  if (!childId) {
+    window.showToast('Validation Error: Please select a child for this assessment.', 'error');
+    return;
+  }
+
   const questions = window.neuroDB.getQuestionsByTemplateId(window.currentAssessmentState.templateId);
 
-  // Validate all answered
+  // 2. Validate Every Question Answered
   const unanswered = questions.filter(q => !window.currentAssessmentState.responses[q.id]);
+  
+  // Update visual state for all questions
+  questions.forEach(q => {
+    const card = document.getElementById(`q-card-${q.id}`);
+    const err = document.getElementById(`q-error-${q.id}`);
+    const isUnanswered = unanswered.includes(q);
+    
+    if (isUnanswered) {
+      if (card) {
+        card.style.border = '2px solid #ef4444';
+        card.style.borderLeft = '4px solid #ef4444';
+        card.style.background = '#fef2f2';
+      }
+      if (err) err.style.display = 'block';
+    } else {
+      if (card) {
+        card.style.border = '1px solid #e2e8f0';
+        card.style.borderLeft = '4px solid #16a34a';
+        card.style.background = '#f8fafc';
+      }
+      if (err) err.style.display = 'none';
+    }
+  });
+
   if (unanswered.length > 0) {
-    window.showToast(`Please answer all questions before submitting (${unanswered.length} remaining).`, 'warning');
+    window.showToast(`Validation Failed: Please answer all ${questions.length} questions before saving (${unanswered.length} unanswered).`, 'error');
     const firstUnanswered = document.getElementById(`q-card-${unanswered[0].id}`);
-    if (firstUnanswered) firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (firstUnanswered) {
+      firstUnanswered.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
+
+  // 3. Validate Therapist Observation Notes
+  const notesInput = document.getElementById('therapist-obs-notes');
+  const obsNotes = notesInput ? notesInput.value.trim() : '';
+  const notesError = document.getElementById('therapist-notes-error');
+
+  if (obsNotes.length < 10) {
+    if (notesInput) {
+      notesInput.style.border = '2px solid #ef4444';
+      notesInput.style.background = '#fef2f2';
+      notesInput.focus();
+    }
+    if (notesError) {
+      notesError.style.display = 'block';
+      notesError.innerText = obsNotes.length === 0 
+        ? '⚠️ Clinical observation notes are required. Please describe your observations.' 
+        : `⚠️ Clinical notes are too brief (${obsNotes.length}/10 chars minimum). Please provide more detail.`;
+    }
+    window.showToast('Validation Error: Please enter clinical observation notes (minimum 10 characters).', 'warning');
+    return;
+  } else {
+    if (notesInput) {
+      notesInput.style.border = '1px solid #cbd5e1';
+      notesInput.style.background = '#ffffff';
+    }
+    if (notesError) notesError.style.display = 'none';
+  }
+
+  // 4. Validate Role Authorization
+  const currentUser = window.neuroAuth.getCurrentUser();
+  const role = window.neuroAuth.getRole();
+  if (role !== 'Therapist') {
+    window.showToast('Unauthorized: Only certified Clinical Therapists are permitted to conduct and save screening assessments.', 'error');
     return;
   }
 
@@ -304,13 +445,6 @@ window.submitAssessment = function(e) {
       riskLevel = 'Moderate Risk Indicator';
       riskColor = 'amber';
     }
-  }
-
-  const currentUser = window.neuroAuth.getCurrentUser();
-  const role = window.neuroAuth.getRole();
-  if (role !== 'Therapist') {
-    window.showToast('Unauthorized: Only certified Clinical Therapists are permitted to conduct and save screening assessments.', 'error');
-    return;
   }
   const newRecord = window.neuroDB.saveAssessmentRecord({
     child_id: window.currentAssessmentState.childId,

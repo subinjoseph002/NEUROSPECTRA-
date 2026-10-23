@@ -315,28 +315,33 @@ class TeacherModule {
       <div class="observation-form-view" style="color: #0f172a; font-family: 'Plus Jakarta Sans', sans-serif;">
         
         <!-- Header -->
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
           <div>
             <h1 style="font-size: 24px; font-weight: 800; color: #0f172a; margin-bottom: 4px;">
               Log Classroom Observation
             </h1>
             <p style="font-size: 13.5px; color: #64748b; margin: 0;">
-              Record everyday behaviors and activities observed in class.
+              Record everyday behaviors and developmental activities observed in class.
             </p>
           </div>
-          <button class="btn btn-outline btn-sm" onclick="window.navigateTo('observations')">
-            &larr; Back to Observations
-          </button>
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <button type="button" class="btn btn-outline btn-sm" onclick="window.teacherModule.fillDemoObservation()" style="display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: #4338ca; border-color: #c7d2fe; background: #eef2ff;">
+              <span>⚡</span> Demo Quick-Fill
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="window.navigateTo('observations')">
+              &larr; Back to Observations
+            </button>
+          </div>
         </div>
 
         <!-- Non-Clinical Banner -->
         <div style="background: #fffbeb; border: 1px solid #fef3c7; border-left: 4px solid #f59e0b; border-radius: 12px; padding: 12px 16px; margin-bottom: 20px; font-size: 12.5px; color: #92400e;">
-          <strong>Helpful Tip:</strong> Record natural interactions observed during playtime, circle time, or group activities.
+          <strong>Classroom Observation Requirement:</strong> All 5 developmental domains must be explicitly rated, and a narrative summary (minimum 10 characters) is required to ensure therapists have comprehensive classroom context.
         </div>
 
         <!-- Form Card -->
         <div class="card" style="padding: 28px; border-radius: 16px; border: 1px solid #e2e8f0; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.03);">
-          <form id="observation-create-form" onsubmit="window.teacherModule.handleSubmitObservation(event)">
+          <form id="observation-create-form" onsubmit="window.teacherModule.handleSubmitObservation(event)" novalidate>
             
             <!-- Section 1: Child & Context Metadata -->
             <div style="margin-bottom: 24px; border-bottom: 1px solid #f1f5f9; padding-bottom: 20px;">
@@ -345,18 +350,21 @@ class TeacherModule {
               <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 16px;">
                 <div>
                   <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Select Student *</label>
-                  <select id="obs-child-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" required>
+                  <select id="obs-child-id" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" onchange="window.teacherModule.validateChildSelection()">
+                    <option value="">-- Choose a Student --</option>
                     ${children.map(c => `<option value="${c.id}" ${c.id === preselectedChildId ? 'selected' : ''}>${c.first_name} ${c.last_name} (${c.child_code})</option>`).join('')}
                   </select>
+                  <div id="obs-child-error" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600; margin-top: 4px;">⚠️ Please select a student for this observation.</div>
                 </div>
 
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Date *</label>
-                  <input type="date" id="obs-date" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" value="${today}" required>
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Observation Date *</label>
+                  <input type="date" id="obs-date" class="form-control" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" value="${today}" max="${today}" onchange="window.teacherModule.validateDate()">
+                  <div id="obs-date-error" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600; margin-top: 4px;">⚠️ Observation date cannot be empty or in the future.</div>
                 </div>
 
                 <div>
-                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Activity</label>
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Activity Context</label>
                   <select id="obs-activity" class="form-select" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;">
                     <option value="Free Play">Free Play / Recess</option>
                     <option value="Group Circle Time" selected>Group Circle Time</option>
@@ -391,7 +399,22 @@ class TeacherModule {
 
             <!-- Section 2: 5 Developmental Domains Evaluation -->
             <div style="margin-bottom: 24px;">
-              <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin-bottom: 14px;">2. Behavior & Development Check</h3>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div>
+                  <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; margin: 0 0 2px 0;">2. Behavior & Development Check *</h3>
+                  <div style="font-size: 12px; color: #64748b;">Rate student behaviors across all 5 developmental domains. All domains are mandatory.</div>
+                </div>
+                <div>
+                  <span id="teacher-domain-counter" style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 9999px; background: #fffbeb; color: #d97706; border: 1px solid #fef3c7;">
+                    0 of 5 Domains Rated (0%)
+                  </span>
+                </div>
+              </div>
+
+              <!-- Domain Progress Bar -->
+              <div style="width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; overflow: hidden; margin-bottom: 16px;">
+                <div id="teacher-domain-progress-bar" style="width: 0%; height: 100%; background: #2563eb; transition: width 0.3s ease, background-color 0.3s ease;"></div>
+              </div>
               
               <div style="display: flex; flex-direction: column; gap: 16px;">
                 ${this.renderDomainInput('social', '1. Playing & Interacting with Others', 'Plays with peers, takes turns, responds when called, and shares toys.')}
@@ -419,8 +442,14 @@ class TeacherModule {
               </div>
 
               <div>
-                <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Teacher Notes & Summary *</label>
-                <textarea id="obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px;" placeholder="Write a brief note about the student's day, interactions, and focus..." required></textarea>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                  <label style="display: block; font-size: 12px; font-weight: 700; color: #475569; text-transform: uppercase; margin: 0;">Teacher Notes & Summary *</label>
+                  <span id="teacher-notes-counter" style="font-size: 11.5px; font-weight: 600; color: #94a3b8;">0 / 10 min chars</span>
+                </div>
+                <textarea id="obs-notes" class="form-control" rows="3" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px; font-size: 14px; transition: border 0.2s;" placeholder="Write a brief note about the student's day, interactions, and focus (minimum 10 characters)..." oninput="window.teacherModule.handleNotesInput()"></textarea>
+                <div id="obs-notes-error" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600; margin-top: 4px;">
+                  ⚠️ Narrative notes are required (minimum 10 characters).
+                </div>
               </div>
             </div>
 
@@ -439,35 +468,275 @@ class TeacherModule {
 
   renderDomainInput(key, title, description) {
     return `
-      <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px;">
-        <div style="margin-bottom: 10px;">
-          <div style="font-weight: 700; font-size: 14px; color: #0f172a;">${title}</div>
-          <div style="font-size: 12px; color: #64748b;">${description}</div>
+      <div id="domain-card-${key}" style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #cbd5e1; border-radius: 12px; padding: 16px; transition: all 0.2s;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+          <div>
+            <div style="font-weight: 700; font-size: 14px; color: #0f172a;">${title}</div>
+            <div style="font-size: 12px; color: #64748b;">${description}</div>
+          </div>
+          <span id="domain-status-${key}" class="badge" style="display: none; font-size: 11px; font-weight: 700; background: #ecfdf5; color: #16a34a; border: 1px solid #bbf7d0; padding: 2px 8px; border-radius: 9999px;">
+            ✓ Rated
+          </span>
         </div>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap;">
           ${this.ratingOptions.map(opt => `
-            <label style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; color: #334155;">
-              <input type="radio" name="domain_${key}" value="${opt}" ${opt === 'Sometimes' ? 'checked' : ''} style="cursor: pointer;">
+            <label style="display: inline-flex; align-items: center; gap: 6px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 6px 12px; font-size: 13px; font-weight: 600; cursor: pointer; color: #334155; transition: all 0.15s;">
+              <input type="radio" name="domain_${key}" value="${opt}" onchange="window.teacherModule.handleDomainChange('${key}', '${opt}')" style="cursor: pointer;">
               ${opt}
             </label>
           `).join('')}
+        </div>
+        <div id="domain-error-${key}" style="display: none; color: #dc2626; font-size: 12px; font-weight: 600; margin-top: 8px;">
+          ⚠️ Evaluation required: Please select an observation rating for this domain.
         </div>
       </div>
     `;
   }
 
+  handleDomainChange(key, value) {
+    const card = document.getElementById(`domain-card-${key}`);
+    const err = document.getElementById(`domain-error-${key}`);
+    const badge = document.getElementById(`domain-status-${key}`);
+    if (card) {
+      card.style.border = '1px solid #bbf7d0';
+      card.style.borderLeft = '4px solid #16a34a';
+      card.style.background = '#f0fdf4';
+    }
+    if (err) err.style.display = 'none';
+    if (badge) badge.style.display = 'inline-flex';
+
+    this.updateDomainProgress();
+  }
+
+  updateDomainProgress() {
+    const domainKeys = ['social', 'communication', 'behavioural', 'sensory', 'learning'];
+    let ratedCount = 0;
+    domainKeys.forEach(k => {
+      if (document.querySelector(`input[name="domain_${k}"]:checked`)) {
+        ratedCount++;
+      }
+    });
+
+    const pct = Math.round((ratedCount / domainKeys.length) * 100);
+    const counter = document.getElementById('teacher-domain-counter');
+    const bar = document.getElementById('teacher-domain-progress-bar');
+    if (counter) {
+      counter.innerText = `${ratedCount} of ${domainKeys.length} Domains Rated (${pct}%)`;
+      if (ratedCount === domainKeys.length) {
+        counter.style.background = '#ecfdf5';
+        counter.style.color = '#16a34a';
+        counter.style.borderColor = '#bbf7d0';
+      } else {
+        counter.style.background = '#fffbeb';
+        counter.style.color = '#d97706';
+        counter.style.borderColor = '#fef3c7';
+      }
+    }
+    if (bar) {
+      bar.style.width = `${pct}%`;
+      bar.style.background = ratedCount === domainKeys.length ? '#16a34a' : '#2563eb';
+    }
+  }
+
+  handleNotesInput() {
+    const notesInput = document.getElementById('obs-notes');
+    const counter = document.getElementById('teacher-notes-counter');
+    const err = document.getElementById('obs-notes-error');
+    if (!notesInput) return;
+    const len = notesInput.value.trim().length;
+
+    if (counter) {
+      counter.innerText = `${len} / 10 min chars`;
+      counter.style.color = len >= 10 ? '#16a34a' : '#94a3b8';
+    }
+
+    if (len >= 10) {
+      notesInput.style.border = '1px solid #10b981';
+      notesInput.style.background = '#ffffff';
+      if (err) err.style.display = 'none';
+    }
+  }
+
+  validateChildSelection() {
+    const childSelect = document.getElementById('obs-child-id');
+    const childError = document.getElementById('obs-child-error');
+    if (!childSelect) return true;
+    if (!childSelect.value) {
+      childSelect.style.border = '2px solid #ef4444';
+      childSelect.style.background = '#fef2f2';
+      if (childError) childError.style.display = 'block';
+      return false;
+    } else {
+      childSelect.style.border = '1px solid #cbd5e1';
+      childSelect.style.background = '#ffffff';
+      if (childError) childError.style.display = 'none';
+      return true;
+    }
+  }
+
+  validateDate() {
+    const dateInput = document.getElementById('obs-date');
+    const dateError = document.getElementById('obs-date-error');
+    if (!dateInput) return true;
+    const val = dateInput.value;
+    const today = new Date().toISOString().split('T')[0];
+    if (!val || val > today) {
+      dateInput.style.border = '2px solid #ef4444';
+      dateInput.style.background = '#fef2f2';
+      if (dateError) {
+        dateError.style.display = 'block';
+        dateError.innerText = !val ? '⚠️ Please specify an observation date.' : '⚠️ Observation date cannot be in the future.';
+      }
+      return false;
+    } else {
+      dateInput.style.border = '1px solid #cbd5e1';
+      dateInput.style.background = '#ffffff';
+      if (dateError) dateError.style.display = 'none';
+      return true;
+    }
+  }
+
+  fillDemoObservation() {
+    const childSelect = document.getElementById('obs-child-id');
+    if (childSelect && !childSelect.value && childSelect.options.length > 1) {
+      childSelect.selectedIndex = 1;
+      this.validateChildSelection();
+    }
+
+    const domainKeys = ['social', 'communication', 'behavioural', 'sensory', 'learning'];
+    const demoRatings = {
+      social: 'Sometimes',
+      communication: 'Often',
+      behavioural: 'Sometimes',
+      sensory: 'Often',
+      learning: 'Always'
+    };
+
+    domainKeys.forEach(k => {
+      const radio = document.querySelector(`input[name="domain_${k}"][value="${demoRatings[k]}"]`);
+      if (radio) {
+        radio.checked = true;
+        this.handleDomainChange(k, demoRatings[k]);
+      }
+    });
+
+    const notes = document.getElementById('obs-notes');
+    if (notes) {
+      notes.value = 'Demonstrated positive participation during group circle time and responded well to visual routine cards with peers.';
+      this.handleNotesInput();
+    }
+
+    const pos = document.getElementById('obs-positive-triggers');
+    if (pos && !pos.value) pos.value = 'Visual transition schedule cards and peer praise.';
+
+    const chal = document.getElementById('obs-challenging-triggers');
+    if (chal && !chal.value) chal.value = 'Unexpected loud cafeteria transition noise.';
+
+    if (window.showToast) {
+      window.showToast('Sample classroom observation filled for demonstration.', 'info');
+    }
+  }
+
   handleSubmitObservation(event) {
-    event.preventDefault();
+    if (event) event.preventDefault();
+
+    // 1. Role Authorization Check
+    const role = window.neuroAuth ? window.neuroAuth.getRole() : '';
+    if (role !== 'Teacher') {
+      if (window.showToast) window.showToast('Unauthorized: Only certified Teachers & Educators can submit classroom observations.', 'error');
+      return;
+    }
+
+    // 2. Validate Student Selection
+    const childSelect = document.getElementById('obs-child-id');
+    const childId = childSelect ? childSelect.value : '';
+    if (!childId) {
+      this.validateChildSelection();
+      childSelect?.focus();
+      if (window.showToast) window.showToast('Validation Error: Please select a student before saving.', 'error');
+      return;
+    }
+
+    // 3. Validate Date (Cannot be empty or future date)
+    if (!this.validateDate()) {
+      document.getElementById('obs-date')?.focus();
+      if (window.showToast) window.showToast('Validation Error: Observation date cannot be empty or in the future.', 'error');
+      return;
+    }
+
+    // 4. Validate All 5 Developmental Domains (Strict Questionnaire Validation)
+    const domainKeys = ['social', 'communication', 'behavioural', 'sensory', 'learning'];
+    const missingDomains = [];
+
+    domainKeys.forEach(k => {
+      const checked = document.querySelector(`input[name="domain_${k}"]:checked`);
+      const card = document.getElementById(`domain-card-${k}`);
+      const err = document.getElementById(`domain-error-${k}`);
+      if (!checked) {
+        missingDomains.push(k);
+        if (card) {
+          card.style.border = '2px solid #ef4444';
+          card.style.borderLeft = '4px solid #ef4444';
+          card.style.background = '#fef2f2';
+        }
+        if (err) err.style.display = 'block';
+      } else {
+        if (card) {
+          card.style.border = '1px solid #bbf7d0';
+          card.style.borderLeft = '4px solid #16a34a';
+          card.style.background = '#f0fdf4';
+        }
+        if (err) err.style.display = 'none';
+      }
+    });
+
+    if (missingDomains.length > 0) {
+      if (window.showToast) {
+        window.showToast(`Validation Failed: Please evaluate all 5 developmental domains (${missingDomains.length} unrated).`, 'error');
+      }
+      const firstMissing = document.getElementById(`domain-card-${missingDomains[0]}`);
+      if (firstMissing) {
+        firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+      return;
+    }
+
+    // 5. Validate Educator Narrative Notes (Minimum 10 Characters)
+    const notesInput = document.getElementById('obs-notes');
+    const educatorNotes = notesInput ? notesInput.value.trim() : '';
+    const notesError = document.getElementById('obs-notes-error');
+
+    if (educatorNotes.length < 10) {
+      if (notesInput) {
+        notesInput.style.border = '2px solid #ef4444';
+        notesInput.style.background = '#fef2f2';
+        notesInput.focus();
+      }
+      if (notesError) {
+        notesError.style.display = 'block';
+        notesError.innerText = educatorNotes.length === 0
+          ? '⚠️ Teacher narrative notes are required. Please describe the student\'s day.'
+          : `⚠️ Notes are too brief (${educatorNotes.length}/10 chars minimum). Please provide more detail.`;
+      }
+      if (window.showToast) window.showToast('Validation Error: Teacher notes must be at least 10 characters long.', 'warning');
+      return;
+    } else {
+      if (notesInput) {
+        notesInput.style.border = '1px solid #cbd5e1';
+        notesInput.style.background = '#ffffff';
+      }
+      if (notesError) notesError.style.display = 'none';
+    }
+
+    // 6. Collect Data and Save
     const teacher = this.getCurrentTeacher();
-    const childId = document.getElementById('obs-child-id').value;
     const observationDate = document.getElementById('obs-date').value;
     const activityType = document.getElementById('obs-activity').value;
     const noiseLevel = document.getElementById('obs-noise').value;
     const peerSetting = document.getElementById('obs-peers').value;
-    const positiveTriggers = document.getElementById('obs-positive-triggers').value;
-    const challengingTriggers = document.getElementById('obs-challenging-triggers').value;
-    const educatorNotes = document.getElementById('obs-notes').value;
+    const positiveTriggers = document.getElementById('obs-positive-triggers')?.value || '';
+    const challengingTriggers = document.getElementById('obs-challenging-triggers')?.value || '';
 
     const getDomainVal = key => {
       const checked = document.querySelector(`input[name="domain_${key}"]:checked`);
