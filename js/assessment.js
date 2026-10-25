@@ -179,23 +179,23 @@ window.renderAssessmentConductView = function(childId) {
                   <p style="font-size: 14px; font-weight: 600; color: #0f172a; margin-bottom: 12px; line-height: 1.45;">${q.text}</p>
 
                   ${is5Point ? `
-                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
                       ${options.map(opt => `
-                        <label id="opt-label-${q.id}-${opt.replace(/\s+/g, '_')}" style="display: inline-flex; align-items: center; gap: 6px; background: ${currentVal === opt ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === opt ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 7px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: ${currentVal === opt ? '#1d4ed8' : '#334155'}; transition: all 0.15s;">
+                        <label id="opt-label-${q.id}-${opt.replace(/\s+/g, '_')}" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; background: ${currentVal === opt ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === opt ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; color: ${currentVal === opt ? '#1d4ed8' : '#334155'}; transition: all 0.15s; box-sizing: border-box;">
                           <input type="radio" name="response_${q.id}" value="${opt}" ${currentVal === opt ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', '${opt}')" style="cursor: pointer;">
-                          ${opt}
+                          <span>${opt}</span>
                         </label>
                       `).join('')}
                     </div>
                   ` : `
-                    <div style="display: flex; gap: 12px;">
-                      <label id="opt-label-${q.id}-yes" style="display: inline-flex; align-items: center; gap: 6px; background: ${currentVal === 'yes' ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === 'yes' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 7px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: ${currentVal === 'yes' ? '#1d4ed8' : '#334155'}; transition: all 0.15s;">
+                    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                      <label id="opt-label-${q.id}-yes" style="flex: 1 1 calc(50% - 6px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; background: ${currentVal === 'yes' ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === 'yes' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 8px 18px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: ${currentVal === 'yes' ? '#1d4ed8' : '#334155'}; transition: all 0.15s; box-sizing: border-box;">
                         <input type="radio" name="response_${q.id}" value="yes" ${currentVal === 'yes' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'yes')" style="cursor: pointer;">
-                        Yes
+                        <span>Yes</span>
                       </label>
-                      <label id="opt-label-${q.id}-no" style="display: inline-flex; align-items: center; gap: 6px; background: ${currentVal === 'no' ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === 'no' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 7px 20px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: ${currentVal === 'no' ? '#1d4ed8' : '#334155'}; transition: all 0.15s;">
+                      <label id="opt-label-${q.id}-no" style="flex: 1 1 calc(50% - 6px); display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; background: ${currentVal === 'no' ? '#eff6ff' : '#ffffff'}; border: 1.5px solid ${currentVal === 'no' ? '#2563eb' : '#cbd5e1'}; border-radius: 8px; padding: 8px 18px; font-size: 13.5px; font-weight: 600; cursor: pointer; color: ${currentVal === 'no' ? '#1d4ed8' : '#334155'}; transition: all 0.15s; box-sizing: border-box;">
                         <input type="radio" name="response_${q.id}" value="no" ${currentVal === 'no' ? 'checked' : ''} onchange="window.selectAnswer('${q.id}', 'no')" style="cursor: pointer;">
-                        No
+                        <span>No</span>
                       </label>
                     </div>
                   `}

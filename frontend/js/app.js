@@ -45,8 +45,35 @@ window.renderBrandLogo = function(theme = 'dark', size = 'normal', showTagline =
   `;
 };
 
+// Mobile Sidebar Drawer Handlers
+window.toggleMobileSidebar = function() {
+  const sidebar = document.getElementById('app-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (sidebar) {
+    const isOpen = sidebar.classList.toggle('open');
+    if (backdrop) {
+      if (isOpen) {
+        backdrop.classList.add('active');
+        document.body.classList.add('sidebar-open');
+      } else {
+        backdrop.classList.remove('active');
+        document.body.classList.remove('sidebar-open');
+      }
+    }
+  }
+};
+
+window.closeMobileSidebar = function() {
+  const sidebar = document.getElementById('app-sidebar');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (sidebar) sidebar.classList.remove('open');
+  if (backdrop) backdrop.classList.remove('active');
+  document.body.classList.remove('sidebar-open');
+};
+
 // Navigation entry point
 window.navigateTo = function(route, params = {}) {
+  window.closeMobileSidebar();
   // If attempting to access protected routes without authentication, redirect to login
   if (route !== 'landing' && route !== 'login' && route !== 'register' && route !== 'forgot-password' && !window.neuroAuth.isAuthenticated()) {
     window.currentRoute = 'login';
@@ -98,10 +125,13 @@ window.renderApp = function() {
 
   root.innerHTML = `
     <div class="app-shell" style="background: #f8fafc; min-height: 100vh;">
-      <!-- Exact Dark Navy Figma Sidebar -->
-      <aside class="app-sidebar" id="app-sidebar" style="background: #0b1329; border-right: 1px solid rgba(255,255,255,0.06); width: 250px;">
-        <div class="sidebar-brand" style="padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center;">
+      <!-- Exact Dark Navy Figma Sidebar with Responsive Drawer Support -->
+      <aside class="app-sidebar" id="app-sidebar" style="background: #0b1329; border-right: 1px solid rgba(255,255,255,0.06);">
+        <div class="sidebar-brand" style="padding: 16px 14px; border-bottom: 1px solid rgba(255,255,255,0.08); display: flex; align-items: center; justify-content: space-between;">
           ${window.renderBrandLogo('dark', 'normal', true)}
+          <button class="mobile-sidebar-close" onclick="window.closeMobileSidebar()" aria-label="Close navigation drawer" title="Close Menu">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
         </div>
 
         <!-- Role Nav Menu -->
@@ -110,19 +140,22 @@ window.renderApp = function() {
         </nav>
       </aside>
 
+      <!-- Accessible Mobile Drawer Backdrop -->
+      <div id="sidebar-backdrop" class="sidebar-backdrop" onclick="window.closeMobileSidebar()" aria-hidden="true"></div>
+
       <!-- Main Workspace Area -->
-      <main class="app-main" style="background: #f8fafc; flex: 1;">
+      <main class="app-main" style="background: #f8fafc; flex: 1; min-width: 0;">
         <!-- Exact Figma Topbar Header -->
-        <header class="app-topbar no-print" style="background: #ffffff; border-bottom: 1px solid #e2e8f0; height: 74px; padding: 0 36px;">
-          <div style="display: flex; align-items: center; gap: 16px;">
-            <button class="mobile-nav-toggle" onclick="document.getElementById('app-sidebar').classList.toggle('open')">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        <header class="app-topbar no-print" style="background: #ffffff; border-bottom: 1px solid #e2e8f0;">
+          <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+            <button class="mobile-nav-toggle" onclick="window.toggleMobileSidebar()" aria-label="Toggle navigation menu" title="Open Menu">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
             </button>
-            <h1 class="topbar-page-title" style="font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">${pageTitle}</h1>
+            <h1 class="topbar-page-title" style="font-weight: 800; color: #0f172a; letter-spacing: -0.5px;">${pageTitle}</h1>
           </div>
 
           <!-- Center Rounded Search Bar from Figma -->
-          <div class="topbar-search-wrap" style="flex: 1; max-width: 440px; margin: 0 24px; position: relative;">
+          <div class="topbar-search-wrap" style="flex: 1; max-width: 440px; margin: 0 20px; position: relative;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2.2" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none;">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
@@ -130,36 +163,37 @@ window.renderApp = function() {
           </div>
 
           <!-- Right Header Items -->
-          <div class="topbar-right" style="display: flex; align-items: center; gap: 20px;">
+          <div class="topbar-right" style="display: flex; align-items: center; flex-shrink: 0;">
             <!-- Notification Bell with Red Dot -->
-            <button style="position: relative; background: transparent; border: none; cursor: pointer; color: #64748b; padding: 8px;" onclick="window.toggleNotificationsPopover()">
+            <button class="notification-bell-btn" style="background: transparent; border: none; cursor: pointer; color: #64748b; padding: 8px;" onclick="window.toggleNotificationsPopover()" aria-label="Notifications">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-              <span style="position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; background: #ef4444; border-radius: 50%; border: 1.5px solid #ffffff;"></span>
+              <span class="notification-badge-dot"></span>
             </button>
 
             <!-- Notifications Popover -->
-            <div class="notifications-popover" id="notifications-popover" style="right: 180px; top: 64px;">
-              <div style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-weight: 700; font-size: 13px; color: #0f172a;">
-                Notifications & Reminders
+            <div class="notifications-popover" id="notifications-popover">
+              <div style="padding: 12px 16px; border-bottom: 1px solid #f1f5f9; font-weight: 700; font-size: 13px; color: #0f172a; display: flex; justify-content: space-between; align-items: center;">
+                <span>Notifications & Reminders</span>
+                <button type="button" onclick="document.getElementById('notifications-popover').classList.remove('show')" style="background: none; border: none; font-size: 11.5px; color: #2563eb; cursor: pointer; font-weight: 600;">Close</button>
               </div>
-              <div style="max-height: 320px; overflow-y: auto;">
+              <div style="max-height: 320px; overflow-y: auto; -webkit-overflow-scrolling: touch;">
                 ${window.renderNotificationsList()}
               </div>
             </div>
 
             <!-- Profile User Pill -->
-            <div style="display: flex; align-items: center; gap: 12px; cursor: pointer;" onclick="window.showUserProfileModal()" title="View & Edit My Profile">
+            <div style="display: flex; align-items: center; gap: 10px; cursor: pointer;" onclick="window.showUserProfileModal()" title="View & Edit My Profile">
               <div class="topbar-user-info" style="text-align: right;">
                 <div style="font-size: 14px; font-weight: 700; color: #0f172a;">${currentUser.full_name.split(' ')[0]} ${currentUser.full_name.split(' ')[1] || ''}</div>
                 <div style="font-size: 11.5px; color: #64748b; font-weight: 500;">${roleSubtitle}</div>
               </div>
-              <img src="${currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128'}" alt="User Avatar" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1.5px solid #e2e8f0; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
+              <img src="${currentUser.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=128'}" alt="User Avatar" style="width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid #e2e8f0; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.08)'" onmouseout="this.style.transform='scale(1)'">
             </div>
           </div>
         </header>
 
         <!-- Dynamic Main Content -->
-        <div class="app-content" style="padding: 32px 36px; max-width: 1440px;">
+        <div class="app-content">
           ${window.renderRouteContent()}
         </div>
       </main>
@@ -853,10 +887,10 @@ window.handleResetPasswordSubmit = function(e) {
 // Full Page Reset Password View (for #forgot-password route)
 window.renderForgotPasswordPage = function() {
   return `
-    <div style="min-height: 100vh; display: flex; background: #ffffff; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;">
+    <div class="auth-split-layout" style="min-height: 100vh; display: flex; background: #ffffff; font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;">
       
       <!-- Left Column Photography Panel -->
-      <div style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/hero_bg.jpg'), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
+      <div class="auth-hero-panel" style="flex: 1.15; background: linear-gradient(180deg, rgba(15, 23, 42, 0.48) 0%, rgba(15, 23, 42, 0.72) 100%), url('assets/hero_bg.jpg'), url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=1200'), #0f172a; background-size: cover; background-position: center; padding: 64px 64px; display: flex; flex-direction: column; justify-content: space-between; position: relative; color: #ffffff;">
         
         <div style="display: inline-flex; align-items: center;">
           ${window.renderBrandLogo('dark', 'large', true)}
@@ -881,7 +915,7 @@ window.renderForgotPasswordPage = function() {
       </div>
 
       <!-- Right Column Reset Password Form -->
-      <div style="flex: 0.85; min-width: 460px; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 40px 54px; background: #ffffff;">
+      <div class="auth-form-panel" style="flex: 0.85; min-width: 0; max-width: 580px; display: flex; align-items: center; justify-content: center; padding: 40px 54px; background: #ffffff;">
         <div style="width: 100%; max-width: 420px;">
           
           <div style="margin-bottom: 18px;">
@@ -2583,12 +2617,14 @@ window.renderReportsMasterList = function() {
 };
 
 // Modals Management
+// Modals Management
 window.closeActiveModal = function() {
   const backdrop = document.getElementById('modal-backdrop');
   if (backdrop) {
     backdrop.classList.remove('active');
     backdrop.innerHTML = '';
   }
+  document.body.classList.remove('modal-open');
 };
 
 window.openModal = function(title, bodyHtml, footerHtml, isLarge = false) {
@@ -2599,7 +2635,7 @@ window.openModal = function(title, bodyHtml, footerHtml, isLarge = false) {
     <div class="modal-dialog ${isLarge ? 'lg' : ''}" onclick="event.stopPropagation()">
       <div class="modal-header">
         <div class="modal-title">${title}</div>
-        <button class="btn-icon" onclick="window.closeActiveModal()">
+        <button class="btn-icon" onclick="window.closeActiveModal()" aria-label="Close dialog" title="Close">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
         </button>
       </div>
@@ -2613,7 +2649,28 @@ window.openModal = function(title, bodyHtml, footerHtml, isLarge = false) {
   `;
 
   backdrop.classList.add('active');
+  document.body.classList.add('modal-open');
 };
+
+// Global escape key handler to dismiss modals, mobile drawers, and popovers
+if (!window._neuroEscapeKeyBound) {
+  window._neuroEscapeKeyBound = true;
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      if (document.getElementById('modal-backdrop')?.classList.contains('active')) {
+        window.closeActiveModal();
+      }
+      if (document.getElementById('app-sidebar')?.classList.contains('open')) {
+        window.closeMobileSidebar();
+      }
+      if (window.closeLandingMobileMenu && document.getElementById('landing-mobile-menu')?.classList.contains('open')) {
+        window.closeLandingMobileMenu();
+      }
+      const notif = document.getElementById('notifications-popover');
+      if (notif) notif.classList.remove('show');
+    }
+  });
+}
 
 // Add User Modal
 window.showAddUserModal = function() {

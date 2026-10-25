@@ -5,12 +5,28 @@
 
 window.toggleLandingMobileMenu = function() {
   const menu = document.getElementById('landing-mobile-menu');
+  const backdrop = document.getElementById('landing-menu-backdrop');
   if (menu) {
-    menu.classList.toggle('open');
+    const isOpen = menu.classList.toggle('open');
+    if (backdrop) backdrop.classList.toggle('show', isOpen);
+    document.body.classList.toggle('landing-menu-open', isOpen);
   }
 };
 
+window.closeLandingMobileMenu = function() {
+  const menu = document.getElementById('landing-mobile-menu');
+  const backdrop = document.getElementById('landing-menu-backdrop');
+  if (menu && menu.classList.contains('open')) {
+    menu.classList.remove('open');
+  }
+  if (backdrop) {
+    backdrop.classList.remove('show');
+  }
+  document.body.classList.remove('landing-menu-open');
+};
+
 window.handleExplorePlatform = function() {
+  window.closeLandingMobileMenu();
   if (window.neuroAuth && window.neuroAuth.isAuthenticated()) {
     window.navigateTo('dashboard');
   } else {
@@ -68,22 +84,25 @@ window.renderLandingPage = function() {
         </button>
       </nav>
 
+      <!-- Mobile Dropdown Menu Backdrop -->
+      <div id="landing-menu-backdrop" class="landing-menu-backdrop" onclick="window.closeLandingMobileMenu()"></div>
+
       <!-- Mobile Dropdown Menu -->
       <div id="landing-mobile-menu" class="landing-mobile-menu">
-        <a href="#home" onclick="window.toggleLandingMobileMenu(); window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Home</a>
-        <a href="#features" onclick="window.toggleLandingMobileMenu(); document.getElementById('features-section').scrollIntoView({behavior:'smooth'}); return false;">Features</a>
-        <a href="#about" onclick="window.toggleLandingMobileMenu(); document.getElementById('specialists-section').scrollIntoView({behavior:'smooth'}); return false;">About</a>
-        <a href="#contact" onclick="window.toggleLandingMobileMenu(); document.getElementById('contact-section').scrollIntoView({behavior:'smooth'}); return false;">Contact</a>
+        <a href="#home" onclick="window.closeLandingMobileMenu(); window.scrollTo({top: 0, behavior: 'smooth'}); return false;">Home</a>
+        <a href="#features" onclick="window.closeLandingMobileMenu(); document.getElementById('features-section').scrollIntoView({behavior:'smooth'}); return false;">Features</a>
+        <a href="#about" onclick="window.closeLandingMobileMenu(); document.getElementById('specialists-section').scrollIntoView({behavior:'smooth'}); return false;">About</a>
+        <a href="#contact" onclick="window.closeLandingMobileMenu(); document.getElementById('contact-section').scrollIntoView({behavior:'smooth'}); return false;">Contact</a>
         <div class="landing-mobile-menu-divider"></div>
         ${isAuth ? `
           <div style="display: flex; gap: 10px; width: 100%; margin-top: 6px;">
-            <button style="flex: 1; padding: 11px; background: #2563eb; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25);" onclick="window.toggleLandingMobileMenu(); window.navigateTo('dashboard')">Dashboard (${currentRole})</button>
-            <button style="flex: 1; padding: 11px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700; font-size: 14px; color: #64748b; cursor: pointer;" onclick="window.toggleLandingMobileMenu(); window.handleLogout()">Sign Out</button>
+            <button style="flex: 1; min-height: 44px; padding: 11px; background: #2563eb; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25);" onclick="window.closeLandingMobileMenu(); window.navigateTo('dashboard')">Dashboard (${currentRole})</button>
+            <button style="flex: 1; min-height: 44px; padding: 11px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700; font-size: 14px; color: #64748b; cursor: pointer;" onclick="window.closeLandingMobileMenu(); window.handleLogout()">Sign Out</button>
           </div>
         ` : `
           <div style="display: flex; gap: 10px; width: 100%; margin-top: 6px;">
-            <button style="flex: 1; padding: 11px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer;" onclick="window.toggleLandingMobileMenu(); window.navigateTo('login')">Login</button>
-            <button style="flex: 1; padding: 11px; background: #2563eb; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25);" onclick="window.toggleLandingMobileMenu(); window.navigateTo('register')">Register</button>
+            <button style="flex: 1; min-height: 44px; padding: 11px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 700; font-size: 14px; color: #0f172a; cursor: pointer;" onclick="window.closeLandingMobileMenu(); window.navigateTo('login')">Login</button>
+            <button style="flex: 1; min-height: 44px; padding: 11px; background: #2563eb; border: none; border-radius: 8px; font-weight: 700; font-size: 14px; color: #ffffff; cursor: pointer; box-shadow: 0 4px 12px rgba(37,99,235,0.25);" onclick="window.closeLandingMobileMenu(); window.navigateTo('register')">Register</button>
           </div>
         `}
       </div>
