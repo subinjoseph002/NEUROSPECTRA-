@@ -144,7 +144,7 @@ const INITIAL_DB_DATA = {
       id: 'ch_101',
       child_code: 'NS-2026-0101',
       first_name: 'Aarav',
-      last_name: 'Sharma',
+      last_name: 'Vinu',
       dob: '2023-04-15',
       age_months: 40,
       gender: 'Male',
@@ -162,8 +162,8 @@ const INITIAL_DB_DATA = {
     {
       id: 'ch_102',
       child_code: 'NS-2026-0102',
-      first_name: 'Liam',
-      last_name: 'Miller',
+      first_name: 'Libin',
+      last_name: 'Chacko',
       dob: '2022-09-10',
       age_months: 47,
       gender: 'Male',
@@ -182,7 +182,7 @@ const INITIAL_DB_DATA = {
       id: 'ch_103',
       child_code: 'NS-2026-0103',
       first_name: 'Maya',
-      last_name: 'Chen',
+      last_name: 'Joseph',
       dob: '2023-11-22',
       age_months: 33,
       gender: 'Female',
@@ -200,11 +200,11 @@ const INITIAL_DB_DATA = {
     {
       id: 'ch_104',
       child_code: 'NS-2026-0104',
-      first_name: 'Noah',
-      last_name: 'Patel',
+      first_name: 'Niya',
+      last_name: 'Vinu',
       dob: '2022-01-30',
       age_months: 54,
-      gender: 'Male',
+      gender: 'Female',
       blood_group: 'AB+',
       address: '88 Oakridge Boulevard, Lakeview',
       emergency_contact: 'Anita Patel (+91 98711 52938)',
@@ -269,7 +269,7 @@ const INITIAL_DB_DATA = {
         class_completes_tasks: 'Often',
         class_requires_assistance: 'Sometimes'
       },
-      teacher_note: 'Liam engaged positively with peers during block construction. Demonstrated good turn-taking when playing with toy cars.',
+      teacher_note: 'Libin engaged positively with peers during block construction. Demonstrated good turn-taking when playing with toy cars.',
       status: 'Submitted',
       created_at: '2026-02-11T14:30:00Z'
     },
@@ -296,7 +296,7 @@ const INITIAL_DB_DATA = {
         class_completes_tasks: 'Always',
         class_requires_assistance: 'Never'
       },
-      teacher_note: 'Noah followed cafeteria rules independently and helped clean up after mealtime. Responded very well to structured praise.',
+      teacher_note: 'Niya followed cafeteria rules independently and helped clean up after mealtime. Responded very well to structured praise.',
       status: 'Submitted',
       created_at: '2026-02-13T12:45:00Z'
     }
@@ -679,7 +679,7 @@ const INITIAL_DB_DATA = {
       id: 'notif_702',
       user_id: 'usr_therapist_1',
       title: 'New Screening Assessment Assigned',
-      message: 'Maya Chen has been scheduled for initial screening today at 02:00 PM.',
+      message: 'Maya Joseph has been scheduled for initial screening today at 02:00 PM.',
       type: 'assessment',
       link: '#assessments',
       is_read: 0,
@@ -788,13 +788,28 @@ class NeurospectraDB {
             'ch_103': 'Lin Chen (+91 98190 38472)',
             'ch_104': 'Anita Patel (+91 98711 52938)'
           };
+          const childNameMap = {
+            'ch_101': { first_name: 'Aarav', last_name: 'Vinu' },
+            'ch_102': { first_name: 'Libin', last_name: 'Chacko' },
+            'ch_103': { first_name: 'Maya', last_name: 'Joseph' },
+            'ch_104': { first_name: 'Niya', last_name: 'Vinu', gender: 'Female' }
+          };
           const childParentMap = {
-            'ch_101': 'usr_parent_1', // Aarav Sharma -> Priya Sharma
-            'ch_102': 'usr_parent_2', // Liam Miller -> David Miller
-            'ch_103': 'usr_parent_3', // Maya Chen -> Lin Chen
-            'ch_104': 'usr_parent_1'  // Noah Patel -> Priya Sharma
+            'ch_101': 'usr_parent_1', // Aarav Vinu -> Priya Sharma
+            'ch_102': 'usr_parent_2', // Libin Chacko -> David Miller
+            'ch_103': 'usr_parent_3', // Maya Joseph -> Lin Chen
+            'ch_104': 'usr_parent_1'  // Niya Vinu -> Priya Sharma
           };
           data.children.forEach(c => {
+            if (childNameMap[c.id]) {
+              const target = childNameMap[c.id];
+              if (c.first_name !== target.first_name || c.last_name !== target.last_name) {
+                c.first_name = target.first_name;
+                c.last_name = target.last_name;
+                if (target.gender) c.gender = target.gender;
+                modified = true;
+              }
+            }
             if (childEmergencyMap[c.id] && c.emergency_contact !== childEmergencyMap[c.id]) {
               c.emergency_contact = childEmergencyMap[c.id];
               modified = true;

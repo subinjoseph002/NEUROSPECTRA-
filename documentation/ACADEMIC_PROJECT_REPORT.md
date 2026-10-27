@@ -37,6 +37,7 @@
     - 4.2.6 Object Diagram
     - 4.2.7 Component Diagram
     - 4.2.8 Deployment Diagram
+    - 4.2.9 Collaboration (Communication) Diagram
   - 4.3 User Interface Design Using Figma
   - 4.4 Database Design & Data Dictionary
 - **5. SYSTEM TESTING**
@@ -551,6 +552,70 @@ graph TD
     Node2 -->|Secure Reverse Proxy HTTPS| Node3
     Node3 -->|SSL Encrypted TCP Pooler Port 5432| Node4
 ```
+
+### 4.2.9 Collaboration (Communication) Diagram
+Illustrates the structural links between collaborating objects and numbered message sequencing across multidisciplinary actors (Parent, Receptionist, Teacher, Therapist) and core platform subsystems.
+
+```mermaid
+graph LR
+    classDef actorNode fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef clientNode fill:#0f172a,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef serviceNode fill:#1e1e38,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
+    classDef dbNode fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#f8fafc;
+
+    Parent["<u>p : Parent</u>"]:::actorNode
+    Recep["<u>r : Receptionist</u>"]:::actorNode
+    Teacher["<u>t : Teacher</u>"]:::actorNode
+    Therapist["<u>th : Therapist</u>"]:::actorNode
+
+    UI["<u>ui : WebClient (SPA Shell)</u>"]:::clientNode
+    Auth["<u>authSvc : AuthRBACService</u>"]:::serviceNode
+    Sched["<u>scheduler : AppointmentScheduler</u>"]:::serviceNode
+    ScreenEng["<u>screenEngine : AssessmentEngine</u>"]:::serviceNode
+    ObsMgr["<u>obsModule : ClassroomObsManager</u>"]:::serviceNode
+    IEPMgr["<u>iepService : TherapyPlanManager</u>"]:::serviceNode
+    Notif["<u>notifSvc : NotificationService</u>"]:::serviceNode
+    DB[("<u>db : PostgreSQLDatabase</u>")]:::dbNode
+
+    Recep -- "1.0: registerPediatricPatient()<br/>2.0: bookAppointment(childId, slot)" --> UI
+    Parent -- "2.1: confirmBooking(aptId)<br/>7.0: viewChildProgress(childId)" --> UI
+    Teacher -- "4.0: submitClassroomObservation(5DomainMatrix)" --> UI
+    Therapist -- "5.0: administerScreening(mchatAnswers)<br/>6.0: createIEPPlan(goals, milestones)" --> UI
+
+    UI -- "0.1: verifyJWTAndRole()<br/>1.1: validatePayload()" --> Auth
+    UI -- "2.2: requestSlotReservation(therapistId, slot)" --> Sched
+    UI -- "4.1: ingestClassroomObservation(obsData)" --> ObsMgr
+    UI -- "5.1: submitAssessment(responsesJson)" --> ScreenEng
+    UI -- "6.1: publishTherapyPlan(planPayload)" --> IEPMgr
+    UI -- "7.1: getLongitudinalAnalytics(childId)" --> IEPMgr
+
+    Sched -- "2.3: checkAvailability(thId, date, time)<br/>2.5: persistAppointmentRecord()" --> DB
+    Sched -- "2.6: dispatchBookingNotification()" --> Notif
+
+    ObsMgr -- "4.2: INSERT INTO teacher_observations()<br/>4.3: alertAssignedClinician()" --> DB
+    ObsMgr -- "4.4: pushRealtimeNotification()" --> Notif
+
+    ScreenEng -- "5.2: fetchMCHATTemplate()<br/>5.5: INSERT INTO assessment_records()" --> DB
+    ScreenEng -- "5.3: [internal] scoreReverseItems()<br/>5.4: [internal] computeRiskTier()" --> ScreenEng
+    ScreenEng -- "5.6: notifyDiagnosticResult()" --> Notif
+
+    IEPMgr -- "6.2: INSERT INTO therapy_plans()<br/>7.2: SELECT progressHistory" --> DB
+    IEPMgr -- "6.3: notifyCareTeamNewIEP()" --> Notif
+
+    Notif -.->|2.7: Booking Confirmed| Parent
+    Notif -.->|4.5: School Observation Logged| Therapist
+    Notif -.->|6.4: Goals Updated| Teacher
+```
+
+#### Chronological Message Sequence Trace:
+1. `1.0: registerPediatricPatient()`: Receptionist registers child demographics and assigns clinical care team.
+2. `2.0: bookAppointment()` / `2.3: checkAvailability()`: Collision-free appointment scheduling verified against PostgreSQL.
+3. `4.0: submitClassroomObservation()`: School teacher records 5-domain behavioral matrix and qualitative context.
+4. `5.0: administerScreening()` / `5.3: scoreReverseItems()`: Clinician inputs 20 M-CHAT-R/F answers; engine calculates composite risk tier (Low: 0-2, Medium: 3-7, High: 8-20).
+5. `6.0: createIEPPlan()` / `6.3: notifyCareTeamNewIEP()`: Clinician formulates individualized therapy goals; notification engine alerts parents and teachers.
+6. `7.0: viewChildProgress()`: Parent reviews longitudinal milestone radar charts and progress history.
+
+*(For detailed sub-collaboration specifications, ASCII text templates, and link definitions, see [COLLABORATION_DIAGRAM.md](file:///c:/Users/hp/Desktop/Neurospectra/documentation/COLLABORATION_DIAGRAM.md)).*
 
 ## 4.3 User Interface Design Using Figma
 The user interface was prototyped following modern healthcare design principles in Figma:

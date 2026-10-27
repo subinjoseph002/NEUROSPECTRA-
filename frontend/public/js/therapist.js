@@ -271,7 +271,7 @@ window.renderTherapistDashboard = function() {
                       09:00 AM
                     </span>
                     <div>
-                      <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">Aarav Sharma</div>
+                      <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">Aarav Vinu</div>
                       <div style="font-size: 12px; color: #64748b;">Pediatric Speech & Language Therapy</div>
                     </div>
                   </div>
@@ -284,7 +284,7 @@ window.renderTherapistDashboard = function() {
                       11:30 AM
                     </span>
                     <div>
-                      <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">Lucas Miller</div>
+                      <div style="font-weight: 700; font-size: 14.5px; color: #0f172a;">Lucas Vance</div>
                       <div style="font-size: 12px; color: #64748b;">Social Skills Play Therapy</div>
                     </div>
                   </div>

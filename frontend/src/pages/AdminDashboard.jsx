@@ -48,10 +48,10 @@ export const AdminDashboard = () => {
 
         setUsers(u.status === 'fulfilled' && Array.isArray(u.value) && u.value.length ? u.value : defaultMockUsers);
         setChildrenList(c.status === 'fulfilled' && Array.isArray(c.value) ? c.value : [
-          { id: 'ch_101', child_code: 'NS-2026-0101', first_name: 'Aarav', last_name: 'Sharma', age_months: 40, status: 'Active' },
-          { id: 'ch_102', child_code: 'NS-2026-0102', first_name: 'Liam', last_name: 'Miller', age_months: 47, status: 'Active' },
-          { id: 'ch_103', child_code: 'NS-2026-0103', first_name: 'Maya', last_name: 'Chen', age_months: 33, status: 'Under Assessment' },
-          { id: 'ch_104', child_code: 'NS-2026-0104', first_name: 'Noah', last_name: 'Patel', age_months: 54, status: 'Active' },
+          { id: 'ch_101', child_code: 'NS-2026-0101', first_name: 'Aarav', last_name: 'Vinu', age_months: 40, status: 'Active' },
+          { id: 'ch_102', child_code: 'NS-2026-0102', first_name: 'Libin', last_name: 'Chacko', age_months: 47, status: 'Active' },
+          { id: 'ch_103', child_code: 'NS-2026-0103', first_name: 'Maya', last_name: 'Joseph', age_months: 33, status: 'Under Assessment' },
+          { id: 'ch_104', child_code: 'NS-2026-0104', first_name: 'Niya', last_name: 'Vinu', age_months: 54, status: 'Active' },
         ]);
         setAssessments(a.status === 'fulfilled' && Array.isArray(a.value) ? a.value : [1, 2, 3]);
         setAppointments(appt.status === 'fulfilled' && Array.isArray(appt.value) ? appt.value : [1, 2, 3, 4]);

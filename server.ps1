@@ -28,10 +28,10 @@ if (-not (Test-Path $dbFile)) {
             @{ id = "usr_teacher_1"; full_name = "Marcus Brody"; email = "teacher@neurospectra.org"; role = "Teacher"; phone = "+91 98300 94165"; is_active = 1; avatar_url = "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=256" }
         )
         children = @(
-            @{ id = "ch_101"; child_code = "NS-2026-0101"; first_name = "Aarav"; last_name = "Sharma"; dob = "2023-04-15"; age_months = 40; gender = "Male"; status = "Active"; primary_parent_id = "usr_parent_1"; assigned_therapist_id = "usr_therapist_1" },
-            @{ id = "ch_102"; child_code = "NS-2026-0102"; first_name = "Liam"; last_name = "Miller"; dob = "2022-09-10"; age_months = 47; gender = "Male"; status = "Active"; primary_parent_id = "usr_parent_2"; assigned_therapist_id = "usr_therapist_1" },
-            @{ id = "ch_103"; child_code = "NS-2026-0103"; first_name = "Maya"; last_name = "Chen"; dob = "2023-11-22"; age_months = 33; gender = "Female"; status = "Under Assessment"; primary_parent_id = "usr_parent_3"; assigned_therapist_id = "usr_therapist_2" },
-            @{ id = "ch_104"; child_code = "NS-2026-0104"; first_name = "Noah"; last_name = "Patel"; dob = "2022-01-30"; age_months = 54; gender = "Male"; status = "Active"; primary_parent_id = "usr_parent_1"; assigned_therapist_id = "usr_therapist_1" }
+            @{ id = "ch_101"; child_code = "NS-2026-0101"; first_name = "Aarav"; last_name = "Vinu"; dob = "2023-04-15"; age_months = 40; gender = "Male"; status = "Active"; primary_parent_id = "usr_parent_1"; assigned_therapist_id = "usr_therapist_1" },
+            @{ id = "ch_102"; child_code = "NS-2026-0102"; first_name = "Libin"; last_name = "Chacko"; dob = "2022-09-10"; age_months = 47; gender = "Male"; status = "Active"; primary_parent_id = "usr_parent_2"; assigned_therapist_id = "usr_therapist_1" },
+            @{ id = "ch_103"; child_code = "NS-2026-0103"; first_name = "Maya"; last_name = "Joseph"; dob = "2023-11-22"; age_months = 33; gender = "Female"; status = "Under Assessment"; primary_parent_id = "usr_parent_3"; assigned_therapist_id = "usr_therapist_2" },
+            @{ id = "ch_104"; child_code = "NS-2026-0104"; first_name = "Niya"; last_name = "Vinu"; dob = "2022-01-30"; age_months = 54; gender = "Female"; status = "Active"; primary_parent_id = "usr_parent_1"; assigned_therapist_id = "usr_therapist_1" }
         )
         assessments = @(
             @{ id = "rec_asmt_1"; child_id = "ch_101"; therapist_id = "usr_therapist_1"; status = "Completed"; total_score = 1; risk_level = "Low Risk Indicator" }

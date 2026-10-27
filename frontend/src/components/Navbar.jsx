@@ -37,11 +37,11 @@ export const Navbar = ({ title = 'Clinical Dashboard' }) => {
               <div className="space-y-2">
                 <div className="p-2 bg-blue-50/50 rounded-lg border border-blue-100">
                   <div className="font-semibold text-slate-800">New Assessment Submitted</div>
-                  <div className="text-slate-500 text-[11px] mt-0.5">M-CHAT-R/F for Aarav Sharma requires review.</div>
+                  <div className="text-slate-500 text-[11px] mt-0.5">M-CHAT-R/F for Aarav Vinu requires review.</div>
                 </div>
                 <div className="p-2 bg-slate-50 rounded-lg border border-slate-100">
                   <div className="font-semibold text-slate-800">Upcoming Session</div>
-                  <div className="text-slate-500 text-[11px] mt-0.5">Speech therapy scheduled with Liam Miller at 11:30 AM.</div>
+                  <div className="text-slate-500 text-[11px] mt-0.5">Speech therapy scheduled with Libin Chacko at 11:30 AM.</div>
                 </div>
               </div>
             </div>

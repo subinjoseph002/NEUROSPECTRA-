@@ -4,10 +4,10 @@ import { Sidebar } from '../components/Sidebar';
 import { Baby, Activity, Calendar, FileText, CheckCircle2, Clock } from 'lucide-react';
 
 export const ParentDashboard = () => {
-  // Static child profile for demo parent (Priya Sharma -> Aarav Sharma)
+  // Static child profile for demo parent (Priya Sharma -> Aarav Vinu)
   const child = {
     first_name: 'Aarav',
-    last_name: 'Sharma',
+    last_name: 'Vinu',
     child_code: 'NS-2026-0101',
     age_months: 40,
     dob: '2023-04-15',

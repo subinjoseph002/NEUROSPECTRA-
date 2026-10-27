@@ -293,7 +293,7 @@ window.renderAdminDashboard = function() {
             <tbody>
               <tr>
                 <td style="font-weight: 700; color: #0f172a; font-size: 13.5px; padding: 16px 14px;">Dr. Aisha Khan</td>
-                <td style="color: #475569; font-size: 13.5px; padding: 16px 14px;">Approved diagnosis assessment report for Aarav Sharma</td>
+                <td style="color: #475569; font-size: 13.5px; padding: 16px 14px;">Approved diagnosis assessment report for Aarav Vinu</td>
                 <td style="padding: 16px 14px;">
                   <span style="background: #eff6ff; color: #2563eb; font-size: 11.5px; font-weight: 700; padding: 4px 10px; border-radius: 6px;">Therapist</span>
                 </td>
@@ -644,12 +644,12 @@ window.openAddUserModal = function(defaultRole = 'Therapist') {
         <form onsubmit="window.handleAdminCreateUser(event)" novalidate>
           <div class="form-group" style="margin-bottom: 14px;">
             <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">Full Name <span style="color: #ef4444;">*</span></label>
-            <input type="text" id="modal-user-name" required placeholder="e.g. Dr. Maya Patel, MD" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none;">
+            <input type="text" id="modal-user-name" required placeholder="e.g. Dr. Kavita Patel, MD" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none;">
           </div>
 
           <div class="form-group" style="margin-bottom: 14px;">
             <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 6px; display: block;">Work Email <span style="color: #ef4444;">*</span></label>
-            <input type="email" id="modal-user-email" required placeholder="maya.patel@neurospectra.org" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none;">
+            <input type="email" id="modal-user-email" required placeholder="kavita.patel@neurospectra.org" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 13.5px; outline: none;">
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px;">

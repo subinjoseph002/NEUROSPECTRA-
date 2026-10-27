@@ -158,7 +158,7 @@ export const RegisterPage = () => {
             <FormField
               label="Full Name"
               name="full_name"
-              placeholder="e.g. Dr. Maya Patel or Sarah Jenkins"
+              placeholder="e.g. Dr. Kavita Patel or Sarah Jenkins"
               register={register}
               error={errors.full_name}
               isValid={touchedFields.full_name && !errors.full_name}

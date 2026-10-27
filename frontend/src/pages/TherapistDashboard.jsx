@@ -7,9 +7,9 @@ export const TherapistDashboard = () => {
   const [activeTab, setActiveTab] = useState('assigned');
 
   const assignedChildren = [
-    { id: 'ch_101', code: 'NS-2026-0101', name: 'Aarav Sharma', age: '3 yrs 4 mos', parent: 'Priya Sharma', lastScore: '1 (Low Risk)', nextSession: 'Today, 10:00 AM' },
-    { id: 'ch_102', code: 'NS-2026-0102', name: 'Liam Miller', age: '3 yrs 11 mos', parent: 'David Miller', lastScore: '4 (Medium Risk)', nextSession: 'Today, 11:30 AM' },
-    { id: 'ch_104', code: 'NS-2026-0104', name: 'Noah Patel', age: '4 yrs 6 mos', parent: 'Anita Patel', lastScore: '2 (Low Risk)', nextSession: 'Tomorrow, 02:00 PM' },
+    { id: 'ch_101', code: 'NS-2026-0101', name: 'Aarav Vinu', age: '3 yrs 4 mos', parent: 'Priya Sharma', lastScore: '1 (Low Risk)', nextSession: 'Today, 10:00 AM' },
+    { id: 'ch_102', code: 'NS-2026-0102', name: 'Libin Chacko', age: '3 yrs 11 mos', parent: 'David Miller', lastScore: '4 (Medium Risk)', nextSession: 'Today, 11:30 AM' },
+    { id: 'ch_104', code: 'NS-2026-0104', name: 'Niya Vinu', age: '4 yrs 6 mos', parent: 'Anita Patel', lastScore: '2 (Low Risk)', nextSession: 'Tomorrow, 02:00 PM' },
   ];
 
   return (

@@ -5,9 +5,9 @@ import { Calendar, Baby, Clock, CheckCircle2, Plus } from 'lucide-react';
 
 export const ReceptionistDashboard = () => {
   const appointments = [
-    { id: '1', time: '10:00 AM', child: 'Aarav Sharma', therapist: 'Dr. Aisha Khan', type: 'Occupational Therapy', status: 'Confirmed' },
-    { id: '2', time: '11:30 AM', child: 'Liam Miller', therapist: 'Dr. Aisha Khan', type: 'Speech & Language Therapy', status: 'Confirmed' },
-    { id: '3', time: '02:00 PM', child: 'Maya Chen', therapist: 'Dr. Marcus Vance', type: 'Initial Screening Assessment', status: 'Confirmed' },
+    { id: '1', time: '10:00 AM', child: 'Aarav Vinu', therapist: 'Dr. Aisha Khan', type: 'Occupational Therapy', status: 'Confirmed' },
+    { id: '2', time: '11:30 AM', child: 'Libin Chacko', therapist: 'Dr. Aisha Khan', type: 'Speech & Language Therapy', status: 'Confirmed' },
+    { id: '3', time: '02:00 PM', child: 'Maya Joseph', therapist: 'Dr. Marcus Vance', type: 'Initial Screening Assessment', status: 'Confirmed' },
   ];
 
   return (

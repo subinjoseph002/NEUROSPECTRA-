@@ -23,7 +23,7 @@ export const TeacherDashboard = () => {
             <h3 className="text-base font-extrabold text-slate-900">Enrolled Students under IEP Plans</h3>
             <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
               <div>
-                <div className="font-extrabold text-sm text-slate-900">Aarav Sharma (NS-2026-0101)</div>
+                <div className="font-extrabold text-sm text-slate-900">Aarav Vinu (NS-2026-0101)</div>
                 <div className="text-xs text-slate-500">Accommodation: Visual transition cards & noise-canceling earmuffs</div>
               </div>
               <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">
