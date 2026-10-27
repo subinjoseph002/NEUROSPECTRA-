@@ -1,11 +1,64 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginSchema } from '../schemas/loginSchema';
 import { useAuth } from '../context/AuthContext';
 import { FormField } from '../components/FormField';
-import { AlertCircle, Loader2, ArrowRight } from 'lucide-react';
+import { AlertCircle, Loader2, ArrowRight, Users, ChevronDown, Check } from 'lucide-react';
+
+const CLINICAL_ACCOUNTS = [
+  {
+    role: 'Administrator',
+    name: 'Dr. Eleanor Vance',
+    email: 'admin@neurospectra.org',
+    password: 'admin123',
+    badge: 'Admin',
+    icon: '👑',
+    bg: 'hover:bg-purple-50',
+    badgeClass: 'bg-purple-50 text-purple-700 border-purple-200'
+  },
+  {
+    role: 'Therapist',
+    name: 'Dr. Aisha Khan, Ph.D.',
+    email: 'therapist@neurospectra.org',
+    password: 'therapist123',
+    badge: 'Therapist',
+    icon: '🩺',
+    bg: 'hover:bg-blue-50',
+    badgeClass: 'bg-blue-50 text-blue-700 border-blue-200'
+  },
+  {
+    role: 'Teacher',
+    name: 'Marcus Brody',
+    email: 'teacher@neurospectra.org',
+    password: 'teacher123',
+    badge: 'Teacher',
+    icon: '🎓',
+    bg: 'hover:bg-sky-50',
+    badgeClass: 'bg-sky-50 text-sky-700 border-sky-200'
+  },
+  {
+    role: 'Receptionist',
+    name: 'Sarah Jenkins',
+    email: 'receptionist@neurospectra.org',
+    password: 'receptionist123',
+    badge: 'Receptionist',
+    icon: '📋',
+    bg: 'hover:bg-amber-50',
+    badgeClass: 'bg-amber-50 text-amber-700 border-amber-200'
+  },
+  {
+    role: 'Parent / Caregiver',
+    name: 'Priya Sharma',
+    email: 'parent@neurospectra.org',
+    password: 'parent123',
+    badge: 'Parent',
+    icon: '👨‍👩‍👧',
+    bg: 'hover:bg-emerald-50',
+    badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+  }
+];
 
 export const LoginPage = () => {
   const { login, switchDemoRole } = useAuth();
@@ -13,6 +66,8 @@ export const LoginPage = () => {
   const [serverError, setServerError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isForgotOpen, setIsForgotOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const emailDropdownRef = useRef(null);
   const [resetEmail, setResetEmail] = useState('therapist@neurospectra.org');
   const [resetPwd, setResetPwd] = useState('');
   const [resetConfirm, setResetConfirm] = useState('');
@@ -27,6 +82,23 @@ export const LoginPage = () => {
     resolver: zodResolver(loginSchema),
     mode: 'onBlur',
   });
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (emailDropdownRef.current && !emailDropdownRef.current.contains(e.target)) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleSelectAccount = (acc) => {
+    setValue('email', acc.email, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    setValue('password', acc.password, { shouldValidate: true, shouldDirty: true, shouldTouch: true });
+    setIsUserDropdownOpen(false);
+    setServerError('');
+  };
 
   const fillDemo = (email, password) => {
     setValue('email', email, { shouldValidate: true });
@@ -156,57 +228,6 @@ export const LoginPage = () => {
             <p className="text-sm text-slate-500">Sign in to access your authorized clinical dashboard</p>
           </div>
 
-          {/* Quick Demo Instant Access Selector */}
-          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
-            <div className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider text-center">
-              Instant Clinical Persona Access
-            </div>
-            <div className="grid grid-cols-3 gap-1.5">
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('Therapist', 'therapist@neurospectra.org', 'therapist123')}
-                className="px-2 py-1.5 bg-blue-50 hover:bg-blue-100 active:scale-95 text-blue-700 border border-blue-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
-                title="Instant Login as Therapist"
-              >
-                🩺 Therapist
-              </button>
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('Teacher', 'teacher@neurospectra.org', 'teacher123')}
-                className="px-2 py-1.5 bg-sky-50 hover:bg-sky-100 active:scale-95 text-sky-700 border border-sky-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
-                title="Instant Login as Teacher"
-              >
-                🎓 Teacher
-              </button>
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('Parent / Caregiver', 'parent@neurospectra.org', 'parent123')}
-                className="px-2 py-1.5 bg-emerald-50 hover:bg-emerald-100 active:scale-95 text-emerald-700 border border-emerald-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
-                title="Instant Login as Parent"
-              >
-                👨‍👩‍👧 Parent
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-1.5">
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('Receptionist', 'receptionist@neurospectra.org', 'receptionist123')}
-                className="px-2 py-1.5 bg-amber-50 hover:bg-amber-100 active:scale-95 text-amber-700 border border-amber-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
-                title="Instant Login as Receptionist"
-              >
-                📋 Receptionist
-              </button>
-              <button
-                type="button"
-                onClick={() => handleInstantDemo('Administrator', 'admin@neurospectra.org', 'admin123')}
-                className="px-2 py-1.5 bg-purple-50 hover:bg-purple-100 active:scale-95 text-purple-700 border border-purple-200 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer"
-                title="Instant Login as Admin"
-              >
-                👑 Admin
-              </button>
-            </div>
-          </div>
-
           {/* Backend Error Banner */}
           {serverError && (
             <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-700 font-medium flex items-center gap-2.5 animate-fadeIn">
@@ -218,16 +239,89 @@ export const LoginPage = () => {
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
             
-            <FormField
-              label="Email Address"
-              name="email"
-              type="email"
-              placeholder="e.g. user@example.com"
-              register={register}
-              error={errors.email}
-              isValid={touchedFields.email && !errors.email}
-              required
-            />
+            {/* Email Address with Interactive Clinical User Dropdown */}
+            <div className="space-y-1.5 text-left relative" ref={emailDropdownRef} id="login-email-container">
+              <div className="flex items-center justify-between">
+                <label htmlFor="login-email" className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Email Address <span className="text-rose-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-1 bg-transparent border-none cursor-pointer p-0"
+                  title="Click to select clinical user"
+                >
+                  <Users className="w-3.5 h-3.5" />
+                  <span>Select demo user</span>
+                </button>
+              </div>
+
+              <div className="relative rounded-lg shadow-sm">
+                <input
+                  id="login-email"
+                  type="email"
+                  placeholder="Click here to select a user (e.g. Admin, Therapist)..."
+                  {...register('email')}
+                  onClick={() => setIsUserDropdownOpen(true)}
+                  onFocus={() => setIsUserDropdownOpen(true)}
+                  autoComplete="off"
+                  className={`w-full px-3.5 py-2.5 pr-10 text-sm bg-white border rounded-lg transition-colors outline-none cursor-pointer ${
+                    errors.email
+                      ? 'border-rose-500 focus:border-rose-600 focus:ring-1 focus:ring-rose-500'
+                      : touchedFields.email && !errors.email
+                      ? 'border-emerald-500 focus:border-emerald-600 focus:ring-1 focus:ring-emerald-500'
+                      : 'border-slate-200 hover:border-slate-300 focus:border-blue-600 focus:ring-1 focus:ring-blue-600'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="absolute inset-y-0 right-0 flex items-center pr-3 bg-transparent border-none text-slate-400 hover:text-slate-600 cursor-pointer"
+                  title="Toggle user list"
+                >
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180 text-blue-600' : ''}`} />
+                </button>
+              </div>
+
+              {errors.email && (
+                <p className="flex items-center gap-1 text-[12px] font-semibold text-rose-600 animate-fadeIn">
+                  <span>{errors.email.message}</span>
+                </p>
+              )}
+
+              {/* Interactive User Accounts Dropdown Menu */}
+              {isUserDropdownOpen && (
+                <div id="login-user-dropdown" className="absolute left-0 right-0 top-full mt-1.5 z-50 bg-white border border-slate-200 rounded-xl shadow-xl overflow-hidden animate-fadeIn max-h-72 overflow-y-auto">
+                  <div className="px-3.5 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                    <span>Click account to autofill</span>
+                    <span className="text-slate-400 normal-case font-medium">5 Clinical Roles</span>
+                  </div>
+                  <div className="divide-y divide-slate-100" id="login-user-list">
+                    {CLINICAL_ACCOUNTS.map((acc) => (
+                      <div
+                        key={acc.email}
+                        id={`demo-btn-${acc.badge.toLowerCase().replace(/[^a-z]/g, '')}`}
+                        onClick={() => handleSelectAccount(acc)}
+                        className={`px-3.5 py-2.5 flex items-center justify-between cursor-pointer transition-colors ${acc.bg}`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-slate-100 border border-slate-200 flex items-center justify-center text-base flex-shrink-0">
+                            {acc.icon}
+                          </div>
+                          <div>
+                            <div className="text-xs font-bold text-slate-900 leading-tight">{acc.name}</div>
+                            <div className="text-[11px] text-slate-500 font-mono">{acc.email}</div>
+                          </div>
+                        </div>
+                        <span className={`text-[10.5px] font-bold px-2 py-0.5 rounded-md border ${acc.badgeClass}`}>
+                          {acc.badge}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
 
             <FormField
               label="Password"

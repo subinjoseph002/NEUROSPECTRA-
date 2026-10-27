@@ -409,44 +409,116 @@ window.renderLoginPage = function() {
           <h2 style="font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.6px; margin-bottom: 4px;">
             Welcome back
           </h2>
-          <p style="font-size: 13.5px; color: #64748b; margin-bottom: 18px;">
-            Sign in or choose a demo persona below to autofill credentials
+          <p style="font-size: 13.5px; color: #64748b; margin-bottom: 22px;">
+            Sign in to access your authorized clinical dashboard
           </p>
-
-          <!-- Interactive Demo Persona Autofill Selector -->
-          <div style="margin-bottom: 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 10px 12px;">
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 6px;">
-              <button type="button" id="demo-btn-therapist" onclick="window.fillDemoCredentials('Therapist')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Dr. Aisha Khan (Therapist)">
-                🩺 Therapist
-              </button>
-              <button type="button" id="demo-btn-teacher" onclick="window.fillDemoCredentials('Teacher')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #bae6fd; background: #f0f9ff; color: #0369a1; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Marcus Brody (Teacher)">
-                🎓 Teacher
-              </button>
-              <button type="button" id="demo-btn-parent" onclick="window.fillDemoCredentials('Parent / Caregiver')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #bbf7d0; background: #f0fdf4; color: #15803d; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Priya Sharma (Parent)">
-                👨‍👩‍👧 Parent
-              </button>
-            </div>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
-              <button type="button" id="demo-btn-receptionist" onclick="window.fillDemoCredentials('Receptionist')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #fde68a; background: #fffbeb; color: #b45309; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Sarah Jenkins (Receptionist)">
-                📋 Receptionist
-              </button>
-              <button type="button" id="demo-btn-admin" onclick="window.fillDemoCredentials('Administrator')" style="padding: 7px 8px; font-size: 12px; font-weight: 700; border-radius: 8px; border: 1px solid #e9d5ff; background: #faf5ff; color: #7e22ce; cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; gap: 4px;" title="Autofill Dr. Eleanor Vance (Admin)">
-                👑 Admin
-              </button>
-            </div>
-          </div>
 
           <!-- Dynamic Form Error Alert -->
           <div id="login-alert-box" style="display: none;"></div>
 
           <form id="login-form" novalidate onsubmit="window.handleLoginForm(event)">
             
-            <div class="form-group" style="margin-bottom: 16px;">
-              <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 7px; display: block;">
-                Email Address <span style="color: #ef4444;">*</span>
-              </label>
-              <input type="email" id="login-email" class="form-control" placeholder="therapist@neurospectra.org" required value="therapist@neurospectra.org" style="width: 100%; padding: 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateLoginEmail(false)" onblur="window.validateLoginEmail(true)">
+            <!-- Email Address with Interactive Account Selector Dropdown -->
+            <div class="form-group" id="login-email-container" style="margin-bottom: 18px; position: relative;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px;">
+                <label class="form-label" style="font-size: 13px; font-weight: 600; color: #1e293b; margin-bottom: 0;">
+                  Email Address <span style="color: #ef4444;">*</span>
+                </label>
+                <button type="button" onclick="window.toggleLoginUserDropdown(event)" style="background: none; border: none; padding: 0; font-size: 12px; font-weight: 600; color: #2563eb; cursor: pointer; display: flex; align-items: center; gap: 4px;" title="Click to view all accounts">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  <span>Select demo user</span>
+                </button>
+              </div>
+
+              <div style="position: relative;">
+                <input 
+                  type="email" 
+                  id="login-email" 
+                  class="form-control" 
+                  placeholder="Click here to select a user (e.g. Admin, Therapist)..." 
+                  required 
+                  value=""
+                  autocomplete="off" 
+                  style="width: 100%; padding: 11.5px 38px 11.5px 14px; border-radius: 9px; border: 1px solid #cbd5e1; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s; cursor: pointer; background: #ffffff;" 
+                  onfocus="window.showLoginUserDropdown()" 
+                  onclick="window.showLoginUserDropdown()" 
+                  oninput="window.filterLoginUserDropdown(this.value); window.validateLoginEmail(false)" 
+                  onkeydown="window.handleLoginEmailKeydown(event)"
+                >
+                <div onclick="window.toggleLoginUserDropdown(event)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #64748b; display: flex; align-items: center; padding: 4px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m6 9 6 6 6-6"/></svg>
+                </div>
+              </div>
               <div id="login-email-error" class="field-error-msg" style="display: none;"></div>
+
+              <!-- Interactive User Accounts Dropdown Menu -->
+              <div id="login-user-dropdown" style="display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 999; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; box-shadow: 0 14px 30px -4px rgba(15, 23, 42, 0.18), 0 6px 14px -4px rgba(15, 23, 42, 0.08); overflow: hidden; max-height: 340px; overflow-y: auto;">
+                <div style="padding: 9px 14px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between;">
+                  <span style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 0.5px;">Click account to autofill</span>
+                  <span style="font-size: 11px; color: #94a3b8; font-weight: 500;">5 Clinical Roles</span>
+                </div>
+                <div id="login-user-list">
+                  <!-- Admin -->
+                  <div id="demo-btn-admin" onclick="window.selectLoginAccount('admin@neurospectra.org', 'admin123', 'Administrator')" class="login-user-item" style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: space-between;" onmouseover="this.style.background='#faf5ff'" onmouseout="this.style.background='#ffffff'">
+                    <div style="display: flex; align-items: center; gap: 11px;">
+                      <div style="width: 34px; height: 34px; border-radius: 8px; background: #faf5ff; border: 1px solid #e9d5ff; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;">👑</div>
+                      <div>
+                        <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.2;">Dr. Eleanor Vance</div>
+                        <div style="font-size: 12px; color: #64748b; font-family: monospace;">admin@neurospectra.org</div>
+                      </div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; background: #faf5ff; color: #7e22ce; border: 1px solid #e9d5ff; padding: 3px 8px; border-radius: 6px;">Admin</span>
+                  </div>
+
+                  <!-- Therapist -->
+                  <div id="demo-btn-therapist" onclick="window.selectLoginAccount('therapist@neurospectra.org', 'therapist123', 'Therapist')" class="login-user-item" style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: space-between;" onmouseover="this.style.background='#eff6ff'" onmouseout="this.style.background='#ffffff'">
+                    <div style="display: flex; align-items: center; gap: 11px;">
+                      <div style="width: 34px; height: 34px; border-radius: 8px; background: #eff6ff; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;">🩺</div>
+                      <div>
+                        <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.2;">Dr. Aisha Khan, Ph.D.</div>
+                        <div style="font-size: 12px; color: #64748b; font-family: monospace;">therapist@neurospectra.org</div>
+                      </div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; padding: 3px 8px; border-radius: 6px;">Therapist</span>
+                  </div>
+
+                  <!-- Teacher -->
+                  <div id="demo-btn-teacher" onclick="window.selectLoginAccount('teacher@neurospectra.org', 'teacher123', 'Teacher')" class="login-user-item" style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: space-between;" onmouseover="this.style.background='#f0f9ff'" onmouseout="this.style.background='#ffffff'">
+                    <div style="display: flex; align-items: center; gap: 11px;">
+                      <div style="width: 34px; height: 34px; border-radius: 8px; background: #f0f9ff; border: 1px solid #bae6fd; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;">🎓</div>
+                      <div>
+                        <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.2;">Marcus Brody</div>
+                        <div style="font-size: 12px; color: #64748b; font-family: monospace;">teacher@neurospectra.org</div>
+                      </div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; padding: 3px 8px; border-radius: 6px;">Teacher</span>
+                  </div>
+
+                  <!-- Receptionist -->
+                  <div id="demo-btn-receptionist" onclick="window.selectLoginAccount('receptionist@neurospectra.org', 'receptionist123', 'Receptionist')" class="login-user-item" style="padding: 10px 14px; border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: space-between;" onmouseover="this.style.background='#fffbeb'" onmouseout="this.style.background='#ffffff'">
+                    <div style="display: flex; align-items: center; gap: 11px;">
+                      <div style="width: 34px; height: 34px; border-radius: 8px; background: #fffbeb; border: 1px solid #fde68a; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;">📋</div>
+                      <div>
+                        <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.2;">Sarah Jenkins</div>
+                        <div style="font-size: 12px; color: #64748b; font-family: monospace;">receptionist@neurospectra.org</div>
+                      </div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; background: #fffbeb; color: #b45309; border: 1px solid #fde68a; padding: 3px 8px; border-radius: 6px;">Receptionist</span>
+                  </div>
+
+                  <!-- Parent -->
+                  <div id="demo-btn-parent" onclick="window.selectLoginAccount('parent@neurospectra.org', 'parent123', 'Parent / Caregiver')" class="login-user-item" style="padding: 10px 14px; cursor: pointer; transition: background 0.15s; display: flex; align-items: center; justify-content: space-between;" onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background='#ffffff'">
+                    <div style="display: flex; align-items: center; gap: 11px;">
+                      <div style="width: 34px; height: 34px; border-radius: 8px; background: #f0fdf4; border: 1px solid #bbf7d0; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0;">👨‍👩‍👧</div>
+                      <div>
+                        <div style="font-size: 13.5px; font-weight: 700; color: #0f172a; line-height: 1.2;">Priya Sharma</div>
+                        <div style="font-size: 12px; color: #64748b; font-family: monospace;">parent@neurospectra.org</div>
+                      </div>
+                    </div>
+                    <span style="font-size: 11px; font-weight: 700; background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; padding: 3px 8px; border-radius: 6px;">Parent</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div class="form-group" style="margin-bottom: 16px;">
@@ -457,7 +529,7 @@ window.renderLoginPage = function() {
                 <a href="#" style="font-size: 12px; font-weight: 600; color: #2563eb; text-decoration: none;" onclick="window.openForgotPasswordModal(); return false;">Forgot Password?</a>
               </div>
               <div style="position: relative;">
-                <input type="password" id="login-password" class="form-control" placeholder="••••••••••••" required value="therapist123" style="width: 100%; padding: 11px 40px 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateLoginPassword(false)" onblur="window.validateLoginPassword(true)">
+                <input type="password" id="login-password" class="form-control" placeholder="••••••••••••" required value="" style="width: 100%; padding: 11px 40px 11px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 14px; color: #0f172a; outline: none; transition: all 0.2s;" oninput="window.validateLoginPassword(false)" onblur="window.validateLoginPassword(true)">
                 <button type="button" onclick="window.togglePasswordVisibility('login-password', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: #94a3b8; padding: 4px; display: flex; align-items: center; justify-content: center;" title="Show/Hide password">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 </button>
@@ -695,7 +767,109 @@ window.renderDemoBanner = function() {
   return '';
 };
 
-// Quick Demo Autofill Helper for Login Page
+// Dropdown & Autofill Helpers for Login Page
+window.showLoginUserDropdown = function() {
+  const dd = document.getElementById('login-user-dropdown');
+  if (dd) {
+    dd.style.display = 'block';
+  }
+};
+
+window.hideLoginUserDropdown = function() {
+  const dd = document.getElementById('login-user-dropdown');
+  if (dd) {
+    dd.style.display = 'none';
+  }
+};
+
+window.toggleLoginUserDropdown = function(e) {
+  if (e) {
+    e.stopPropagation();
+  }
+  const dd = document.getElementById('login-user-dropdown');
+  if (dd) {
+    if (dd.style.display === 'none' || !dd.style.display) {
+      dd.style.display = 'block';
+      const emailInput = document.getElementById('login-email');
+      if (emailInput) emailInput.focus();
+    } else {
+      dd.style.display = 'none';
+    }
+  }
+};
+
+window.filterLoginUserDropdown = function(query) {
+  const list = document.getElementById('login-user-list');
+  if (!list) return;
+  const q = (query || '').toLowerCase().trim();
+  const items = list.querySelectorAll('.login-user-item');
+  items.forEach(item => {
+    const text = item.innerText.toLowerCase();
+    if (!q || text.includes(q)) {
+      item.style.display = 'flex';
+    } else {
+      item.style.display = 'none';
+    }
+  });
+};
+
+window.handleLoginEmailKeydown = function(e) {
+  if (e.key === 'Escape') {
+    window.hideLoginUserDropdown();
+  }
+};
+
+window.selectLoginAccount = function(email, password, roleLabel) {
+  const emailInput = document.getElementById('login-email');
+  const pwdInput = document.getElementById('login-password');
+
+  if (emailInput) {
+    emailInput.value = email;
+  }
+  if (pwdInput) {
+    pwdInput.value = password;
+  }
+
+  window.hideLoginUserDropdown();
+
+  if (window.clearFieldError) {
+    window.clearFieldError('login-email', 'login-email-error');
+    window.clearFieldError('login-password', 'login-password-error');
+  }
+  const alertBox = document.getElementById('login-alert-box');
+  if (alertBox) alertBox.style.display = 'none';
+
+  // Visual pulse effect
+  if (emailInput && pwdInput) {
+    emailInput.style.borderColor = '#2563eb';
+    emailInput.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.15)';
+    pwdInput.style.borderColor = '#2563eb';
+    pwdInput.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.15)';
+    setTimeout(() => {
+      emailInput.style.borderColor = '#cbd5e1';
+      emailInput.style.boxShadow = 'none';
+      pwdInput.style.borderColor = '#e2e8f0';
+      pwdInput.style.boxShadow = 'none';
+    }, 600);
+  }
+
+  if (window.showToast) {
+    window.showToast(`Selected ${roleLabel} (${email}) - credentials autofilled.`, 'info');
+  }
+};
+
+// Global click-outside listener to close dropdown
+if (!window._loginDropdownListenerAdded) {
+  window._loginDropdownListenerAdded = true;
+  document.addEventListener('click', function(e) {
+    const container = document.getElementById('login-email-container');
+    if (container && !container.contains(e.target)) {
+      window.hideLoginUserDropdown();
+    }
+  });
+}
+
+// Quick Demo Autofill Helper for Login Page (backward-compatible)
 window.fillDemoCredentials = function(role) {
   const credentialsMap = {
     'Therapist': { email: 'therapist@neurospectra.org', password: 'therapist123', label: 'Therapist (Dr. Aisha Khan)' },
@@ -706,33 +880,7 @@ window.fillDemoCredentials = function(role) {
   };
 
   const cred = credentialsMap[role] || credentialsMap['Therapist'];
-  const emailInput = document.getElementById('login-email');
-  const pwdInput = document.getElementById('login-password');
-
-  if (emailInput && pwdInput) {
-    emailInput.value = cred.email;
-    pwdInput.value = cred.password;
-    if (window.clearFieldError) {
-      window.clearFieldError('login-email', 'login-email-error');
-      window.clearFieldError('login-password', 'login-password-error');
-    }
-    const alertBox = document.getElementById('login-alert-box');
-    if (alertBox) alertBox.style.display = 'none';
-
-    // Visual pulse effect
-    emailInput.style.borderColor = '#2563eb';
-    emailInput.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.15)';
-    pwdInput.style.borderColor = '#2563eb';
-    pwdInput.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.15)';
-    setTimeout(() => {
-      emailInput.style.borderColor = '#e2e8f0';
-      emailInput.style.boxShadow = 'none';
-      pwdInput.style.borderColor = '#e2e8f0';
-      pwdInput.style.boxShadow = 'none';
-    }, 600);
-
-    window.showToast(`Autofilled ${cred.label} login credentials.`, 'info');
-  }
+  window.selectLoginAccount(cred.email, cred.password, cred.label);
 };
 
 // --- Working Password Reset Flow ---
