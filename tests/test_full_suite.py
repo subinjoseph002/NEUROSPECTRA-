@@ -294,9 +294,13 @@ def test_admin_login_and_dashboard(driver):
         nav_to(driver, "login")
         time.sleep(0.4)
 
-        # Use Admin demo autofill or type admin credentials
-        admin_demo_btn = driver.find_element(By.ID, "demo-btn-admin")
-        admin_demo_btn.click()
+        # Type admin credentials directly
+        email_el = driver.find_element(By.ID, "login-email")
+        email_el.clear()
+        email_el.send_keys("admin@neurospectra.org")
+        pwd_el = driver.find_element(By.ID, "login-password")
+        pwd_el.clear()
+        pwd_el.send_keys("admin123")
         time.sleep(0.3)
 
         driver.find_element(By.ID, "btn-login-submit").click()
